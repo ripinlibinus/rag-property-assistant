@@ -18,6 +18,18 @@
     >
       <!-- Sidebar Header -->
       <div class="p-4 border-b border-gray-700">
+        <!-- Mobile Close Button -->
+        <div class="flex items-center justify-between mb-3 md:hidden">
+          <span class="text-sm font-medium text-gray-400">Menu</span>
+          <button
+            @click="sidebarOpen = false"
+            class="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
         <button
           @click="startNewChat"
           class="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-gray-600 hover:bg-gray-800 transition-colors"
