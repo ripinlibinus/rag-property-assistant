@@ -1,0 +1,317 @@
+{
+  "timestamp": "2026-01-26T07:27:56.765Z",
+  "source_report": "evaluation",
+  "summary": {
+    "constraint_overrides_count": 3,
+    "manual_evaluations_count": 68
+  },
+  "constraint_overrides": {
+    "2": {
+      "9": {
+        "location": "pass"
+      }
+    },
+    "7": {
+      "6": {
+        "location": "pass"
+      }
+    },
+    "16": {
+      "0": {
+        "location": "pass"
+      }
+    }
+  },
+  "manual_evaluations": {
+    "22": {
+      "0": {
+        "result": "fail",
+        "comment": ""
+      },
+      "1": {
+        "result": "pass",
+        "comment": ""
+      },
+      "2": {
+        "result": "pass",
+        "comment": ""
+      },
+      "3": {
+        "result": "pass",
+        "comment": ""
+      },
+      "4": {
+        "result": "pass",
+        "comment": ""
+      },
+      "5": {
+        "result": "pass",
+        "comment": ""
+      },
+      "6": {
+        "result": "pass",
+        "comment": ""
+      },
+      "7": {
+        "result": "pass",
+        "comment": ""
+      },
+      "8": {
+        "result": "pass",
+        "comment": ""
+      }
+    },
+    "23": {
+      "0": {
+        "result": "pass",
+        "comment": ""
+      },
+      "1": {
+        "result": "pass",
+        "comment": ""
+      },
+      "2": {
+        "result": "pass",
+        "comment": ""
+      },
+      "3": {
+        "result": "pass",
+        "comment": ""
+      },
+      "4": {
+        "result": "pass",
+        "comment": ""
+      }
+    },
+    "24": {
+      "0": {
+        "result": "pass",
+        "comment": ""
+      },
+      "1": {
+        "result": "pass",
+        "comment": ""
+      },
+      "2": {
+        "result": "pass",
+        "comment": ""
+      },
+      "3": {
+        "result": "pass",
+        "comment": ""
+      },
+      "4": {
+        "result": "pass",
+        "comment": ""
+      },
+      "5": {
+        "result": "pass",
+        "comment": ""
+      }
+    },
+    "25": {
+      "0": {
+        "result": "pass",
+        "comment": ""
+      },
+      "1": {
+        "result": "pass",
+        "comment": ""
+      },
+      "2": {
+        "result": "pass",
+        "comment": ""
+      },
+      "3": {
+        "result": "fail",
+        "comment": ""
+      },
+      "4": {
+        "result": "pass",
+        "comment": ""
+      },
+      "5": {
+        "result": "pass",
+        "comment": ""
+      },
+      "6": {
+        "result": "pass",
+        "comment": ""
+      },
+      "7": {
+        "result": "pass",
+        "comment": ""
+      },
+      "8": {
+        "result": "pass",
+        "comment": ""
+      },
+      "9": {
+        "result": "pass",
+        "comment": ""
+      }
+    },
+    "26": {
+      "0": {
+        "result": "pass",
+        "comment": ""
+      },
+      "1": {
+        "result": "pass",
+        "comment": ""
+      },
+      "2": {
+        "result": "fail",
+        "comment": ""
+      },
+      "3": {
+        "result": "pass",
+        "comment": ""
+      },
+      "4": {
+        "result": "pass",
+        "comment": ""
+      },
+      "5": {
+        "result": "pass",
+        "comment": ""
+      },
+      "6": {
+        "result": "pass",
+        "comment": ""
+      },
+      "7": {
+        "result": "fail",
+        "comment": ""
+      },
+      "8": {
+        "result": "pass",
+        "comment": ""
+      },
+      "9": {
+        "result": "pass",
+        "comment": ""
+      }
+    },
+    "27": {
+      "0": {
+        "result": "pass",
+        "comment": ""
+      },
+      "1": {
+        "result": "fail",
+        "comment": ""
+      },
+      "2": {
+        "result": "pass",
+        "comment": ""
+      },
+      "3": {
+        "result": "pass",
+        "comment": ""
+      },
+      "4": {
+        "result": "pass",
+        "comment": ""
+      },
+      "5": {
+        "result": "pass",
+        "comment": ""
+      },
+      "6": {
+        "result": "pass",
+        "comment": ""
+      },
+      "7": {
+        "result": "pass",
+        "comment": ""
+      },
+      "8": {
+        "result": "pass",
+        "comment": ""
+      },
+      "9": {
+        "result": "pass",
+        "comment": ""
+      }
+    },
+    "28": {
+      "0": {
+        "result": "pass",
+        "comment": ""
+      },
+      "1": {
+        "result": "pass",
+        "comment": ""
+      },
+      "2": {
+        "result": "pass",
+        "comment": ""
+      },
+      "3": {
+        "result": "pass",
+        "comment": ""
+      },
+      "4": {
+        "result": "pass",
+        "comment": ""
+      },
+      "5": {
+        "result": "pass",
+        "comment": ""
+      },
+      "6": {
+        "result": "pass",
+        "comment": ""
+      },
+      "7": {
+        "result": "pass",
+        "comment": ""
+      },
+      "8": {
+        "result": "pass",
+        "comment": ""
+      },
+      "9": {
+        "result": "pass",
+        "comment": ""
+      }
+    },
+    "29": {
+      "0": {
+        "result": "pass",
+        "comment": ""
+      },
+      "1": {
+        "result": "pass",
+        "comment": ""
+      },
+      "2": {
+        "result": "pass",
+        "comment": ""
+      },
+      "3": {
+        "result": "pass",
+        "comment": ""
+      },
+      "4": {
+        "result": "pass",
+        "comment": ""
+      },
+      "5": {
+        "result": "pass",
+        "comment": ""
+      }
+    },
+    "30": {
+      "0": {
+        "result": "pass",
+        "comment": ""
+      },
+      "1": {
+        "result": "pass",
+        "comment": ""
+      }
+    }
+  }
+}

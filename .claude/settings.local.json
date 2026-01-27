@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python scripts/sync_properties.py:*)",
+      "Bash(PYTHONIOENCODING=utf-8 python:*)",
+      "Bash(python:*)",
+      "Bash(curl:*)",
+      "Bash(find:*)",
+      "Bash(dir:*)",
+      "Bash(start \"\" \"d:\\\\Project\\\\Rag-Tesis\\\\docs\\\\paper-html\\\\thesis-paper.html\")",
+      "Bash(\"C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python312\\\\python.exe\" -c \"\nimport requests\n\nresponse = requests.post\\(\n    ''http://localhost:8000/api/v1/chat'',\n    json={''message'': ''cari rumah di daerah cemara'', ''method'': ''hybrid''},\n    timeout=120\n\\)\nprint\\(''Status:'', response.status_code\\)\nif response.status_code == 200:\n    data = response.json\\(\\)\n    print\\(''Success!''\\)\n    print\\(''Response:'', data.get\\(''response'', ''''\\)[:1000]\\)\nelse:\n    print\\(''Error:'', response.text[:500]\\)\n\")",
+      "Bash(for f in supervisor metaproperty bizapps claude family)",
+      "Bash(do echo -n 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==')"
+    ],
+    "additionalDirectories": [
+      "d:\\Project\\Metaproperty\\metaproperty2026\\api-laravel\\routes\\api\\v1"
+    ]
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "timestamp": "2026-01-26T15:00:00.000Z",
+  "source_report": "api_only_openai_20260126_135949",
+  "summary": {
+    "constraint_overrides_count": 0,
+    "manual_evaluations_count": 80
+  },
+  "constraint_overrides": {},
+  "manual_evaluations": {
+    "22": {
+      "0": {"result": "fail", "comment": "No CCTV in description/features"},
+      "1": {"result": "fail", "comment": "No CCTV in description/features"},
+      "2": {"result": "pass", "comment": "CCTV mentioned in description"},
+      "3": {"result": "fail", "comment": "No CCTV in description/features"},
+      "4": {"result": "fail", "comment": "No CCTV in description/features"},
+      "5": {"result": "fail", "comment": "No CCTV in description/features"},
+      "6": {"result": "pass", "comment": "CCTV mentioned in description"},
+      "7": {"result": "fail", "comment": "No CCTV in description/features"},
+      "8": {"result": "fail", "comment": "No CCTV in description/features"},
+      "9": {"result": "fail", "comment": "No CCTV in description/features"}
+    },
+    "23": {
+      "0": {"result": "pass", "comment": "WiFi/Internet mentioned"},
+      "1": {"result": "fail", "comment": "No WiFi in description"},
+      "2": {"result": "fail", "comment": "No WiFi in description"},
+      "3": {"result": "fail", "comment": "No WiFi in description"},
+      "4": {"result": "fail", "comment": "No WiFi in description"},
+      "5": {"result": "fail", "comment": "No WiFi in description"},
+      "6": {"result": "fail", "comment": "No WiFi in description"},
+      "7": {"result": "fail", "comment": "No WiFi in description"},
+      "8": {"result": "fail", "comment": "No WiFi in description"},
+      "9": {"result": "fail", "comment": "No WiFi in description"}
+    },
+    "24": {
+      "0": {"result": "pass", "comment": "In komplek with basketball court"},
+      "1": {"result": "fail", "comment": "In komplek but no basketball"},
+      "2": {"result": "fail", "comment": "In komplek but no basketball"},
+      "3": {"result": "fail", "comment": "In komplek but no basketball"},
+      "4": {"result": "pass", "comment": "In komplek with basketball court"},
+      "5": {"result": "fail", "comment": "In komplek but no basketball"},
+      "6": {"result": "fail", "comment": "In komplek but no basketball"},
+      "7": {"result": "fail", "comment": "In komplek but no basketball"},
+      "8": {"result": "fail", "comment": "In komplek but no basketball"},
+      "9": {"result": "fail", "comment": "In komplek but no basketball"}
+    },
+    "25": {
+      "0": {"result": "pass", "comment": "Parking mentioned in description"},
+      "1": {"result": "fail", "comment": "No multi-parking info"},
+      "2": {"result": "fail", "comment": "No multi-parking info"},
+      "3": {"result": "pass", "comment": "Parking mentioned in description"},
+      "4": {"result": "fail", "comment": "No multi-parking info"},
+      "5": {"result": "fail", "comment": "No multi-parking info"},
+      "6": {"result": "fail", "comment": "No multi-parking info"},
+      "7": {"result": "fail", "comment": "No multi-parking info"},
+      "8": {"result": "fail", "comment": "No multi-parking info"},
+      "9": {"result": "fail", "comment": "No multi-parking info"}
+    },
+    "26": {
+      "0": {"result": "fail", "comment": "Has AC and tangki but missing lemari and dapur"},
+      "1": {"result": "fail", "comment": "Has AC and tangki but missing lemari and dapur"},
+      "2": {"result": "fail", "comment": "Has AC, lemari, tangki but missing dapur"},
+      "3": {"result": "fail", "comment": "Only has AC"},
+      "4": {"result": "fail", "comment": "Only has AC"},
+      "5": {"result": "fail", "comment": "Has AC, lemari, dapur but missing tangki"},
+      "6": {"result": "fail", "comment": "Has AC and lemari but missing dapur and tangki"},
+      "7": {"result": "fail", "comment": "Has AC and tangki but missing lemari and dapur"},
+      "8": {"result": "fail", "comment": "Has AC and tangki but missing lemari and dapur"},
+      "9": {"result": "fail", "comment": "Has lemari and tangki but missing AC and dapur"}
+    },
+    "27": {
+      "0": {"result": "fail", "comment": "No mall proximity mentioned"},
+      "1": {"result": "fail", "comment": "No mall proximity mentioned"},
+      "2": {"result": "fail", "comment": "No mall proximity mentioned"},
+      "3": {"result": "pass", "comment": "Next to Centre Point Mall"},
+      "4": {"result": "fail", "comment": "No mall proximity mentioned"},
+      "5": {"result": "fail", "comment": "No mall proximity mentioned"},
+      "6": {"result": "pass", "comment": "Podomoro area - near mall"},
+      "7": {"result": "pass", "comment": "Podomoro area - near mall"},
+      "8": {"result": "pass", "comment": "Podomoro area - near mall"}
+    },
+    "28": {
+      "0": {"result": "fail", "comment": "No school proximity mentioned"},
+      "1": {"result": "fail", "comment": "No school proximity mentioned"},
+      "2": {"result": "fail", "comment": "No school proximity mentioned"},
+      "3": {"result": "fail", "comment": "No school proximity mentioned"},
+      "4": {"result": "fail", "comment": "No school proximity mentioned"},
+      "5": {"result": "fail", "comment": "No school proximity mentioned"},
+      "6": {"result": "fail", "comment": "No school proximity mentioned"},
+      "7": {"result": "fail", "comment": "No school proximity mentioned"},
+      "8": {"result": "fail", "comment": "No school proximity mentioned"},
+      "9": {"result": "fail", "comment": "No school proximity mentioned"},
+      "10": {"result": "fail", "comment": "No school proximity mentioned"}
+    },
+    "29": {
+      "0": {"result": "fail", "comment": "Price OK but not near mall"},
+      "1": {"result": "fail", "comment": "Price OK but not near mall"},
+      "2": {"result": "fail", "comment": "Price OK but Carrefour is supermarket not mall"},
+      "3": {"result": "fail", "comment": "Price OK but not near mall"},
+      "4": {"result": "fail", "comment": "Price OK but not near mall"},
+      "5": {"result": "pass", "comment": "Podomoro near mall and price under 800M"},
+      "6": {"result": "fail", "comment": "Price OK but not near mall"}
+    },
+    "30": {
+      "0": {"result": "pass", "comment": "All criteria met: furnished, komplek, basketball, under 1B"},
+      "1": {"result": "pass", "comment": "All criteria met: furnished, komplek, basketball, under 1B"},
+      "2": {"result": "fail", "comment": "Not furnished"}
+    }
+  }
+}

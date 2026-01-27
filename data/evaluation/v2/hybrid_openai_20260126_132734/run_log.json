@@ -1,0 +1,16 @@
+[
+  {
+    "timestamp": "20260126_132734",
+    "from_q": 1,
+    "to_q": null,
+    "limit": null,
+    "questions_evaluated": 30
+  },
+  {
+    "timestamp": "20260126_141433",
+    "from_q": 22,
+    "to_q": 30,
+    "limit": null,
+    "questions_evaluated": 9
+  }
+]

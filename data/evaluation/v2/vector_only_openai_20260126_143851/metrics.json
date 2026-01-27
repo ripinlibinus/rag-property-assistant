@@ -1,0 +1,480 @@
+{
+  "timestamp": "20260126_143851",
+  "method": "vector_only",
+  "llm": "openai",
+  "threshold_t": 0.6,
+  "metrics": {
+    "total_queries": 30,
+    "total_properties": 112,
+    "threshold_t": 0.6,
+    "pca": {
+      "property_type": 0.5217,
+      "listing_type": 0.8305,
+      "location": 0.942,
+      "price": 0.4375,
+      "bedrooms": 0.5294,
+      "floors": 0.6667
+    },
+    "mean_cpr": 0.4461,
+    "strict_success_ratio": 0.2232,
+    "query_success_rate": 0.4667,
+    "confusion_matrix": {
+      "tp": 14,
+      "fp": 0,
+      "tn": 2,
+      "fn": 14,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6667,
+      "accuracy": 0.5333
+    },
+    "category_metrics": {
+      "location_simple": {
+        "total_queries": 3,
+        "successful_queries": 3,
+        "success_rate": 1.0,
+        "total_properties": 19,
+        "mean_cpr": 0.807
+      },
+      "location_price": {
+        "total_queries": 3,
+        "successful_queries": 2,
+        "success_rate": 0.6667,
+        "total_properties": 12,
+        "mean_cpr": 0.7083
+      },
+      "location_price_spec": {
+        "total_queries": 3,
+        "successful_queries": 3,
+        "success_rate": 1.0,
+        "total_properties": 6,
+        "mean_cpr": 0.6
+      },
+      "location_intent": {
+        "total_queries": 1,
+        "successful_queries": 0,
+        "success_rate": 0.0,
+        "total_properties": 2,
+        "mean_cpr": 0.3333
+      },
+      "property_type": {
+        "total_queries": 3,
+        "successful_queries": 1,
+        "success_rate": 0.3333,
+        "total_properties": 7,
+        "mean_cpr": 0.5
+      },
+      "context_followup": {
+        "total_queries": 3,
+        "successful_queries": 2,
+        "success_rate": 0.6667,
+        "total_properties": 8,
+        "mean_cpr": 0.6083
+      },
+      "context_modify": {
+        "total_queries": 2,
+        "successful_queries": 0,
+        "success_rate": 0.0,
+        "total_properties": 3,
+        "mean_cpr": 0.5
+      },
+      "complex_query": {
+        "total_queries": 2,
+        "successful_queries": 1,
+        "success_rate": 0.5,
+        "total_properties": 6,
+        "mean_cpr": 0.5
+      },
+      "project_search": {
+        "total_queries": 2,
+        "successful_queries": 2,
+        "success_rate": 1.0,
+        "total_properties": 9,
+        "mean_cpr": 1.0
+      },
+      "feature_search": {
+        "total_queries": 5,
+        "successful_queries": 0,
+        "success_rate": 0.0,
+        "total_properties": 25,
+        "mean_cpr": 0.0
+      },
+      "nearby_search": {
+        "total_queries": 2,
+        "successful_queries": 0,
+        "success_rate": 0.0,
+        "total_properties": 14,
+        "mean_cpr": 0.0
+      },
+      "nearby_price": {
+        "total_queries": 1,
+        "successful_queries": 0,
+        "success_rate": 0.0,
+        "total_properties": 1,
+        "mean_cpr": 0.0
+      }
+    }
+  },
+  "evaluations": [
+    {
+      "query_id": 1,
+      "question": "Carikan rumah dijual di daerah cemara",
+      "category": "location_simple",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 9,
+      "mean_cpr": 0.9629629629629631,
+      "strict_success": 8,
+      "is_success": true,
+      "confusion_category": "TP"
+    },
+    {
+      "query_id": 2,
+      "question": "Carikan rumah dijual di daerah ringroad",
+      "category": "location_simple",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 8,
+      "mean_cpr": 0.625,
+      "strict_success": 0,
+      "is_success": true,
+      "confusion_category": "TP"
+    },
+    {
+      "query_id": 3,
+      "question": "Carikan rumah sewa di medan",
+      "category": "location_simple",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 2,
+      "mean_cpr": 0.8333333333333333,
+      "strict_success": 1,
+      "is_success": true,
+      "confusion_category": "TP"
+    },
+    {
+      "query_id": 4,
+      "question": "Carikan rumah dijual di daerah cemara harga 1M an",
+      "category": "location_price",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 5,
+      "mean_cpr": 0.75,
+      "strict_success": 0,
+      "is_success": true,
+      "confusion_category": "TP"
+    },
+    {
+      "query_id": 5,
+      "question": "Carikan rumah dijual daerah ringroad harga dibawah 800juta 3 kamar",
+      "category": "location_price_spec",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 2,
+      "mean_cpr": 0.6,
+      "strict_success": 0,
+      "is_success": true,
+      "confusion_category": "TP"
+    },
+    {
+      "query_id": 6,
+      "question": "apakah ada rumah sewa di medan yang dibawah 50juta 3 kamar?",
+      "category": "location_price_spec",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 2,
+      "mean_cpr": 0.6,
+      "strict_success": 0,
+      "is_success": true,
+      "confusion_category": "TP"
+    },
+    {
+      "query_id": 7,
+      "question": "Saya ingin beli rumah di dekat podomoro medan harga dibawah 1M ada?",
+      "category": "location_price",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 4,
+      "mean_cpr": 0.5,
+      "strict_success": 0,
+      "is_success": false,
+      "confusion_category": "FN"
+    },
+    {
+      "query_id": 8,
+      "question": "Client saya lagi cari sewa dekat usu, anaknya mau kuliah disana",
+      "category": "location_intent",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 2,
+      "mean_cpr": 0.3333333333333333,
+      "strict_success": 0,
+      "is_success": false,
+      "confusion_category": "FN"
+    },
+    {
+      "query_id": 9,
+      "question": "Carikan rumah di inti kota medan yang harganya dibawah 1M",
+      "category": "location_price",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 3,
+      "mean_cpr": 0.9166666666666666,
+      "strict_success": 2,
+      "is_success": true,
+      "confusion_category": "TP"
+    },
+    {
+      "query_id": 10,
+      "question": "apakah ada ruko yang disewakan di daerah krakatau?",
+      "category": "property_type",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 2,
+      "mean_cpr": 0.5,
+      "strict_success": 0,
+      "is_success": false,
+      "confusion_category": "FN"
+    },
+    {
+      "query_id": 11,
+      "question": "saya lagi cari tanah yang dijual di marelan",
+      "category": "property_type",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 2,
+      "mean_cpr": 1.0,
+      "strict_success": 2,
+      "is_success": true,
+      "confusion_category": "TP"
+    },
+    {
+      "query_id": 12,
+      "question": "apakah ada gudang yang dijual atau disewa di KIM ?",
+      "category": "property_type",
+      "expected_result": "no_data",
+      "has_results": true,
+      "num_properties": 3,
+      "mean_cpr": 0.16666666666666666,
+      "strict_success": 0,
+      "is_success": false,
+      "confusion_category": "TN"
+    },
+    {
+      "query_id": 13,
+      "question": "Carikan rumah dijual daerah ringroad harga 1M an 3 kamar",
+      "category": "location_price_spec",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 2,
+      "mean_cpr": 0.6,
+      "strict_success": 0,
+      "is_success": true,
+      "confusion_category": "TP"
+    },
+    {
+      "query_id": 14,
+      "question": "Apakah masih ada pilihan lain?",
+      "category": "context_followup",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 2,
+      "mean_cpr": 0.7,
+      "strict_success": 0,
+      "is_success": true,
+      "confusion_category": "TP"
+    },
+    {
+      "query_id": 15,
+      "question": "Berikan lagi pilihan lain",
+      "category": "context_followup",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 3,
+      "mean_cpr": 0.6,
+      "strict_success": 0,
+      "is_success": true,
+      "confusion_category": "TP"
+    },
+    {
+      "query_id": 16,
+      "question": "kasih pilihan lain, lokasi dan harga masih sama, tapi yang 3 lantai?",
+      "category": "context_modify",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 2,
+      "mean_cpr": 0.5,
+      "strict_success": 0,
+      "is_success": false,
+      "confusion_category": "FN"
+    },
+    {
+      "query_id": 17,
+      "question": "Berikan lagi pilihan lain",
+      "category": "context_followup",
+      "expected_result": "no_data",
+      "has_results": true,
+      "num_properties": 3,
+      "mean_cpr": 0.5555555555555555,
+      "strict_success": 0,
+      "is_success": false,
+      "confusion_category": "TN"
+    },
+    {
+      "query_id": 18,
+      "question": "Kalau pilihan lain, lokasi dan jumlah lantai masih sama, tapi yang dibawah 800 juta ada?",
+      "category": "context_modify",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 1,
+      "mean_cpr": 0.5,
+      "strict_success": 0,
+      "is_success": false,
+      "confusion_category": "FN"
+    },
+    {
+      "query_id": 19,
+      "question": "cari apartment di podomoro yang bisa harganya dibawah 1.5 M",
+      "category": "complex_query",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 3,
+      "mean_cpr": 1.0,
+      "strict_success": 3,
+      "is_success": true,
+      "confusion_category": "TP"
+    },
+    {
+      "query_id": 20,
+      "question": "cari rumah di citraland bagya city medan",
+      "category": "project_search",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 4,
+      "mean_cpr": 1.0,
+      "strict_success": 4,
+      "is_success": true,
+      "confusion_category": "TP"
+    },
+    {
+      "query_id": 21,
+      "question": "cari rumah dijual di komplek givency one",
+      "category": "project_search",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 5,
+      "mean_cpr": 1.0,
+      "strict_success": 5,
+      "is_success": true,
+      "confusion_category": "TP"
+    },
+    {
+      "query_id": 22,
+      "question": "carikan rumah dengan fasilitas cctv di medan",
+      "category": "feature_search",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 5,
+      "mean_cpr": 0.0,
+      "strict_success": 0,
+      "is_success": false,
+      "confusion_category": "FN"
+    },
+    {
+      "query_id": 23,
+      "question": "carikan rumah dengan fasilitas wifi di medan",
+      "category": "feature_search",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 5,
+      "mean_cpr": 0.0,
+      "strict_success": 0,
+      "is_success": false,
+      "confusion_category": "FN"
+    },
+    {
+      "query_id": 24,
+      "question": "cari rumah dalam komplek dengan fasilitas lapangan basket",
+      "category": "feature_search",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 5,
+      "mean_cpr": 0.0,
+      "strict_success": 0,
+      "is_success": false,
+      "confusion_category": "FN"
+    },
+    {
+      "query_id": 25,
+      "question": "cari rumah yang bisa parkir beberapa mobil",
+      "category": "feature_search",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 5,
+      "mean_cpr": 0.0,
+      "strict_success": 0,
+      "is_success": false,
+      "confusion_category": "FN"
+    },
+    {
+      "query_id": 26,
+      "question": "cari rumah yang sudah ada ac, lemari, dapur dan tangki air",
+      "category": "feature_search",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 5,
+      "mean_cpr": 0.0,
+      "strict_success": 0,
+      "is_success": false,
+      "confusion_category": "FN"
+    },
+    {
+      "query_id": 27,
+      "question": "cari rumah dekat mall di medan",
+      "category": "nearby_search",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 7,
+      "mean_cpr": 0.0,
+      "strict_success": 0,
+      "is_success": false,
+      "confusion_category": "FN"
+    },
+    {
+      "query_id": 28,
+      "question": "cari rumah dekat sekolah di medan",
+      "category": "nearby_search",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 7,
+      "mean_cpr": 0.0,
+      "strict_success": 0,
+      "is_success": false,
+      "confusion_category": "FN"
+    },
+    {
+      "query_id": 29,
+      "question": "cari rumah dekat mall yang harganya dibawah 800 juta",
+      "category": "nearby_price",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 1,
+      "mean_cpr": 0.0,
+      "strict_success": 0,
+      "is_success": false,
+      "confusion_category": "FN"
+    },
+    {
+      "query_id": 30,
+      "question": "cari rumah full furnished yang harganya dibawah 1 M dalam komplek dengan fasilitas lapangan basket",
+      "category": "complex_query",
+      "expected_result": "has_data",
+      "has_results": true,
+      "num_properties": 3,
+      "mean_cpr": 0.0,
+      "strict_success": 0,
+      "is_success": false,
+      "confusion_category": "FN"
+    }
+  ]
+}

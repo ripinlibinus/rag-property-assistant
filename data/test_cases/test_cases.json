@@ -1,0 +1,323 @@
+[
+  {
+    "id": "PS001",
+    "category": "property_search",
+    "subcategory": "simple",
+    "input": "Cari rumah di Sunggal",
+    "expected_intent": "property_search",
+    "expected_response_type": "property_list",
+    "expected_key_points": ["hasil pencarian", "lokasi Sunggal", "daftar properti"],
+    "expected_property_filters": {
+      "property_type": "rumah",
+      "location": "Sunggal"
+    }
+  },
+  {
+    "id": "PS002",
+    "category": "property_search",
+    "subcategory": "simple",
+    "input": "Ada ruko di Medan?",
+    "expected_intent": "property_search",
+    "expected_response_type": "property_list",
+    "expected_key_points": ["hasil pencarian", "tipe ruko", "lokasi Medan"],
+    "expected_property_filters": {
+      "property_type": "ruko",
+      "location": "Medan"
+    }
+  },
+  {
+    "id": "PS003",
+    "category": "property_search",
+    "subcategory": "simple",
+    "input": "Tolong carikan tanah kosong",
+    "expected_intent": "property_search",
+    "expected_response_type": "property_list",
+    "expected_key_points": ["hasil pencarian", "tipe tanah"],
+    "expected_property_filters": {
+      "property_type": "tanah"
+    }
+  },
+  {
+    "id": "PS004",
+    "category": "property_search",
+    "subcategory": "complex",
+    "input": "Saya butuh rumah 3 kamar tidur budget sekitar 1 milyar di daerah Medan Selayang",
+    "expected_intent": "property_search",
+    "expected_response_type": "property_list",
+    "expected_key_points": ["hasil pencarian", "3 KT", "budget 1M", "Medan Selayang"],
+    "expected_property_filters": {
+      "property_type": "rumah",
+      "min_bedrooms": 3,
+      "max_price": 1000000000,
+      "location": "Medan Selayang"
+    }
+  },
+  {
+    "id": "PS005",
+    "category": "property_search",
+    "subcategory": "complex",
+    "input": "Ada rumah bagus gak yang dekat sekolah, 2 lantai, garasi minimal 2 mobil?",
+    "expected_intent": "property_search",
+    "expected_response_type": "property_list",
+    "expected_key_points": ["dekat sekolah", "2 lantai", "garasi"],
+    "expected_property_filters": {
+      "property_type": "rumah",
+      "features": ["dekat sekolah", "2 lantai", "garasi 2 mobil"]
+    }
+  },
+  {
+    "id": "PS006",
+    "category": "property_search",
+    "subcategory": "complex",
+    "input": "Saya mau cari rumah range 500jt-800jt di Binjai, minimal luas tanah 100m2",
+    "expected_intent": "property_search",
+    "expected_response_type": "property_list",
+    "expected_key_points": ["range harga", "lokasi Binjai", "luas tanah"],
+    "expected_property_filters": {
+      "property_type": "rumah",
+      "min_price": 500000000,
+      "max_price": 800000000,
+      "location": "Binjai",
+      "min_land_area": 100
+    }
+  },
+  {
+    "id": "PS007",
+    "category": "property_search",
+    "subcategory": "followup",
+    "input": "Yang lebih murah ada?",
+    "expected_intent": "property_search",
+    "expected_response_type": "property_list",
+    "expected_key_points": ["alternatif harga lebih rendah"],
+    "context_required": true,
+    "expected_behavior": "Filter dengan harga lebih rendah dari hasil sebelumnya"
+  },
+  {
+    "id": "PS008",
+    "category": "property_search",
+    "subcategory": "followup",
+    "input": "Ada yang lebih besar gak rumahnya?",
+    "expected_intent": "property_search",
+    "expected_response_type": "property_list",
+    "expected_key_points": ["alternatif lebih besar"],
+    "context_required": true,
+    "expected_behavior": "Filter dengan luas lebih besar dari hasil sebelumnya"
+  },
+  {
+    "id": "PS009",
+    "category": "property_search",
+    "subcategory": "ambiguous",
+    "input": "Ada yang bagus gak?",
+    "expected_intent": "property_search",
+    "expected_response_type": "clarification_or_list",
+    "expected_key_points": ["minta klarifikasi atau tampilkan top recommended"],
+    "expected_behavior": "Ask for clarification about criteria or show top properties"
+  },
+  {
+    "id": "PS010",
+    "category": "property_search",
+    "subcategory": "ambiguous",
+    "input": "Carikan yang cocok buat saya",
+    "expected_intent": "property_search",
+    "expected_response_type": "personalized_or_clarification",
+    "expected_key_points": ["personalisasi berdasarkan profil atau minta klarifikasi"],
+    "context_required": true,
+    "expected_behavior": "Use client profile for personalization or ask for preferences"
+  },
+  {
+    "id": "LM001",
+    "category": "listing_management",
+    "subcategory": "update_price",
+    "input": "Update harga rumah di Jalan Pancing jadi 1.5 milyar",
+    "expected_intent": "property_update",
+    "expected_response_type": "confirmation",
+    "expected_key_points": ["konfirmasi update", "harga baru 1.5M", "lokasi"],
+    "expected_action": {
+      "type": "update_price",
+      "new_value": 1500000000
+    }
+  },
+  {
+    "id": "LM002",
+    "category": "listing_management",
+    "subcategory": "update_status",
+    "input": "Tandai listing 123 sudah terjual",
+    "expected_intent": "property_update",
+    "expected_response_type": "confirmation",
+    "expected_key_points": ["konfirmasi status sold", "ID listing"],
+    "expected_action": {
+      "type": "update_status",
+      "new_value": "sold"
+    }
+  },
+  {
+    "id": "LM003",
+    "category": "listing_management",
+    "subcategory": "generate_description",
+    "input": "Buatkan deskripsi marketing untuk rumah di komplek Cemara Asri",
+    "expected_intent": "property_description",
+    "expected_response_type": "generated_text",
+    "expected_key_points": ["deskripsi menarik", "highlight fitur", "call to action"]
+  },
+  {
+    "id": "CS001",
+    "category": "coaching",
+    "subcategory": "sales_tips",
+    "input": "Gimana cara closing buyer yang masih ragu-ragu?",
+    "expected_intent": "coaching_sales",
+    "expected_response_type": "tips_list",
+    "expected_key_points": ["teknik closing", "handling objections", "praktis"]
+  },
+  {
+    "id": "CS002",
+    "category": "coaching",
+    "subcategory": "sales_tips",
+    "input": "Tips follow up client gimana biar gak ganggu?",
+    "expected_intent": "coaching_sales",
+    "expected_response_type": "tips_list",
+    "expected_key_points": ["timing follow up", "pendekatan sopan", "value-based"]
+  },
+  {
+    "id": "CS003",
+    "category": "coaching",
+    "subcategory": "sales_tips",
+    "input": "Cara handling kalau client bilang kemahalan?",
+    "expected_intent": "coaching_sales",
+    "expected_response_type": "tips_list",
+    "expected_key_points": ["price objection handling", "value justification", "alternatives"]
+  },
+  {
+    "id": "CK001",
+    "category": "coaching",
+    "subcategory": "knowledge",
+    "input": "Apa itu AJB?",
+    "expected_intent": "coaching_knowledge",
+    "expected_response_type": "explanation",
+    "expected_key_points": ["Akta Jual Beli", "definisi", "proses pembuatan", "pentingnya"],
+    "expected_accuracy": "Akta Jual Beli dibuat oleh PPAT"
+  },
+  {
+    "id": "CK002",
+    "category": "coaching",
+    "subcategory": "knowledge",
+    "input": "Bedanya SHM sama SHGB apa?",
+    "expected_intent": "coaching_knowledge",
+    "expected_response_type": "comparison",
+    "expected_key_points": ["SHM = Sertifikat Hak Milik", "SHGB = Sertifikat Hak Guna Bangunan", "perbedaan hak", "jangka waktu"],
+    "expected_accuracy": "SHM adalah hak tertinggi, SHGB ada masa berlaku"
+  },
+  {
+    "id": "CK003",
+    "category": "coaching",
+    "subcategory": "knowledge",
+    "input": "Proses balik nama sertifikat gimana?",
+    "expected_intent": "coaching_knowledge",
+    "expected_response_type": "step_by_step",
+    "expected_key_points": ["langkah-langkah", "dokumen diperlukan", "biaya", "waktu proses"]
+  },
+  {
+    "id": "CM001",
+    "category": "coaching",
+    "subcategory": "motivation",
+    "input": "Lagi down nih, udah sebulan gak closing",
+    "expected_intent": "coaching_motivation",
+    "expected_response_type": "motivation",
+    "expected_key_points": ["semangat", "empati", "saran praktis"]
+  },
+  {
+    "id": "CM002",
+    "category": "coaching",
+    "subcategory": "motivation",
+    "input": "Kasih motivasi dong",
+    "expected_intent": "coaching_motivation",
+    "expected_response_type": "motivation",
+    "expected_key_points": ["motivasi positif", "encouraging"]
+  },
+  {
+    "id": "GR001",
+    "category": "greeting",
+    "subcategory": "greeting",
+    "input": "Halo",
+    "expected_intent": "greeting",
+    "expected_response_type": "greeting",
+    "expected_key_points": ["sapaan", "tawarkan bantuan"]
+  },
+  {
+    "id": "GR002",
+    "category": "greeting",
+    "subcategory": "greeting",
+    "input": "Selamat pagi",
+    "expected_intent": "greeting",
+    "expected_response_type": "greeting",
+    "expected_key_points": ["sapaan pagi", "tawarkan bantuan"]
+  },
+  {
+    "id": "GR003",
+    "category": "greeting",
+    "subcategory": "thanks",
+    "input": "Terima kasih banyak ya infonya",
+    "expected_intent": "greeting",
+    "expected_response_type": "acknowledgement",
+    "expected_key_points": ["sama-sama", "tawarkan bantuan lebih lanjut"]
+  },
+  {
+    "id": "OOS001",
+    "category": "out_of_scope",
+    "subcategory": "unrelated",
+    "input": "Cuaca hari ini gimana?",
+    "expected_intent": "out_of_scope",
+    "expected_response_type": "redirect",
+    "expected_key_points": ["tidak bisa jawab", "redirect ke topik properti"]
+  },
+  {
+    "id": "OOS002",
+    "category": "out_of_scope",
+    "subcategory": "unrelated",
+    "input": "Rekomendasi restoran dong",
+    "expected_intent": "out_of_scope",
+    "expected_response_type": "redirect",
+    "expected_key_points": ["tidak bisa jawab", "redirect ke topik properti"]
+  },
+  {
+    "id": "MT001",
+    "category": "multi_turn",
+    "subcategory": "contextual",
+    "conversation": [
+      {"role": "user", "content": "Cari rumah di Medan Johor"},
+      {"role": "assistant", "content": "[Menampilkan 5 rumah di Medan Johor]"},
+      {"role": "user", "content": "Yang nomor 2 detailnya gimana?"}
+    ],
+    "expected_intent": "property_search",
+    "expected_response_type": "property_detail",
+    "expected_key_points": ["detail properti #2", "spesifikasi lengkap"],
+    "expected_behavior": "Remember previous context and show detail of item #2"
+  },
+  {
+    "id": "MT002",
+    "category": "multi_turn",
+    "subcategory": "contextual",
+    "conversation": [
+      {"role": "user", "content": "Saya lagi cari rumah budget 1M"},
+      {"role": "assistant", "content": "Baik, di lokasi mana?"},
+      {"role": "user", "content": "Di Binjai aja"}
+    ],
+    "expected_intent": "property_search",
+    "expected_response_type": "property_list",
+    "expected_key_points": ["hasil dengan budget 1M", "lokasi Binjai"],
+    "expected_behavior": "Combine budget from turn 1 with location from turn 3"
+  },
+  {
+    "id": "MT003",
+    "category": "multi_turn",
+    "subcategory": "topic_switch",
+    "conversation": [
+      {"role": "user", "content": "Cari rumah di Sunggal"},
+      {"role": "assistant", "content": "[Showing results]"},
+      {"role": "user", "content": "Oh iya, gimana cara nego harga sama owner?"}
+    ],
+    "expected_intent": "coaching_sales",
+    "expected_response_type": "tips_list",
+    "expected_key_points": ["teknik negosiasi", "tips praktis"],
+    "expected_behavior": "Switch to coaching context while maintaining awareness of property context"
+  }
+]

@@ -1,0 +1,81 @@
+# =============================================================================
+# RAG Property Search - Docker Compose Configuration
+# =============================================================================
+#
+# Usage:
+#   Development:  docker-compose up -d
+#   Production:   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# =============================================================================
+
+version: '3.8'
+
+services:
+  # ---------------------------------------------------------------------------
+  # Main API Service
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rag-property-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # App
+      - ENVIRONMENT=production
+      - DEBUG=false
+
+      # OpenAI (required)
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+      - OPENAI_EMBEDDING_MODEL=${OPENAI_EMBEDDING_MODEL:-text-embedding-3-small}
+
+      # MetaProperty API
+      - METAPROPERTY_API_URL=${METAPROPERTY_API_URL:-http://host.docker.internal:8001}
+      - METAPROPERTY_API_TOKEN=${METAPROPERTY_API_TOKEN:-}
+
+      # ChromaDB
+      - CHROMA_PERSIST_DIRECTORY=/app/data/chromadb
+
+      # Database
+      - DATABASE_PATH=/app/data/chat_history.db
+
+      # CORS
+      - CORS_ORIGINS=["http://localhost:3000","http://localhost:5173","http://localhost:8000"]
+
+      # Logging
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      # Persist ChromaDB data
+      - chromadb_data:/app/data/chromadb
+      # Persist chat history
+      - chat_history:/app/data
+      # Mount knowledge base (optional, for live updates)
+      - ./data/knowledge-base:/app/data/knowledge-base:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - rag-network
+
+# ---------------------------------------------------------------------------
+# Volumes
+# ---------------------------------------------------------------------------
+volumes:
+  chromadb_data:
+    name: rag-chromadb-data
+  chat_history:
+    name: rag-chat-history
+
+# ---------------------------------------------------------------------------
+# Networks
+# ---------------------------------------------------------------------------
+networks:
+  rag-network:
+    name: rag-property-network
+    driver: bridge

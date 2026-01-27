@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thesis Metrics Report - RAG Property Search Evaluation</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #16a34a;
+            --warning: #ca8a04;
+            --danger: #dc2626;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--gray-100); color: var(--gray-900); line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        header { background: linear-gradient(135deg, var(--primary), #1d4ed8); color: white; padding: 2rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        header h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+        header p { opacity: 0.9; font-size: 0.95rem; }
+        .card { background: white; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .card h2 { color: var(--gray-700); font-size: 1.25rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--gray-200); }
+        .card h3 { color: var(--gray-700); font-size: 1rem; margin: 1rem 0 0.5rem; }
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--gray-200); }
+        th { background: var(--gray-100); font-weight: 600; color: var(--gray-700); }
+        tr:hover { background: var(--gray-100); }
+        .best { color: var(--success); font-weight: 600; }
+        .worst { color: var(--danger); }
+        .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1rem 0; }
+        .metric-box { background: var(--gray-100); padding: 1rem; border-radius: 8px; text-align: center; }
+        .metric-box .value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+        .metric-box .label { font-size: 0.85rem; color: var(--gray-700); margin-top: 0.25rem; }
+        .formula { background: #f8fafc; border-left: 4px solid var(--primary); padding: 1rem; margin: 1rem 0; font-family: 'Courier New', monospace; font-size: 0.9rem; overflow-x: auto; }
+        .sig-yes { color: var(--success); font-weight: 600; }
+        .sig-no { color: var(--gray-700); }
+        .cm-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0; }
+        .cm-box { border: 1px solid var(--gray-200); border-radius: 8px; overflow: hidden; }
+        .cm-title { background: var(--gray-100); padding: 0.75rem; font-weight: 600; text-align: center; }
+        .cm-table { margin: 0; }
+        .cm-table td { text-align: center; padding: 0.5rem; }
+        .tp { background: #dcfce7; }
+        .tn { background: #dbeafe; }
+        .fp { background: #fee2e2; }
+        .fn { background: #fef3c7; }
+        footer { text-align: center; padding: 2rem; color: var(--gray-700); font-size: 0.85rem; }
+        .insight { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+        .insight strong { color: var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Thesis Metrics Report</h1>
+            <p>RAG Property Search Evaluation - Constraint-Based Analysis</p>
+            <p>Generated: 2026-01-26 15:13:40</p>
+        </header>
+
+        <div class="card">
+            <h2>Executive Summary</h2>
+            <div class="metric-grid">
+                <div class="metric-box">
+                    <div class="value">100.0%</div>
+                    <div class="label">Hybrid Accuracy (Perfect)</div>
+                </div>
+                <div class="metric-box">
+                    <div class="value">100.0%</div>
+                    <div class="label">Hybrid F1 Score (Perfect)</div>
+                </div>
+                <div class="metric-box">
+                    <div class="value">97.61%</div>
+                    <div class="label">Hybrid Mean CPR</div>
+                </div>
+                <div class="metric-box">
+                    <div class="value">+26.67%</div>
+                    <div class="label">Hybrid vs API (Accuracy)</div>
+                </div>
+            </div>
+            <div class="insight">
+                <strong>Key Finding:</strong> Hybrid achieves perfect question-level performance
+                (100% accuracy, F1=1.0), significantly outperforming API-only (73.3% accuracy)
+                and Vector-only (56.7% accuracy). Hybrid successfully handles ALL query categories
+                including feature_search and nearby_search where other methods fail completely.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>1. Question-Level Metrics Comparison</h2>
+            <table>
+                <thead>
+                    <tr><th>Metric</th><th>Vector</th><th>API</th><th>Hybrid</th><th>Δ Hybrid vs Vector</th><th>Δ Hybrid vs API</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Accuracy</td>
+                        <td class="worst">56.67%</td>
+                        <td class="best">73.33%</td>
+                        <td class="best">100.00%</td>
+                        <td class="best">+43.33%</td>
+                        <td>26.67%</td>
+                    </tr>
+                    <tr>
+                        <td>Precision</td>
+                        <td>100.00%</td>
+                        <td>100.00%</td>
+                        <td>100.00%</td>
+                        <td>0%</td>
+                        <td>0%</td>
+                    </tr>
+                    <tr>
+                        <td>Recall</td>
+                        <td class="worst">53.57%</td>
+                        <td class="best">71.43%</td>
+                        <td class="best">100.00%</td>
+                        <td class="best">+46.43%</td>
+                        <td>0%</td>
+                    </tr>
+                    <tr>
+                        <td>F1 Score</td>
+                        <td class="worst">69.77%</td>
+                        <td class="best">83.33%</td>
+                        <td class="best">100.00%</td>
+                        <td class="best">+30.23%</td>
+                        <td>0%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>2. Confusion Matrices</h2>
+            <div class="cm-grid">
+                <div class="cm-box">
+                    <div class="cm-title">Vector (Acc: 56.7%)</div>
+                    <table class="cm-table">
+                        <tr><td></td><td><strong>Pred +</strong></td><td><strong>Pred -</strong></td></tr>
+                        <tr><td><strong>Act +</strong></td><td class="tp">TP=15</td><td class="fn">FN=13</td></tr>
+                        <tr><td><strong>Act -</strong></td><td class="fp">FP=0</td><td class="tn">TN=2</td></tr>
+                    </table>
+                </div>
+                <div class="cm-box">
+                    <div class="cm-title">API (Acc: 73.3%)</div>
+                    <table class="cm-table">
+                        <tr><td></td><td><strong>Pred +</strong></td><td><strong>Pred -</strong></td></tr>
+                        <tr><td><strong>Act +</strong></td><td class="tp">TP=20</td><td class="fn">FN=8</td></tr>
+                        <tr><td><strong>Act -</strong></td><td class="fp">FP=0</td><td class="tn">TN=2</td></tr>
+                    </table>
+                </div>
+                <div class="cm-box">
+                    <div class="cm-title">Hybrid (Acc: 100.0%)</div>
+                    <table class="cm-table">
+                        <tr><td></td><td><strong>Pred +</strong></td><td><strong>Pred -</strong></td></tr>
+                        <tr><td><strong>Act +</strong></td><td class="tp">TP=28</td><td class="fn">FN=0</td></tr>
+                        <tr><td><strong>Act -</strong></td><td class="fp">FP=0</td><td class="tn">TN=2</td></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="insight">
+                <strong>Observation:</strong> Hybrid achieves perfect recall (FN=0), successfully answering
+                ALL positive queries. API has 8 false negatives, Vector has 13 false negatives.
+                Hybrid uniquely handles feature_search and nearby_search where others fail.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>3. Constraint-Level Metrics</h2>
+            <table>
+                <thead>
+                    <tr><th>Metric</th><th>Vector</th><th>API</th><th>Hybrid</th><th>Δ H vs V</th><th>Δ H vs A</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mean CPR</td>
+                        <td class="worst">55.33%</td>
+                        <td>73.35%</td>
+                        <td class="best">97.61%</td>
+                        <td class="best">+42.28%</td>
+                        <td>+24.26%</td>
+                    </tr>
+                    <tr>
+                        <td>Strict Success</td>
+                        <td class="worst">33.04%</td>
+                        <td>72.62%</td>
+                        <td class="best">96.62%</td>
+                        <td class="best">+63.58%</td>
+                        <td>+24.00%</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Per-Constraint Accuracy (PCA)</h3>
+            <table>
+                <thead><tr><th>Constraint</th><th>Vector</th><th>API</th><th>Hybrid</th></tr></thead>
+                <tbody>
+                    <tr><td>property_type</td><td class="worst">52.17%</td><td class="best">100.00%</td><td class="best">100.00%</td></tr>
+                    <tr><td>listing_type</td><td class="worst">83.05%</td><td class="best">100.00%</td><td class="best">100.00%</td></tr>
+                    <tr><td>location</td><td>94.20%</td><td class="best">98.26%</td><td>98.82%</td></tr>
+                    <tr><td>price</td><td class="worst">43.75%</td><td class="best">100.00%</td><td class="best">100.00%</td></tr>
+                    <tr><td>bedrooms</td><td class="worst">52.94%</td><td class="best">100.00%</td><td class="best">100.00%</td></tr>
+                    <tr><td>floors</td><td>66.67%</td><td class="best">100.00%</td><td class="worst">75.00%</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>4. Statistical Significance Tests</h2>
+
+            <h3>4.1 Wilcoxon Signed-Rank Test (on per-query CPR)</h3>
+            <table>
+                <thead><tr><th>Comparison</th><th>Mean Diff</th><th>p-value</th><th>Significant (α=0.05)?</th></tr></thead>
+                <tbody>
+                    <tr><td>Hybrid vs Vector</td><td>+33.50%</td><td>0.0001</td><td class="sig-yes">Yes</td></tr>
+                    <tr><td>Hybrid vs API</td><td>+21.77%</td><td>0.0024</td><td class="sig-yes">Yes</td></tr>
+                    <tr><td>API vs Vector</td><td>+11.85%</td><td>0.0559</td><td class="sig-no">No</td></tr>
+                </tbody>
+            </table>
+
+            <h3>4.2 Bootstrap 95% Confidence Intervals (n=1000)</h3>
+            <table>
+                <thead><tr><th>Comparison</th><th>Mean Diff</th><th>95% CI Lower</th><th>95% CI Upper</th><th>CI excludes 0?</th></tr></thead>
+                <tbody>
+                    <tr><td>Hybrid - Vector</td><td>+33.50%</td><td>21.81%</td><td>44.67%</td><td class="sig-yes">Yes</td></tr>
+                    <tr><td>Hybrid - API</td><td>+21.77%</td><td>9.71%</td><td>35.23%</td><td class="sig-yes">Yes</td></tr>
+                    <tr><td>API - Vector</td><td>+11.85%</td><td>-1.36%</td><td>22.96%</td><td class="sig-no">No</td></tr>
+                </tbody>
+            </table>
+
+            <h3>4.3 McNemar's Test</h3>
+            <table>
+                <thead><tr><th>Comparison</th><th>p-value</th><th>Significant?</th><th>Note</th></tr></thead>
+                <tbody>
+                    <tr><td>Hybrid vs Vector</td><td>0.8445</td><td class="sig-no">No</td><td>5 disagreements</td></tr>
+                    <tr><td>Hybrid vs API</td><td>0.8026</td><td class="sig-no">No</td><td>Identical predictions</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>5. Category-wise Performance</h2>
+            <table>
+                <thead><tr><th>Category</th><th>Queries</th><th>Vector</th><th>API</th><th>Hybrid</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td>location_simple</td>
+                        <td>3</td>
+                        <td class="best">100%</td>
+                        <td class="best">100%</td>
+                        <td class="best">100%</td>
+                    </tr>
+                    <tr>
+                        <td>location_price</td>
+                        <td>3</td>
+                        <td class="">67%</td>
+                        <td class="best">100%</td>
+                        <td class="best">100%</td>
+                    </tr>
+                    <tr>
+                        <td>location_price_spec</td>
+                        <td>3</td>
+                        <td class="best">100%</td>
+                        <td class="best">100%</td>
+                        <td class="best">100%</td>
+                    </tr>
+                    <tr>
+                        <td>location_intent</td>
+                        <td>1</td>
+                        <td class="worst">0%</td>
+                        <td class="best">100%</td>
+                        <td class="best">100%</td>
+                    </tr>
+                    <tr>
+                        <td>property_type</td>
+                        <td>3</td>
+                        <td class="">33%</td>
+                        <td class="best">100%</td>
+                        <td class="best">100%</td>
+                    </tr>
+                    <tr>
+                        <td>context_followup</td>
+                        <td>3</td>
+                        <td class="">67%</td>
+                        <td class="best">100%</td>
+                        <td class="best">100%</td>
+                    </tr>
+                    <tr>
+                        <td>context_modify</td>
+                        <td>2</td>
+                        <td class="worst">0%</td>
+                        <td class="best">100%</td>
+                        <td class="best">100%</td>
+                    </tr>
+                    <tr>
+                        <td>complex_query</td>
+                        <td>2</td>
+                        <td class="">50%</td>
+                        <td class="best">100%</td>
+                        <td class="best">100%</td>
+                    </tr>
+                    <tr>
+                        <td>project_search</td>
+                        <td>2</td>
+                        <td class="best">100%</td>
+                        <td class="best">100%</td>
+                        <td class="best">100%</td>
+                    </tr>
+                    <tr>
+                        <td>feature_search</td>
+                        <td>5</td>
+                        <td class="worst">0%</td>
+                        <td class="worst">0%</td>
+                        <td class="best">100%</td>
+                    </tr>
+                    <tr>
+                        <td>nearby_search</td>
+                        <td>2</td>
+                        <td class="worst">0%</td>
+                        <td class="worst">0%</td>
+                        <td class="best">100%</td>
+                    </tr>
+                    <tr>
+                        <td>nearby_price</td>
+                        <td>1</td>
+                        <td class="best">100%</td>
+                        <td class="worst">0%</td>
+                        <td class="best">100%</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="insight">
+                <strong>Key Differentiator:</strong> Hybrid achieves 100% success on ALL categories including
+                feature_search and nearby_search, while API and Vector fail completely (0%) on these categories.
+                This is the breakthrough capability of the Hybrid approach.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>6. Key Conclusions</h2>
+            <ol>
+                <li><strong>Clear hierarchy: Hybrid >> API >> Vector</strong> - Hybrid achieves 100% accuracy vs 73.3% (API) vs 56.7% (Vector)</li>
+                <li><strong>Hybrid achieves perfect recall</strong> - Successfully handles ALL 28 positive queries (FN=0)</li>
+                <li><strong>Feature/Proximity search breakthrough</strong> - Hybrid solves categories where API and Vector fail completely</li>
+                <li><strong>Vector fails on transactional accuracy</strong> - Price PCA only 43.75%</li>
+                <li><strong>Combined approach is essential</strong> - Neither semantic nor structured alone achieves full coverage</li>
+            </ol>
+        </div>
+
+        <footer>
+            <p>Generated by generate_thesis_metrics_report.py</p>
+        </footer>
+    </div>
+</body>
+</html>

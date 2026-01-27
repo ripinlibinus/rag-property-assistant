@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>References for Mendeley</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th {
+            background: #007bff;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .ref-num {
+            font-weight: bold;
+            color: #007bff;
+            width: 50px;
+        }
+        .title-cell {
+            max-width: 400px;
+        }
+        .authors {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .year {
+            font-weight: bold;
+            width: 60px;
+        }
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background 0.2s;
+        }
+        .copy-btn:hover {
+            background: #218838;
+        }
+        .copy-btn.copied {
+            background: #6c757d;
+        }
+        .url-cell {
+            max-width: 300px;
+            word-break: break-all;
+        }
+        .url-cell a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 0.85em;
+        }
+        .url-cell a:hover {
+            text-decoration: underline;
+        }
+        .copy-url-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+        .copy-url-btn:hover {
+            background: #138496;
+        }
+        .instructions {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <h1>References for Mendeley Upload</h1>
+
+    <div class="instructions">
+        <strong>Cara Pakai:</strong><br>
+        1. Klik tombol <strong>"Copy Title"</strong> untuk copy judul<br>
+        2. Paste di Mendeley search atau "Add by identifier"<br>
+        3. Klik <strong>"Copy URL"</strong> untuk copy link DOI/arXiv
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Copy</th>
+                <th>Authors</th>
+                <th>Year</th>
+                <th>URL</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="ref-num">[1]</td>
+                <td class="title-cell" id="title-1">Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</td>
+                <td><button class="copy-btn" onclick="copyTitle(1)">Copy Title</button></td>
+                <td class="authors">Lewis, P. et al.</td>
+                <td class="year">2020</td>
+                <td class="url-cell"><a href="https://arxiv.org/abs/2005.11401" target="_blank">arxiv.org/abs/2005.11401</a><button class="copy-url-btn" onclick="copyUrl('https://arxiv.org/abs/2005.11401')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[2]</td>
+                <td class="title-cell" id="title-2">Leveraging Passage Retrieval with Generative Models for Open Domain Question Answering</td>
+                <td><button class="copy-btn" onclick="copyTitle(2)">Copy Title</button></td>
+                <td class="authors">Izacard, G. & Grave, E.</td>
+                <td class="year">2021</td>
+                <td class="url-cell"><a href="https://doi.org/10.18653/v1/2021.eacl-main.74" target="_blank">doi.org/10.18653/v1/2021.eacl-main.74</a><button class="copy-url-btn" onclick="copyUrl('https://doi.org/10.18653/v1/2021.eacl-main.74')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[3]</td>
+                <td class="title-cell" id="title-3">Dense Passage Retrieval for Open-Domain Question Answering</td>
+                <td><button class="copy-btn" onclick="copyTitle(3)">Copy Title</button></td>
+                <td class="authors">Karpukhin, V. et al.</td>
+                <td class="year">2020</td>
+                <td class="url-cell"><a href="https://doi.org/10.18653/v1/2020.emnlp-main.550" target="_blank">doi.org/10.18653/v1/2020.emnlp-main.550</a><button class="copy-url-btn" onclick="copyUrl('https://doi.org/10.18653/v1/2020.emnlp-main.550')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[4]</td>
+                <td class="title-cell" id="title-4">ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT</td>
+                <td><button class="copy-btn" onclick="copyTitle(4)">Copy Title</button></td>
+                <td class="authors">Khattab, O. & Zaharia, M.</td>
+                <td class="year">2020</td>
+                <td class="url-cell"><a href="https://doi.org/10.1145/3397271.3401075" target="_blank">doi.org/10.1145/3397271.3401075</a><button class="copy-url-btn" onclick="copyUrl('https://doi.org/10.1145/3397271.3401075')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[5]</td>
+                <td class="title-cell" id="title-5">Analyzing the Impact of AI-Enabled Chatbot on Service Quality in the Real Estate Sector</td>
+                <td><button class="copy-btn" onclick="copyTitle(5)">Copy Title</button></td>
+                <td class="authors">Sao, A. et al.</td>
+                <td class="year">2025</td>
+                <td class="url-cell"><a href="https://doi.org/10.1016/j.procs.2025.04.075" target="_blank">doi.org/10.1016/j.procs.2025.04.075</a><button class="copy-url-btn" onclick="copyUrl('https://doi.org/10.1016/j.procs.2025.04.075')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[6]</td>
+                <td class="title-cell" id="title-6">A Survey on Conversational Recommender Systems</td>
+                <td><button class="copy-btn" onclick="copyTitle(6)">Copy Title</button></td>
+                <td class="authors">Jannach, D. et al.</td>
+                <td class="year">2022</td>
+                <td class="url-cell"><a href="https://doi.org/10.1145/3453154" target="_blank">doi.org/10.1145/3453154</a><button class="copy-url-btn" onclick="copyUrl('https://doi.org/10.1145/3453154')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[7]</td>
+                <td class="title-cell" id="title-7">Advances and Challenges in Conversational Recommender Systems: A Survey</td>
+                <td><button class="copy-btn" onclick="copyTitle(7)">Copy Title</button></td>
+                <td class="authors">Gao, C. et al.</td>
+                <td class="year">2021</td>
+                <td class="url-cell"><a href="https://doi.org/10.1016/j.aiopen.2021.06.002" target="_blank">doi.org/10.1016/j.aiopen.2021.06.002</a><button class="copy-url-btn" onclick="copyUrl('https://doi.org/10.1016/j.aiopen.2021.06.002')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[8]</td>
+                <td class="title-cell" id="title-8">A Theoretical Framework for Conversational Search</td>
+                <td><button class="copy-btn" onclick="copyTitle(8)">Copy Title</button></td>
+                <td class="authors">Radlinski, F. & Craswell, N.</td>
+                <td class="year">2017</td>
+                <td class="url-cell"><a href="https://doi.org/10.1145/3020165.3020183" target="_blank">doi.org/10.1145/3020165.3020183</a><button class="copy-url-btn" onclick="copyUrl('https://doi.org/10.1145/3020165.3020183')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[9]</td>
+                <td class="title-cell" id="title-9">CAsT 2020: The Conversational Assistance Track Overview</td>
+                <td><button class="copy-btn" onclick="copyTitle(9)">Copy Title</button></td>
+                <td class="authors">Dalton, J. et al.</td>
+                <td class="year">2021</td>
+                <td class="url-cell"><a href="https://trec.nist.gov/pubs/trec29/papers/OVERVIEW.C.pdf" target="_blank">trec.nist.gov/.../OVERVIEW.C.pdf</a><button class="copy-url-btn" onclick="copyUrl('https://trec.nist.gov/pubs/trec29/papers/OVERVIEW.C.pdf')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[10]</td>
+                <td class="title-cell" id="title-10">REALM: Retrieval-Augmented Language Model Pre-Training</td>
+                <td><button class="copy-btn" onclick="copyTitle(10)">Copy Title</button></td>
+                <td class="authors">Guu, K. et al.</td>
+                <td class="year">2020</td>
+                <td class="url-cell"><a href="https://arxiv.org/abs/2002.08909" target="_blank">arxiv.org/abs/2002.08909</a><button class="copy-url-btn" onclick="copyUrl('https://arxiv.org/abs/2002.08909')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[11]</td>
+                <td class="title-cell" id="title-11">A Survey on RAG Meeting LLMs: Towards Retrieval-Augmented Large Language Models</td>
+                <td><button class="copy-btn" onclick="copyTitle(11)">Copy Title</button></td>
+                <td class="authors">Fan, W. et al.</td>
+                <td class="year">2024</td>
+                <td class="url-cell"><a href="https://doi.org/10.1145/3637528.3671470" target="_blank">doi.org/10.1145/3637528.3671470</a><button class="copy-url-btn" onclick="copyUrl('https://doi.org/10.1145/3637528.3671470')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[12]</td>
+                <td class="title-cell" id="title-12">Search User Interfaces</td>
+                <td><button class="copy-btn" onclick="copyTitle(12)">Copy Title</button></td>
+                <td class="authors">Hearst, M.A.</td>
+                <td class="year">2009</td>
+                <td class="url-cell"><a href="https://searchuserinterfaces.com/" target="_blank">searchuserinterfaces.com</a><button class="copy-url-btn" onclick="copyUrl('https://searchuserinterfaces.com/')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[13]</td>
+                <td class="title-cell" id="title-13">FAISS: A Library for Efficient Similarity Search and Clustering of Dense Vectors</td>
+                <td><button class="copy-btn" onclick="copyTitle(13)">Copy Title</button></td>
+                <td class="authors">Facebook AI Research</td>
+                <td class="year">2017</td>
+                <td class="url-cell"><a href="https://faiss.ai/" target="_blank">faiss.ai</a><button class="copy-url-btn" onclick="copyUrl('https://faiss.ai/')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[14]</td>
+                <td class="title-cell" id="title-14">Product Quantization for Nearest Neighbor Search</td>
+                <td><button class="copy-btn" onclick="copyTitle(14)">Copy Title</button></td>
+                <td class="authors">Jegou, H. et al.</td>
+                <td class="year">2011</td>
+                <td class="url-cell"><a href="https://doi.org/10.1109/TPAMI.2010.57" target="_blank">doi.org/10.1109/TPAMI.2010.57</a><button class="copy-url-btn" onclick="copyUrl('https://doi.org/10.1109/TPAMI.2010.57')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[15]</td>
+                <td class="title-cell" id="title-15">Chroma: The AI-native Open-source Embedding Database</td>
+                <td><button class="copy-btn" onclick="copyTitle(15)">Copy Title</button></td>
+                <td class="authors">Chroma Team</td>
+                <td class="year">2023</td>
+                <td class="url-cell"><a href="https://docs.trychroma.com/" target="_blank">docs.trychroma.com</a><button class="copy-url-btn" onclick="copyUrl('https://docs.trychroma.com/')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[16]</td>
+                <td class="title-cell" id="title-16">LangChain: Building Applications with LLMs</td>
+                <td><button class="copy-btn" onclick="copyTitle(16)">Copy Title</button></td>
+                <td class="authors">LangChain Team</td>
+                <td class="year">2023</td>
+                <td class="url-cell"><a href="https://docs.langchain.com/" target="_blank">docs.langchain.com</a><button class="copy-url-btn" onclick="copyUrl('https://docs.langchain.com/')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[17]</td>
+                <td class="title-cell" id="title-17">Selective Classification for Deep Neural Networks</td>
+                <td><button class="copy-btn" onclick="copyTitle(17)">Copy Title</button></td>
+                <td class="authors">Geifman, Y. & El-Yaniv, R.</td>
+                <td class="year">2017</td>
+                <td class="url-cell"><a href="https://proceedings.neurips.cc/paper/2017/hash/4a8423d5e91fda00bb7e46540e2b0cf1-Abstract.html" target="_blank">proceedings.neurips.cc/...</a><button class="copy-url-btn" onclick="copyUrl('https://proceedings.neurips.cc/paper/2017/hash/4a8423d5e91fda00bb7e46540e2b0cf1-Abstract.html')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[18]</td>
+                <td class="title-cell" id="title-18">Natural Language Interface to Database for Data Retrieval and Processing</td>
+                <td><button class="copy-btn" onclick="copyTitle(18)">Copy Title</button></td>
+                <td class="authors">Tapsai, C. et al.</td>
+                <td class="year">2021</td>
+                <td class="url-cell"><a href="https://doi.org/10.14416/j.asep.2020.05.003" target="_blank">doi.org/10.14416/j.asep.2020.05.003</a><button class="copy-url-btn" onclick="copyUrl('https://doi.org/10.14416/j.asep.2020.05.003')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[19]</td>
+                <td class="title-cell" id="title-19">The Probabilistic Relevance Framework: BM25 and Beyond</td>
+                <td><button class="copy-btn" onclick="copyTitle(19)">Copy Title</button></td>
+                <td class="authors">Robertson, S. & Zaragoza, H.</td>
+                <td class="year">2009</td>
+                <td class="url-cell"><a href="https://doi.org/10.1561/1500000019" target="_blank">doi.org/10.1561/1500000019</a><button class="copy-url-btn" onclick="copyUrl('https://doi.org/10.1561/1500000019')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[20]</td>
+                <td class="title-cell" id="title-20">Learning to Rank by Optimizing NDCG Measure</td>
+                <td><button class="copy-btn" onclick="copyTitle(20)">Copy Title</button></td>
+                <td class="authors">Valizadegan, H. et al.</td>
+                <td class="year">2009</td>
+                <td class="url-cell"><a href="https://proceedings.neurips.cc/paper/2009/hash/b3967a0e938dc2a6340e258630febd5a-Abstract.html" target="_blank">proceedings.neurips.cc/...</a><button class="copy-url-btn" onclick="copyUrl('https://proceedings.neurips.cc/paper/2009/hash/b3967a0e938dc2a6340e258630febd5a-Abstract.html')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[21]</td>
+                <td class="title-cell" id="title-21">From Retrieval to Generation: Comparing Different Approaches</td>
+                <td><button class="copy-btn" onclick="copyTitle(21)">Copy Title</button></td>
+                <td class="authors">Abdallah, A. et al.</td>
+                <td class="year">2025</td>
+                <td class="url-cell"><a href="https://arxiv.org/abs/2502.20245" target="_blank">arxiv.org/abs/2502.20245</a><button class="copy-url-btn" onclick="copyUrl('https://arxiv.org/abs/2502.20245')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[22]</td>
+                <td class="title-cell" id="title-22">Rethinking Hybrid Retrieval: When Small Embeddings and LLM Re-ranking Beat Bigger Models</td>
+                <td><button class="copy-btn" onclick="copyTitle(22)">Copy Title</button></td>
+                <td class="authors">Rao, A. et al.</td>
+                <td class="year">2025</td>
+                <td class="url-cell"><a href="https://arxiv.org/abs/2506.00049" target="_blank">arxiv.org/abs/2506.00049</a><button class="copy-url-btn" onclick="copyUrl('https://arxiv.org/abs/2506.00049')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[23]</td>
+                <td class="title-cell" id="title-23">Retrieval-Augmented Generation for Large Language Models: A Survey</td>
+                <td><button class="copy-btn" onclick="copyTitle(23)">Copy Title</button></td>
+                <td class="authors">Gao, Y. et al.</td>
+                <td class="year">2024</td>
+                <td class="url-cell"><a href="https://arxiv.org/abs/2312.10997" target="_blank">arxiv.org/abs/2312.10997</a><button class="copy-url-btn" onclick="copyUrl('https://arxiv.org/abs/2312.10997')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[24]</td>
+                <td class="title-cell" id="title-24">A Hybrid Retrieval Approach for Advancing Retrieval-Augmented Generation Systems</td>
+                <td><button class="copy-btn" onclick="copyTitle(24)">Copy Title</button></td>
+                <td class="authors">Doan, N.N. et al.</td>
+                <td class="year">2024</td>
+                <td class="url-cell"><a href="https://aclanthology.org/2024.icnlsp-1.41/" target="_blank">aclanthology.org/2024.icnlsp-1.41</a><button class="copy-url-btn" onclick="copyUrl('https://aclanthology.org/2024.icnlsp-1.41/')">Copy URL</button></td>
+            </tr>
+            <tr>
+                <td class="ref-num">[25]</td>
+                <td class="title-cell" id="title-25">Evaluation of Retrieval-Augmented Generation: A Survey</td>
+                <td><button class="copy-btn" onclick="copyTitle(25)">Copy Title</button></td>
+                <td class="authors">Yu, H. et al.</td>
+                <td class="year">2024</td>
+                <td class="url-cell"><a href="https://link.springer.com/chapter/10.1007/978-981-97-5803-6_6" target="_blank">link.springer.com/...</a><button class="copy-url-btn" onclick="copyUrl('https://link.springer.com/chapter/10.1007/978-981-97-5803-6_6')">Copy URL</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        function copyTitle(num) {
+            const title = document.getElementById('title-' + num).innerText;
+            navigator.clipboard.writeText(title).then(() => {
+                const btn = event.target;
+                btn.innerText = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerText = 'Copy Title';
+                    btn.classList.remove('copied');
+                }, 1500);
+            });
+        }
+
+        function copyUrl(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = event.target;
+                const originalText = btn.innerText;
+                btn.innerText = 'Copied!';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                }, 1500);
+            });
+        }
+    </script>
+</body>
+</html>

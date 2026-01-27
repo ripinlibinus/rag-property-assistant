@@ -1,0 +1,402 @@
+{
+  "timestamp": "2026-01-23T11:36:06.262519",
+  "summary": {
+    "total_tests": 29,
+    "passed_tests": 17,
+    "failed_tests": 12,
+    "intent_accuracy": 0.896551724137931,
+    "overall_accuracy": 0.5862068965517241
+  },
+  "performance": {
+    "avg_latency_ms": 6015.6551724137935,
+    "p95_latency_ms": 10830,
+    "p99_latency_ms": 10985
+  },
+  "cost": {
+    "total_tokens": 0,
+    "total_cost_usd": 0.0,
+    "avg_cost_per_query": 0.0
+  },
+  "category_results": {
+    "greeting": {
+      "total": 3,
+      "passed": 3,
+      "intent_accuracy": 1.0
+    },
+    "multi_turn": {
+      "total": 3,
+      "passed": 2,
+      "intent_accuracy": 0.6666666666666666
+    },
+    "coaching": {
+      "total": 8,
+      "passed": 3,
+      "intent_accuracy": 1.0
+    },
+    "out_of_scope": {
+      "total": 2,
+      "passed": 2,
+      "intent_accuracy": 1.0
+    },
+    "property_search": {
+      "total": 10,
+      "passed": 6,
+      "intent_accuracy": 0.8
+    },
+    "listing_management": {
+      "total": 3,
+      "passed": 1,
+      "intent_accuracy": 1.0
+    }
+  },
+  "test_results": [
+    {
+      "test_case_id": "PS001",
+      "passed": true,
+      "intent_correct": true,
+      "predicted_intent": "property_search",
+      "actual_intent": "property_search",
+      "relevance_score": 5.0,
+      "latency_ms": 5660,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "PS002",
+      "passed": true,
+      "intent_correct": true,
+      "predicted_intent": "property_search",
+      "actual_intent": "property_search",
+      "relevance_score": 5.0,
+      "latency_ms": 4805,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "PS003",
+      "passed": true,
+      "intent_correct": true,
+      "predicted_intent": "property_search",
+      "actual_intent": "property_search",
+      "relevance_score": 5.0,
+      "latency_ms": 6275,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "PS004",
+      "passed": true,
+      "intent_correct": true,
+      "predicted_intent": "property_search",
+      "actual_intent": "property_search",
+      "relevance_score": 3.75,
+      "latency_ms": 6158,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "PS005",
+      "passed": false,
+      "intent_correct": true,
+      "predicted_intent": "property_search",
+      "actual_intent": "property_search",
+      "relevance_score": 0.8333333333333333,
+      "latency_ms": 5666,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "PS006",
+      "passed": true,
+      "intent_correct": true,
+      "predicted_intent": "property_search",
+      "actual_intent": "property_search",
+      "relevance_score": 4.166666666666667,
+      "latency_ms": 5494,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "PS007",
+      "passed": false,
+      "intent_correct": false,
+      "predicted_intent": "general",
+      "actual_intent": "property_search",
+      "relevance_score": 2.5,
+      "latency_ms": 10985,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "PS008",
+      "passed": false,
+      "intent_correct": true,
+      "predicted_intent": "property_search",
+      "actual_intent": "property_search",
+      "relevance_score": 0.0,
+      "latency_ms": 5162,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "PS009",
+      "passed": false,
+      "intent_correct": false,
+      "predicted_intent": "general",
+      "actual_intent": "property_search",
+      "relevance_score": 5.0,
+      "latency_ms": 6775,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "PS010",
+      "passed": true,
+      "intent_correct": true,
+      "predicted_intent": "property_search",
+      "actual_intent": "property_search",
+      "relevance_score": 5.0,
+      "latency_ms": 6380,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "LM001",
+      "passed": true,
+      "intent_correct": true,
+      "predicted_intent": "property_update",
+      "actual_intent": "property_update",
+      "relevance_score": 3.333333333333333,
+      "latency_ms": 3685,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "LM002",
+      "passed": false,
+      "intent_correct": true,
+      "predicted_intent": "property_update",
+      "actual_intent": "property_update",
+      "relevance_score": 2.5,
+      "latency_ms": 3180,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "LM003",
+      "passed": false,
+      "intent_correct": true,
+      "predicted_intent": "property_description",
+      "actual_intent": "property_description",
+      "relevance_score": 2.5,
+      "latency_ms": 7053,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "CS001",
+      "passed": false,
+      "intent_correct": true,
+      "predicted_intent": "coaching_sales",
+      "actual_intent": "coaching_sales",
+      "relevance_score": 2.5,
+      "latency_ms": 8206,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "CS002",
+      "passed": false,
+      "intent_correct": true,
+      "predicted_intent": "coaching_sales",
+      "actual_intent": "coaching_sales",
+      "relevance_score": 1.6666666666666665,
+      "latency_ms": 9186,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "CS003",
+      "passed": false,
+      "intent_correct": true,
+      "predicted_intent": "coaching_sales",
+      "actual_intent": "coaching_sales",
+      "relevance_score": 1.6666666666666665,
+      "latency_ms": 7783,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "CK001",
+      "passed": true,
+      "intent_correct": true,
+      "predicted_intent": "coaching_knowledge",
+      "actual_intent": "coaching_knowledge",
+      "relevance_score": 4.375,
+      "latency_ms": 6336,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "CK002",
+      "passed": false,
+      "intent_correct": true,
+      "predicted_intent": "coaching_knowledge",
+      "actual_intent": "coaching_knowledge",
+      "relevance_score": 2.5,
+      "latency_ms": 10261,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "CK003",
+      "passed": true,
+      "intent_correct": true,
+      "predicted_intent": "coaching_knowledge",
+      "actual_intent": "coaching_knowledge",
+      "relevance_score": 3.75,
+      "latency_ms": 6795,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "CM001",
+      "passed": true,
+      "intent_correct": true,
+      "predicted_intent": "coaching_motivation",
+      "actual_intent": "coaching_motivation",
+      "relevance_score": 3.333333333333333,
+      "latency_ms": 6901,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "CM002",
+      "passed": false,
+      "intent_correct": true,
+      "predicted_intent": "coaching_motivation",
+      "actual_intent": "coaching_motivation",
+      "relevance_score": 0.0,
+      "latency_ms": 10830,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "GR001",
+      "passed": true,
+      "intent_correct": true,
+      "predicted_intent": "greeting",
+      "actual_intent": "greeting",
+      "relevance_score": 5.0,
+      "latency_ms": 1428,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "GR002",
+      "passed": true,
+      "intent_correct": true,
+      "predicted_intent": "greeting",
+      "actual_intent": "greeting",
+      "relevance_score": 5.0,
+      "latency_ms": 1271,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "GR003",
+      "passed": true,
+      "intent_correct": true,
+      "predicted_intent": "greeting",
+      "actual_intent": "greeting",
+      "relevance_score": 5.0,
+      "latency_ms": 1400,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "OOS001",
+      "passed": true,
+      "intent_correct": true,
+      "predicted_intent": "out_of_scope",
+      "actual_intent": "out_of_scope",
+      "relevance_score": 5.0,
+      "latency_ms": 1803,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "OOS002",
+      "passed": true,
+      "intent_correct": true,
+      "predicted_intent": "out_of_scope",
+      "actual_intent": "out_of_scope",
+      "relevance_score": 5.0,
+      "latency_ms": 2250,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "MT001",
+      "passed": false,
+      "intent_correct": false,
+      "predicted_intent": "general",
+      "actual_intent": "property_search",
+      "relevance_score": 2.5,
+      "latency_ms": 8758,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "MT002",
+      "passed": true,
+      "intent_correct": true,
+      "predicted_intent": "property_search",
+      "actual_intent": "property_search",
+      "relevance_score": 5.0,
+      "latency_ms": 4910,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    },
+    {
+      "test_case_id": "MT003",
+      "passed": true,
+      "intent_correct": true,
+      "predicted_intent": "coaching_sales",
+      "actual_intent": "coaching_sales",
+      "relevance_score": 3.75,
+      "latency_ms": 9058,
+      "tokens_used": 0,
+      "estimated_cost_usd": 0.0,
+      "error": null
+    }
+  ]
+}

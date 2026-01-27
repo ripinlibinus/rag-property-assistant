@@ -1,0 +1,87 @@
+{
+  "version": "1.0",
+  "description": "Master location data for Medan area with coordinates from Google Maps",
+  "default_radius_km": 2.0,
+  "locations": {
+    "cemara_asri": {
+      "name": "Cemara Asri",
+      "keywords": ["cemara", "cemara asri", "cemara asri medan"],
+      "lat": 3.6234,
+      "lng": 98.7012,
+      "radius_km": 2.0,
+      "description": "Perumahan elit di Medan utara"
+    },
+    "ringroad": {
+      "name": "Ringroad",
+      "keywords": ["ringroad", "ring road", "jl ringroad", "jalan ringroad"],
+      "lat": 3.5891,
+      "lng": 98.6543,
+      "radius_km": 3.0,
+      "description": "Area sekitar jalan ringroad Medan"
+    },
+    "podomoro": {
+      "name": "Podomoro City",
+      "keywords": ["podomoro", "podomoro city", "podomoro deli"],
+      "lat": 3.5756,
+      "lng": 98.6721,
+      "radius_km": 1.5,
+      "description": "Kompleks apartemen dan perumahan Podomoro"
+    },
+    "usu": {
+      "name": "USU",
+      "keywords": ["usu", "universitas sumatera utara", "kampus usu", "sekitar usu"],
+      "lat": 3.5656,
+      "lng": 98.6565,
+      "radius_km": 2.0,
+      "description": "Area sekitar Universitas Sumatera Utara"
+    },
+    "krakatau": {
+      "name": "Krakatau",
+      "keywords": ["krakatau", "jl krakatau", "jalan krakatau"],
+      "lat": 3.5789,
+      "lng": 98.6834,
+      "radius_km": 2.0,
+      "description": "Area sekitar Jalan Krakatau Medan"
+    },
+    "setia_budi": {
+      "name": "Setia Budi",
+      "keywords": ["setia budi", "setiabudi", "jl setia budi"],
+      "lat": 3.5712,
+      "lng": 98.6412,
+      "radius_km": 2.0,
+      "description": "Area Jalan Setia Budi Medan"
+    },
+    "gajah_mada": {
+      "name": "Gajah Mada",
+      "keywords": ["gajah mada", "gajahmada", "jl gajah mada"],
+      "lat": 3.5834,
+      "lng": 98.6723,
+      "radius_km": 1.5,
+      "description": "Area pusat kota Jalan Gajah Mada"
+    },
+    "sunggal": {
+      "name": "Sunggal",
+      "keywords": ["sunggal", "jl sunggal", "jalan sunggal"],
+      "lat": 3.6012,
+      "lng": 98.6234,
+      "radius_km": 2.5,
+      "description": "Area Jalan Sunggal dan sekitarnya"
+    },
+    "menteng": {
+      "name": "Menteng",
+      "keywords": ["menteng", "menteng medan", "perumahan menteng"],
+      "lat": 3.5523,
+      "lng": 98.6489,
+      "radius_km": 1.5,
+      "description": "Perumahan Menteng Medan"
+    },
+    "helvetia": {
+      "name": "Helvetia",
+      "keywords": ["helvetia", "jl helvetia", "helvetia timur", "helvetia tengah"],
+      "lat": 3.6089,
+      "lng": 98.6512,
+      "radius_km": 2.0,
+      "description": "Area Helvetia Medan"
+    }
+  }
+}

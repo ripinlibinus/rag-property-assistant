@@ -1,0 +1,594 @@
+{
+  "version": "2.0",
+  "description": "Gold standard questions with constraint-based evaluation",
+  "threshold_t": 0.6,
+  "price_tolerance": 0.1,
+  "questions": [
+    {
+      "id": 1,
+      "question": "Carikan rumah dijual di daerah cemara",
+      "category": "location_simple",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "house",
+        "listing_type": "sale",
+        "location": {
+          "keywords": [
+            "cemara",
+            "cemara asri"
+          ],
+          "lat": 3.628602097142661,
+          "lng": 98.69582971809083,
+          "radius_km": 3
+        }
+      },
+      "notes": "Simple location search for houses for sale in Cemara area"
+    },
+    {
+      "id": 2,
+      "question": "Carikan rumah dijual di daerah ringroad",
+      "category": "location_simple",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "house",
+        "listing_type": "sale",
+        "location": {
+          "keywords": [
+            "ringroad",
+            "ring road",
+            "jl ringroad"
+          ],
+          "lat": 3.576442,
+          "lng": 98.626183,
+          "radius_km": 3
+        }
+      },
+      "notes": "Simple location search for houses for sale near Ringroad"
+    },
+    {
+      "id": 3,
+      "question": "Carikan rumah sewa di medan",
+      "category": "location_simple",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "house",
+        "listing_type": "rent",
+        "location": {
+          "keywords": [
+            "medan"
+          ],
+          "lat": 3.5952,
+          "lng": 98.6722,
+          "radius_km": 15
+        }
+      },
+      "notes": "Broad search for rental houses in Medan"
+    },
+    {
+      "id": 4,
+      "question": "Carikan rumah dijual di daerah cemara harga 1M an",
+      "category": "location_price",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "house",
+        "listing_type": "sale",
+        "location": {
+          "keywords": [
+            "cemara",
+            "cemara asri"
+          ],
+          "lat": 3.6289464105598106,
+          "lng": 98.69602870101929,
+          "radius_km": 3
+        },
+        "price": {
+          "min": 1000000000,
+          "max": 1999999999,
+          "currency": "IDR"
+        }
+      },
+      "notes": "Location + price range - 'harga 1M an' means in the 1 billion range (1B - 1.99B)"
+    },
+    {
+      "id": 5,
+      "question": "Carikan rumah dijual daerah ringroad harga dibawah 800juta 3 kamar",
+      "category": "location_price_spec",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "house",
+        "listing_type": "sale",
+        "location": {
+          "keywords": [
+            "ringroad",
+            "ring road"
+          ],
+          "lat": 3.576442,
+          "lng": 98.626183,
+          "radius_km": 3
+        },
+        "price": {
+          "max": 800000000,
+          "currency": "IDR"
+        },
+        "bedrooms": {
+          "min": 3
+        }
+      },
+      "notes": "Location + price + bedroom constraint"
+    },
+    {
+      "id": 6,
+      "question": "apakah ada rumah sewa di medan yang dibawah 50juta 3 kamar?",
+      "category": "location_price_spec",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "house",
+        "listing_type": "rent",
+        "location": {
+          "keywords": [
+            "medan"
+          ],
+          "lat": 3.5952,
+          "lng": 98.6722,
+          "radius_km": 15
+        },
+        "price": {
+          "max": 50000000,
+          "currency": "IDR"
+        },
+        "bedrooms": {
+          "min": 3
+        }
+      },
+      "notes": "Rental house in Medan under 50M with 3 bedrooms - rent price is per year"
+    },
+    {
+      "id": 7,
+      "question": "Saya ingin beli rumah di dekat podomoro medan harga dibawah 1M ada?",
+      "category": "location_price",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "house",
+        "listing_type": "sale",
+        "location": {
+          "keywords": [
+            "podomoro"
+          ],
+          "lat": 3.5939682,
+          "lng": 98.6742318,
+          "radius_km": 3
+        },
+        "price": {
+          "max": 1000000000,
+          "currency": "IDR"
+        }
+      },
+      "notes": "House for sale near Podomoro under 1B"
+    },
+    {
+      "id": 8,
+      "question": "Client saya lagi cari sewa dekat usu, anaknya mau kuliah disana",
+      "category": "location_intent",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "house",
+        "listing_type": "rent",
+        "location": {
+          "keywords": [
+            "usu",
+            "padang bulan",
+            "dr mansyur"
+          ],
+          "lat": 3.5656,
+          "lng": 98.6565,
+          "radius_km": 3
+        }
+      },
+      "notes": "Rental near USU for student - agent should understand context"
+    },
+    {
+      "id": 9,
+      "question": "Carikan rumah di inti kota medan yang harganya dibawah 1M",
+      "category": "location_price",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "house",
+        "listing_type": "sale",
+        "location": {
+          "keywords": [
+            "medan kota",
+            "pusat kota",
+            "kesawan",
+            "merdeka"
+          ],
+          "lat": 3.5951956,
+          "lng": 98.6722227,
+          "radius_km": 5
+        },
+        "price": {
+          "max": 1000000000,
+          "currency": "IDR"
+        }
+      },
+      "notes": "House in city center under 1B"
+    },
+    {
+      "id": 10,
+      "question": "apakah ada ruko yang disewakan di daerah krakatau?",
+      "category": "property_type",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "ruko",
+        "listing_type": "rent",
+        "location": {
+          "keywords": [
+            "krakatau",
+            "jl krakatau"
+          ],
+          "lat": 3.6173599,
+          "lng": 98.6807724,
+          "radius_km": 3
+        }
+      },
+      "notes": "Shophouse for rent in Krakatau area"
+    },
+    {
+      "id": 11,
+      "question": "saya lagi cari tanah yang dijual di marelan",
+      "category": "property_type",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "land",
+        "listing_type": "sale",
+        "location": {
+          "keywords": [
+            "marelan",
+            "medan marelan"
+          ],
+          "lat": 3.6847,
+          "lng": 98.6453,
+          "radius_km": 5
+        }
+      },
+      "notes": "Land for sale in Marelan"
+    },
+    {
+      "id": 12,
+      "question": "apakah ada gudang yang dijual atau disewa di KIM ?",
+      "category": "property_type",
+      "expected_result": "no_data",
+      "constraints": {
+        "property_type": "warehouse",
+        "location": {
+          "keywords": [
+            "kim",
+            "kawasan industri medan"
+          ],
+          "lat": 3.6693658,
+          "lng": 98.6904473,
+          "radius_km": 5
+        }
+      },
+      "notes": "Warehouse for sale or rent in KIM industrial area - no listing_type constraint"
+    },
+    {
+      "id": 13,
+      "question": "Carikan rumah dijual daerah ringroad harga 1M an 3 kamar",
+      "category": "location_price_spec",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "house",
+        "listing_type": "sale",
+        "location": {
+          "keywords": [
+            "ringroad",
+            "ring road"
+          ],
+          "lat": 3.576442,
+          "lng": 98.626183,
+          "radius_km": 3
+        },
+        "price": {
+          "min": 1000000000,
+          "max": 1999999999,
+          "currency": "IDR"
+        },
+        "bedrooms": {
+          "min": 3
+        }
+      },
+      "notes": "Ringroad area, price 1B range, 3+ bedrooms - base for context questions 14-18"
+    },
+    {
+      "id": 14,
+      "question": "Apakah masih ada pilihan lain?",
+      "category": "context_followup",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "house",
+        "listing_type": "sale",
+        "location": {
+          "keywords": [
+            "ringroad",
+            "ring road"
+          ],
+          "lat": 3.576442,
+          "lng": 98.626183,
+          "radius_km": 3
+        },
+        "price": {
+          "min": 1000000000,
+          "max": 1999999999,
+          "currency": "IDR"
+        },
+        "bedrooms": {
+          "min": 3
+        }
+      },
+      "notes": "Context: continues from Q13 - should show more results with same criteria (pagination)"
+    },
+    {
+      "id": 15,
+      "question": "Berikan lagi pilihan lain",
+      "category": "context_followup",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "house",
+        "listing_type": "sale",
+        "location": {
+          "keywords": [
+            "ringroad",
+            "ring road"
+          ],
+          "lat": 3.576442,
+          "lng": 98.626183,
+          "radius_km": 3
+        },
+        "price": {
+          "min": 1000000000,
+          "max": 1999999999,
+          "currency": "IDR"
+        },
+        "bedrooms": {
+          "min": 3
+        }
+      },
+      "notes": "Context: continues from Q14 - more pagination"
+    },
+    {
+      "id": 16,
+      "question": "kasih pilihan lain, lokasi dan harga masih sama, tapi yang 3 lantai?",
+      "category": "context_modify",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "house",
+        "listing_type": "sale",
+        "location": {
+          "keywords": [
+            "ringroad",
+            "ring road"
+          ],
+          "lat": 3.576442,
+          "lng": 98.626183,
+          "radius_km": 3
+        },
+        "price": {
+          "min": 1000000000,
+          "max": 1999999999,
+          "currency": "IDR"
+        },
+        "bedrooms": {
+          "min": 3
+        },
+        "floors": {
+          "min": 3
+        }
+      },
+      "notes": "Context: modifies Q13-15 criteria - adds 3 floors requirement"
+    },
+    {
+      "id": 17,
+      "question": "Berikan lagi pilihan lain",
+      "category": "context_followup",
+      "expected_result": "no_data",
+      "constraints": {
+        "property_type": "house",
+        "listing_type": "sale",
+        "location": {
+          "keywords": [
+            "ringroad",
+            "ring road"
+          ],
+          "lat": 3.576442,
+          "lng": 98.626183,
+          "radius_km": 3
+        },
+        "price": {
+          "min": 1000000000,
+          "max": 1999999999,
+          "currency": "IDR"
+        },
+        "bedrooms": {
+          "min": 3
+        },
+        "floors": {
+          "min": 3
+        }
+      },
+      "notes": "Context: continues from Q16 - no_data because only 2 properties match Q16 constraints (already shown)"
+    },
+    {
+      "id": 18,
+      "question": "Kalau pilihan lain, lokasi dan jumlah lantai masih sama, tapi yang dibawah 800 juta ada?",
+      "category": "context_modify",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "house",
+        "listing_type": "sale",
+        "location": {
+          "keywords": [
+            "ringroad",
+            "ring road"
+          ],
+          "lat": 3.576442,
+          "lng": 98.626183,
+          "radius_km": 3
+        },
+        "price": {
+          "max": 800000000,
+          "currency": "IDR"
+        },
+        "bedrooms": {
+          "min": 3
+        },
+        "floors": {
+          "min": 3
+        }
+      },
+      "notes": "Context: modifies Q16-17 - changes max price to 800M, keeps 3 floors"
+    },
+    {
+      "id": 19,
+      "question": "cari apartment di podomoro yang bisa harganya dibawah 1.5 M",
+      "category": "complex_query",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "apartment",
+        "location": {
+          "keywords": [
+            "podomoro"
+          ],
+          "lat": 3.5939682,
+          "lng": 98.6742318,
+          "radius_km": 3
+        },
+        "price": {
+          "max": 1500000000,
+          "currency": "IDR"
+        }
+      },
+      "notes": "Apartment at Podomoro under 1.5B"
+    },
+    {
+      "id": 20,
+      "question": "cari rumah di citraland bagya city medan",
+      "category": "project_search",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "house",
+        "location": {
+          "keywords": [
+            "citraland",
+            "bagya city",
+            "citra land"
+          ],
+          "lat": 3.6129525447418165,
+          "lng": 98.7290717902369,
+          "radius_km": 1.5
+        }
+      },
+      "notes": "Project/developer search - Citraland Bagya City"
+    },
+    {
+      "id": 21,
+      "question": "cari rumah dijual di komplek givency one",
+      "category": "project_search",
+      "expected_result": "has_data",
+      "constraints": {
+        "property_type": "house",
+        "listing_type": "sale",
+        "location": {
+          "keywords": [
+            "givency",
+            "givency one"
+          ],
+          "lat": 3.6089069,
+          "lng": 98.6171026,
+          "radius_km": 1
+        }
+      },
+      "notes": "Project/complex search - Givency One"
+    },
+    {
+      "id": 22,
+      "question": "carikan rumah dengan fasilitas cctv di medan",
+      "category": "feature_search",
+      "expected_result": "has_data",
+      "evaluation_mode": "manual",
+      "constraints": {},
+      "notes": "MANUAL EVALUATION: Feature search - CCTV. Evaluator must verify if returned properties have CCTV feature."
+    },
+    {
+      "id": 23,
+      "question": "carikan rumah dengan fasilitas wifi di medan",
+      "category": "feature_search",
+      "expected_result": "has_data",
+      "evaluation_mode": "manual",
+      "constraints": {},
+      "notes": "MANUAL EVALUATION: Feature search - WiFi. Evaluator must verify if returned properties have WiFi feature."
+    },
+    {
+      "id": 24,
+      "question": "cari rumah dalam komplek dengan fasilitas lapangan basket",
+      "category": "feature_search",
+      "expected_result": "has_data",
+      "evaluation_mode": "manual",
+      "constraints": {},
+      "notes": "MANUAL EVALUATION: In-complex house with basketball court. Evaluator must verify complex and amenity."
+    },
+    {
+      "id": 25,
+      "question": "cari rumah yang bisa parkir beberapa mobil",
+      "category": "feature_search",
+      "expected_result": "has_data",
+      "evaluation_mode": "manual",
+      "constraints": {},
+      "notes": "MANUAL EVALUATION: House with multiple parking. Evaluator must verify parking capacity from property details."
+    },
+    {
+      "id": 26,
+      "question": "cari rumah yang sudah ada ac, lemari, dapur dan tangki air",
+      "category": "feature_search",
+      "expected_result": "has_data",
+      "evaluation_mode": "manual",
+      "constraints": {},
+      "notes": "MANUAL EVALUATION: Furnished house with AC, wardrobe, kitchen, water tank. Evaluator must verify amenities."
+    },
+    {
+      "id": 27,
+      "question": "cari rumah dekat mall di medan",
+      "category": "nearby_search",
+      "expected_result": "has_data",
+      "evaluation_mode": "manual",
+      "constraints": {},
+      "notes": "MANUAL EVALUATION: House near any mall in Medan. Evaluator must verify proximity to mall from map location."
+    },
+    {
+      "id": 28,
+      "question": "cari rumah dekat sekolah di medan",
+      "category": "nearby_search",
+      "expected_result": "has_data",
+      "evaluation_mode": "manual",
+      "constraints": {},
+      "notes": "MANUAL EVALUATION: House near schools in Medan. Evaluator must verify proximity to schools from map."
+    },
+    {
+      "id": 29,
+      "question": "cari rumah dekat mall yang harganya dibawah 800 juta",
+      "category": "nearby_price",
+      "expected_result": "has_data",
+      "evaluation_mode": "manual",
+      "constraints": {},
+      "notes": "MANUAL EVALUATION: House near mall under 800M. Evaluator must verify proximity to mall AND price constraint."
+    },
+    {
+      "id": 30,
+      "question": "cari rumah full furnished yang harganya dibawah 1 M dalam komplek dengan fasilitas lapangan basket",
+      "category": "complex_query",
+      "expected_result": "has_data",
+      "evaluation_mode": "manual",
+      "constraints": {},
+      "notes": "MANUAL EVALUATION: Complex query. Evaluator must verify: furnished, in complex, basketball court, price under 1B."
+    }
+  ]
+}

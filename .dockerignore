@@ -1,0 +1,63 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.pyo
+.Python
+*.egg-info
+.eggs
+*.egg
+.pytest_cache
+.coverage
+htmlcov
+venv
+.venv
+ENV
+env
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Data (not needed for build, mounted as volume)
+data/chromadb
+data/chat_history.db
+data/metrics
+data/evaluation
+data/archive
+data/properties
+
+# Old version
+old-version
+
+# Frontend node_modules (installed in container)
+frontend/node_modules
+frontend/dist
+
+# Documentation
+docs
+*.md
+!README.md
+
+# Scripts (not needed for runtime)
+scripts
+
+# Tests
+tests
+
+# Misc
+*.log
+.DS_Store
+Thumbs.db
+nul

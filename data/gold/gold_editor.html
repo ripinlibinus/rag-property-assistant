@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gold Standard Editor - RAG Evaluation</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #ca8a04;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-900);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 16px 0;
+            margin-bottom: 24px;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+
+        .btn-outline:hover {
+            background: var(--gray-50);
+        }
+
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+        }
+
+        .card-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: var(--gray-700);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: #fef9c3;
+            color: var(--warning);
+        }
+
+        .question-list {
+            margin-bottom: 24px;
+        }
+
+        .question-item {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .question-header {
+            padding: 12px 16px;
+            background: var(--gray-50);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .question-header:hover {
+            background: var(--gray-100);
+        }
+
+        .question-id {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .question-text {
+            flex: 1;
+            margin-left: 16px;
+            color: var(--gray-700);
+        }
+
+        .question-meta {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .question-body {
+            display: none;
+            padding: 16px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .question-body.expanded {
+            display: block;
+        }
+
+        .constraint-section {
+            background: var(--gray-50);
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+
+        .constraint-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+
+        .location-preview {
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+
+        #preview-panel {
+            position: fixed;
+            right: 20px;
+            top: 100px;
+            width: 400px;
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
+        }
+
+        #json-preview {
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 11px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            background: var(--gray-900);
+            color: #10b981;
+            padding: 12px;
+            border-radius: 6px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .collapsible-header {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .collapsible-header:hover {
+            background: var(--gray-50);
+        }
+
+        .collapse-icon {
+            transition: transform 0.2s;
+        }
+
+        .collapsed .collapse-icon {
+            transform: rotate(-90deg);
+        }
+
+        .collapsible-body {
+            transition: max-height 0.3s ease;
+            overflow: hidden;
+        }
+
+        .collapsed .collapsible-body {
+            display: none;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Map Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #map-container {
+            width: 100%;
+            height: 400px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+        }
+
+        .map-info {
+            margin-top: 16px;
+            padding: 12px;
+            background: var(--gray-50);
+            border-radius: 6px;
+        }
+
+        .map-info-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 100px auto;
+            gap: 16px;
+            align-items: end;
+        }
+
+        .map-info label {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        .map-info .value {
+            font-family: monospace;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .input-with-btn {
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-with-btn input {
+            flex: 1;
+        }
+
+        .location-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .search-box {
+            margin-bottom: 12px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 1400px) {
+            #preview-panel {
+                position: static;
+                width: 100%;
+                margin-top: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Gold Standard Editor</h1>
+            <div class="btn-group">
+                <div class="file-input-wrapper">
+                    <button class="btn btn-outline">Load JSON</button>
+                    <input type="file" id="load-file" accept=".json">
+                </div>
+                <button class="btn btn-primary" onclick="exportJSON()">Export JSON</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-total">0</div>
+                <div class="stat-label">Total Questions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-has-data">0</div>
+                <div class="stat-label">Expected Has Data</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-no-data">0</div>
+                <div class="stat-label">Expected No Data</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-categories">0</div>
+                <div class="stat-label">Categories</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Global Settings</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Version</label>
+                        <input type="text" id="version" value="2.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Threshold T (CPR threshold)</label>
+                        <input type="number" id="threshold" value="0.6" step="0.1" min="0" max="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Default Price Tolerance</label>
+                        <input type="number" id="price-tolerance" value="0.10" step="0.01" min="0" max="0.5">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Questions</h2>
+                <button class="btn btn-success" onclick="addQuestion()">+ Add Question</button>
+            </div>
+            <div class="card-body">
+                <div id="questions-container" class="question-list">
+                    <!-- Questions will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="preview-panel" class="card">
+            <div class="card-header collapsible-header" onclick="toggleJsonPreview()">
+                <h2><span class="collapse-icon">▼</span> JSON Preview</h2>
+                <div class="btn-group">
+                    <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); copyJSON()">Copy</button>
+                    <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); toggleJsonPreview()">Hide/Show</button>
+                </div>
+            </div>
+            <div class="card-body collapsible-body" id="json-preview-body">
+                <div id="json-preview"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Picker Modal -->
+    <div class="modal-overlay" id="map-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>📍 Pick Location on Map</h3>
+                <button class="btn btn-outline btn-sm" onclick="closeMapModal()">✕ Close</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-box">
+                    <input type="text" id="map-search" placeholder="Search location (e.g., Ringroad Medan, Cemara Asri)...">
+                </div>
+                <div id="map-container"></div>
+                <div class="map-info">
+                    <div class="map-info-row">
+                        <div>
+                            <label>Latitude</label>
+                            <div class="value" id="picked-lat">-</div>
+                        </div>
+                        <div>
+                            <label>Longitude</label>
+                            <div class="value" id="picked-lng">-</div>
+                        </div>
+                        <div>
+                            <label>Radius (km)</label>
+                            <input type="number" id="picked-radius" value="2.0" step="0.5" min="0.5" max="20" style="width: 80px;">
+                        </div>
+                        <div style="display: flex; align-items: end;">
+                            <button class="btn btn-success" onclick="confirmLocation()" id="apply-btn" disabled>
+                                ✓ Apply to Form
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div style="color: var(--gray-500); font-size: 13px;">
+                    Click on map to pick location. Use search to find specific areas.
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-outline" onclick="closeMapModal()">Cancel</button>
+                    <button class="btn btn-success" onclick="confirmLocation()">✓ Use This Location</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Google Maps API -->
+    <script>
+        // Will be set when loading API
+        let map = null;
+        let marker = null;
+        let circle = null;
+        let searchBox = null;
+        let currentQuestionIdx = null;
+        let pickedLocation = { lat: null, lng: null };
+
+        // Default center: Medan, Indonesia
+        const MEDAN_CENTER = { lat: 3.5952, lng: 98.6722 };
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map-container'), {
+                center: MEDAN_CENTER,
+                zoom: 12,
+                mapTypeControl: true,
+                streetViewControl: false,
+                fullscreenControl: true,
+                gestureHandling: 'greedy',  // Better click handling
+                clickableIcons: false,      // Prevent POI clicks from interfering
+            });
+
+            // Create marker (initially hidden)
+            marker = new google.maps.Marker({
+                map: map,
+                draggable: true,
+                visible: false,
+            });
+
+            // Create radius circle
+            circle = new google.maps.Circle({
+                map: map,
+                fillColor: '#2563eb',
+                fillOpacity: 0.15,
+                strokeColor: '#2563eb',
+                strokeWeight: 2,
+                visible: false,
+            });
+
+            // Click on map to pick location
+            map.addListener('click', function(e) {
+                setPickedLocation(e.latLng.lat(), e.latLng.lng());
+            });
+
+            // Drag marker to update location
+            marker.addListener('dragend', function(e) {
+                setPickedLocation(e.latLng.lat(), e.latLng.lng());
+            });
+
+            // Update circle when radius changes
+            document.getElementById('picked-radius').addEventListener('input', updateCircle);
+
+            // Setup search box
+            const searchInput = document.getElementById('map-search');
+            searchBox = new google.maps.places.SearchBox(searchInput);
+
+            searchBox.addListener('places_changed', function() {
+                const places = searchBox.getPlaces();
+                if (places.length === 0) return;
+
+                const place = places[0];
+                if (!place.geometry || !place.geometry.location) return;
+
+                map.setCenter(place.geometry.location);
+                map.setZoom(15);
+                setPickedLocation(
+                    place.geometry.location.lat(),
+                    place.geometry.location.lng()
+                );
+            });
+        }
+
+        function setPickedLocation(lat, lng) {
+            pickedLocation = { lat, lng };
+
+            // Update marker
+            const pos = new google.maps.LatLng(lat, lng);
+            marker.setPosition(pos);
+            marker.setVisible(true);
+
+            // Update circle
+            updateCircle();
+
+            // Update display
+            document.getElementById('picked-lat').textContent = lat.toFixed(6);
+            document.getElementById('picked-lng').textContent = lng.toFixed(6);
+
+            // Enable apply button
+            document.getElementById('apply-btn').disabled = false;
+        }
+
+        function updateCircle() {
+            if (!pickedLocation.lat) return;
+
+            const radius = parseFloat(document.getElementById('picked-radius').value) * 1000; // km to m
+            circle.setCenter(new google.maps.LatLng(pickedLocation.lat, pickedLocation.lng));
+            circle.setRadius(radius);
+            circle.setVisible(true);
+        }
+
+        function openMapModal(questionIdx) {
+            currentQuestionIdx = questionIdx;
+            const modal = document.getElementById('map-modal');
+            modal.classList.add('active');
+
+            // Get current values if any
+            const q = goldData.questions[questionIdx];
+            const loc = q.constraints?.location || {};
+
+            // Trigger map resize after modal is visible (important for click events!)
+            setTimeout(function() {
+                google.maps.event.trigger(map, 'resize');
+
+                if (loc.lat && loc.lng) {
+                    setPickedLocation(loc.lat, loc.lng);
+                    map.setCenter({ lat: loc.lat, lng: loc.lng });
+                    map.setZoom(14);
+                    document.getElementById('picked-radius').value = loc.radius_km || 2.0;
+                    updateCircle();
+                } else {
+                    // Reset to Medan center
+                    map.setCenter(MEDAN_CENTER);
+                    map.setZoom(12);
+                    marker.setVisible(false);
+                    circle.setVisible(false);
+                    pickedLocation = { lat: null, lng: null };
+                    document.getElementById('picked-lat').textContent = '-';
+                    document.getElementById('picked-lng').textContent = '-';
+                    document.getElementById('picked-radius').value = 2.0;
+                    document.getElementById('apply-btn').disabled = true;
+                }
+            }, 100);
+
+            // Clear search
+            document.getElementById('map-search').value = '';
+        }
+
+        function closeMapModal() {
+            document.getElementById('map-modal').classList.remove('active');
+            currentQuestionIdx = null;
+        }
+
+        function confirmLocation() {
+            if (!pickedLocation.lat || currentQuestionIdx === null) {
+                alert('Please pick a location on the map first.');
+                return;
+            }
+
+            const radius = parseFloat(document.getElementById('picked-radius').value);
+
+            // Update the question
+            updateLocation(currentQuestionIdx, 'lat', pickedLocation.lat);
+            updateLocation(currentQuestionIdx, 'lng', pickedLocation.lng);
+            updateLocation(currentQuestionIdx, 'radius_km', radius);
+
+            // Update the input fields
+            renderQuestions();
+            updatePreview();
+
+            closeMapModal();
+        }
+    </script>
+
+    <script>
+        let goldData = {
+            version: "2.0",
+            description: "Gold standard questions with constraint-based evaluation",
+            threshold_t: 0.6,
+            price_tolerance: 0.10,
+            questions: []
+        };
+
+        const categories = [
+            "location_simple",
+            "location_price",
+            "location_price_spec",
+            "location_intent",
+            "property_type",
+            "context_followup",
+            "context_modify",
+            "feature_search",
+            "nearby_search",
+            "nearby_price",
+            "complex_query",
+            "project_search"
+        ];
+
+        const propertyTypes = [
+            "house",
+            "apartment",
+            "ruko",
+            "land",
+            "warehouse",
+            "office"
+        ];
+
+        const listingTypes = [
+            "sale",
+            "rent"
+        ];
+
+        // Load file handler
+        document.getElementById('load-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        goldData = JSON.parse(e.target.result);
+                        document.getElementById('version').value = goldData.version || "2.0";
+                        document.getElementById('threshold').value = goldData.threshold_t || 0.6;
+                        document.getElementById('price-tolerance').value = goldData.price_tolerance || 0.10;
+                        renderQuestions();
+                        updatePreview();
+                        updateStats();
+                    } catch (err) {
+                        alert('Error parsing JSON: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            goldData.questions.forEach((q, idx) => {
+                container.appendChild(createQuestionElement(q, idx));
+            });
+        }
+
+        function createQuestionElement(question, idx) {
+            const div = document.createElement('div');
+            div.className = 'question-item';
+            div.dataset.idx = idx;
+
+            const constraints = question.constraints || {};
+            const location = constraints.location || {};
+            const price = constraints.price || {};
+            const bedrooms = constraints.bedrooms || {};
+
+            const hasCoords = location.lat && location.lng;
+            const coordsDisplay = hasCoords
+                ? `📍 ${location.lat.toFixed(4)}, ${location.lng.toFixed(4)} (${location.radius_km || 2}km)`
+                : '📍 No coordinates set';
+
+            div.innerHTML = `
+                <div class="question-header" onclick="toggleQuestion(${idx})">
+                    <span class="question-id">#${question.id}</span>
+                    <span class="question-text">${question.question}</span>
+                    <div class="question-meta">
+                        <span class="badge ${question.expected_result === 'has_data' ? 'badge-success' : 'badge-warning'}">
+                            ${question.expected_result}
+                        </span>
+                        <span class="badge">${question.category}</span>
+                    </div>
+                </div>
+                <div class="question-body" id="question-body-${idx}">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>ID</label>
+                            <input type="number" value="${question.id}" onchange="updateQuestion(${idx}, 'id', parseInt(this.value))">
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select onchange="updateQuestion(${idx}, 'category', this.value)">
+                                ${categories.map(c => `<option value="${c}" ${c === question.category ? 'selected' : ''}>${c}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Expected Result</label>
+                            <select onchange="updateQuestion(${idx}, 'expected_result', this.value)">
+                                <option value="has_data" ${question.expected_result === 'has_data' ? 'selected' : ''}>has_data</option>
+                                <option value="no_data" ${question.expected_result === 'no_data' ? 'selected' : ''}>no_data</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Question</label>
+                        <input type="text" value="${question.question}" onchange="updateQuestion(${idx}, 'question', this.value)">
+                    </div>
+
+                    <div class="constraint-section">
+                        <div class="constraint-title">Property Constraints</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Property Type</label>
+                                <select onchange="updateConstraint(${idx}, 'property_type', this.value)">
+                                    <option value="">-- Not specified --</option>
+                                    ${propertyTypes.map(t => `<option value="${t}" ${t === constraints.property_type ? 'selected' : ''}>${t}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Listing Type</label>
+                                <select onchange="updateConstraint(${idx}, 'listing_type', this.value)">
+                                    <option value="">-- Not specified --</option>
+                                    ${listingTypes.map(t => `<option value="${t}" ${t === constraints.listing_type ? 'selected' : ''}>${t}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="constraint-section">
+                        <div class="constraint-title">Location Constraints</div>
+                        <div class="form-group">
+                            <label>Keywords (comma separated)</label>
+                            <input type="text" value="${(location.keywords || []).join(', ')}"
+                                onchange="updateLocationKeywords(${idx}, this.value)">
+                        </div>
+                        <div class="location-row">
+                            <div class="form-group">
+                                <label>Latitude</label>
+                                <input type="number" step="0.0001" value="${location.lat || ''}" id="lat-${idx}"
+                                    onchange="updateLocation(${idx}, 'lat', parseFloat(this.value))">
+                            </div>
+                            <div class="form-group">
+                                <label>Longitude</label>
+                                <input type="number" step="0.0001" value="${location.lng || ''}" id="lng-${idx}"
+                                    onchange="updateLocation(${idx}, 'lng', parseFloat(this.value))">
+                            </div>
+                            <div class="form-group">
+                                <label>Radius (km)</label>
+                                <input type="number" step="0.1" value="${location.radius_km || 2.0}" id="radius-${idx}"
+                                    onchange="updateLocation(${idx}, 'radius_km', parseFloat(this.value))">
+                            </div>
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button class="btn btn-primary btn-sm" onclick="openMapModal(${idx})">
+                                    🗺️ Pick on Map
+                                </button>
+                            </div>
+                        </div>
+                        <div class="location-preview">${coordsDisplay}</div>
+                    </div>
+
+                    <div class="constraint-section">
+                        <div class="constraint-title">Price Constraints (IDR)</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Min Price</label>
+                                <input type="number" value="${price.min || ''}"
+                                    onchange="updatePrice(${idx}, 'min', this.value ? parseInt(this.value) : null)">
+                            </div>
+                            <div class="form-group">
+                                <label>Max Price</label>
+                                <input type="number" value="${price.max || ''}"
+                                    onchange="updatePrice(${idx}, 'max', this.value ? parseInt(this.value) : null)">
+                            </div>
+                            <div class="form-group">
+                                <label>Tolerance (0-1)</label>
+                                <input type="number" step="0.01" value="${price.tolerance || ''}"
+                                    onchange="updatePrice(${idx}, 'tolerance', this.value ? parseFloat(this.value) : null)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="constraint-section">
+                        <div class="constraint-title">Bedroom Constraints</div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Min Bedrooms</label>
+                                <input type="number" value="${bedrooms.min || ''}"
+                                    onchange="updateBedrooms(${idx}, 'min', this.value ? parseInt(this.value) : null)">
+                            </div>
+                            <div class="form-group">
+                                <label>Max Bedrooms</label>
+                                <input type="number" value="${bedrooms.max || ''}"
+                                    onchange="updateBedrooms(${idx}, 'max', this.value ? parseInt(this.value) : null)">
+                            </div>
+                            <div class="form-group">
+                                <label>Exact</label>
+                                <input type="number" value="${bedrooms.exact || ''}"
+                                    onchange="updateBedrooms(${idx}, 'exact', this.value ? parseInt(this.value) : null)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea onchange="updateQuestion(${idx}, 'notes', this.value)">${question.notes || ''}</textarea>
+                    </div>
+
+                    <div class="btn-group" style="margin-top: 16px;">
+                        <button class="btn btn-danger" onclick="deleteQuestion(${idx})">Delete</button>
+                        <button class="btn btn-outline" onclick="duplicateQuestion(${idx})">Duplicate</button>
+                    </div>
+                </div>
+            `;
+
+            return div;
+        }
+
+        function toggleQuestion(idx) {
+            const body = document.getElementById(`question-body-${idx}`);
+            body.classList.toggle('expanded');
+        }
+
+        function updateQuestion(idx, field, value) {
+            goldData.questions[idx][field] = value;
+            updatePreview();
+            updateStats();
+        }
+
+        function updateConstraint(idx, field, value) {
+            if (!goldData.questions[idx].constraints) {
+                goldData.questions[idx].constraints = {};
+            }
+            if (value) {
+                goldData.questions[idx].constraints[field] = value;
+            } else {
+                delete goldData.questions[idx].constraints[field];
+            }
+            updatePreview();
+        }
+
+        function updateLocation(idx, field, value) {
+            if (!goldData.questions[idx].constraints) {
+                goldData.questions[idx].constraints = {};
+            }
+            if (!goldData.questions[idx].constraints.location) {
+                goldData.questions[idx].constraints.location = {};
+            }
+            goldData.questions[idx].constraints.location[field] = value;
+            updatePreview();
+        }
+
+        function updateLocationKeywords(idx, value) {
+            if (!goldData.questions[idx].constraints) {
+                goldData.questions[idx].constraints = {};
+            }
+            if (!goldData.questions[idx].constraints.location) {
+                goldData.questions[idx].constraints.location = {};
+            }
+            goldData.questions[idx].constraints.location.keywords = value.split(',').map(k => k.trim()).filter(k => k);
+            updatePreview();
+        }
+
+        function updatePrice(idx, field, value) {
+            if (!goldData.questions[idx].constraints) {
+                goldData.questions[idx].constraints = {};
+            }
+            if (!goldData.questions[idx].constraints.price) {
+                goldData.questions[idx].constraints.price = { currency: 'IDR' };
+            }
+            if (value !== null) {
+                goldData.questions[idx].constraints.price[field] = value;
+            } else {
+                delete goldData.questions[idx].constraints.price[field];
+            }
+            // Clean up empty price object
+            const price = goldData.questions[idx].constraints.price;
+            if (!price.min && !price.max && !price.tolerance) {
+                delete goldData.questions[idx].constraints.price;
+            }
+            updatePreview();
+        }
+
+        function updateBedrooms(idx, field, value) {
+            if (!goldData.questions[idx].constraints) {
+                goldData.questions[idx].constraints = {};
+            }
+            if (!goldData.questions[idx].constraints.bedrooms) {
+                goldData.questions[idx].constraints.bedrooms = {};
+            }
+            if (value !== null) {
+                goldData.questions[idx].constraints.bedrooms[field] = value;
+            } else {
+                delete goldData.questions[idx].constraints.bedrooms[field];
+            }
+            // Clean up empty bedrooms object
+            const bedrooms = goldData.questions[idx].constraints.bedrooms;
+            if (!bedrooms.min && !bedrooms.max && !bedrooms.exact) {
+                delete goldData.questions[idx].constraints.bedrooms;
+            }
+            updatePreview();
+        }
+
+        function addQuestion() {
+            const newId = goldData.questions.length > 0
+                ? Math.max(...goldData.questions.map(q => q.id)) + 1
+                : 1;
+
+            goldData.questions.push({
+                id: newId,
+                question: "New question",
+                category: "location_simple",
+                expected_result: "has_data",
+                constraints: {
+                    property_type: "house",
+                    listing_type: "sale"
+                },
+                notes: ""
+            });
+
+            renderQuestions();
+            updatePreview();
+            updateStats();
+
+            // Expand the new question
+            const idx = goldData.questions.length - 1;
+            setTimeout(() => toggleQuestion(idx), 100);
+        }
+
+        function deleteQuestion(idx) {
+            if (confirm('Delete this question?')) {
+                goldData.questions.splice(idx, 1);
+                renderQuestions();
+                updatePreview();
+                updateStats();
+            }
+        }
+
+        function duplicateQuestion(idx) {
+            const original = goldData.questions[idx];
+            const newId = Math.max(...goldData.questions.map(q => q.id)) + 1;
+
+            const duplicate = JSON.parse(JSON.stringify(original));
+            duplicate.id = newId;
+            duplicate.question = original.question + " (copy)";
+
+            goldData.questions.splice(idx + 1, 0, duplicate);
+            renderQuestions();
+            updatePreview();
+            updateStats();
+        }
+
+        function updatePreview() {
+            goldData.version = document.getElementById('version').value;
+            goldData.threshold_t = parseFloat(document.getElementById('threshold').value);
+            goldData.price_tolerance = parseFloat(document.getElementById('price-tolerance').value);
+
+            const preview = document.getElementById('json-preview');
+            preview.textContent = JSON.stringify(goldData, null, 2);
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total').textContent = goldData.questions.length;
+            document.getElementById('stat-has-data').textContent =
+                goldData.questions.filter(q => q.expected_result === 'has_data').length;
+            document.getElementById('stat-no-data').textContent =
+                goldData.questions.filter(q => q.expected_result === 'no_data').length;
+            document.getElementById('stat-categories').textContent =
+                new Set(goldData.questions.map(q => q.category)).size;
+        }
+
+        function exportJSON() {
+            updatePreview();
+            const blob = new Blob([JSON.stringify(goldData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'questions_v2.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function copyJSON() {
+            updatePreview();
+            navigator.clipboard.writeText(JSON.stringify(goldData, null, 2))
+                .then(() => alert('JSON copied to clipboard!'))
+                .catch(err => alert('Failed to copy: ' + err));
+        }
+
+        function toggleJsonPreview() {
+            const panel = document.getElementById('preview-panel');
+            panel.classList.toggle('collapsed');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load default data
+            fetch('questions_v2.json')
+                .then(r => r.json())
+                .then(data => {
+                    goldData = data;
+                    document.getElementById('version').value = goldData.version || "2.0";
+                    document.getElementById('threshold').value = goldData.threshold_t || 0.6;
+                    document.getElementById('price-tolerance').value = goldData.price_tolerance || 0.10;
+                    renderQuestions();
+                    updatePreview();
+                    updateStats();
+                })
+                .catch(err => {
+                    console.log('No existing gold file found, starting fresh');
+                    updatePreview();
+                    updateStats();
+                });
+        });
+    </script>
+
+    <!-- Load Google Maps API with Places library -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDfygUuk0JbjGvk_LCxhBc70Pt1oJEpGk0&libraries=places&callback=initMap">
+    </script>
+</body>
+</html>
