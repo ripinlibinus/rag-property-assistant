@@ -292,7 +292,7 @@ Several directions merit future investigation:
 
 Acknowledgments
 
-I am deeply grateful to my advisor, Suryadiputra Liawatimena, and the thesis committee at BINUS University for their guidance, constructive feedback, and steady encouragement throughout this research. Their probing questions sharpened the methodology and helped clarify the evaluation design. Special thanks go to PT. Meta Properti Indonesia for curating property listings, maintaining the live API, and supporting the data collection process. Their efforts ensured reliable ground truth and made the hybrid evaluation possible. Finally, I owe my deepest appreciation to my family and friends for their patience and unwavering support. Their encouragement sustained me through long nights of experimentation, writing, and revision.
+The author would like to thank PT. Meta Properti Indonesia for providing access to property listing data, maintaining the live API, and supporting the data collection process throughout this research. Their cooperation ensured reliable ground truth and made the hybrid evaluation possible.
 
 Author Contributions
 

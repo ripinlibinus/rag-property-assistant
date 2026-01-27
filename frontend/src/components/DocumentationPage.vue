@@ -263,35 +263,35 @@
                     <th class="text-left py-2 font-semibold text-gray-700">Method</th>
                     <th class="text-center py-2 font-semibold text-gray-700">Query Success</th>
                     <th class="text-center py-2 font-semibold text-gray-700">Mean CPR</th>
-                    <th class="text-center py-2 font-semibold text-gray-700">PCA</th>
+                    <th class="text-center py-2 font-semibold text-gray-700">Strict Success</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr class="border-b bg-emerald-100">
                     <td class="py-3 font-medium text-emerald-800">Hybrid</td>
                     <td class="text-center py-3 font-bold text-emerald-700">100%</td>
-                    <td class="text-center py-3">70.71%</td>
-                    <td class="text-center py-3">100%</td>
+                    <td class="text-center py-3">97.61%</td>
+                    <td class="text-center py-3">96.62%</td>
                   </tr>
                   <tr class="border-b">
                     <td class="py-3 font-medium text-gray-700">API Only</td>
-                    <td class="text-center py-3">73.3%</td>
-                    <td class="text-center py-3">67.79%</td>
-                    <td class="text-center py-3">73.3%</td>
+                    <td class="text-center py-3">73.33%</td>
+                    <td class="text-center py-3">73.35%</td>
+                    <td class="text-center py-3">72.62%</td>
                   </tr>
                   <tr>
                     <td class="py-3 font-medium text-gray-700">Vector Only</td>
-                    <td class="text-center py-3">56.7%</td>
-                    <td class="text-center py-3">44.61%</td>
-                    <td class="text-center py-3">56.7%</td>
+                    <td class="text-center py-3">50%</td>
+                    <td class="text-center py-3">55.33%</td>
+                    <td class="text-center py-3">33.04%</td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <p class="text-xs text-gray-500 mt-4">
-              * Query Success = percentage of queries that return relevant properties<br>
-              * CPR = Constraint Pass Rate (average constraints fulfilled)<br>
-              * PCA = Per-Constraint Accuracy
+              * Query Success = percentage of queries achieving CPR ≥ 0.60 threshold<br>
+              * Mean CPR = average Constraint Pass Rate across all queries<br>
+              * Strict Success = ratio of listings where all constraints are satisfied
             </p>
           </div>
 
@@ -313,20 +313,20 @@
               <div>
                 <div class="flex justify-between text-sm mb-1">
                   <span class="font-medium text-gray-700">API Only</span>
-                  <span class="text-blue-600 font-bold">73.3%</span>
+                  <span class="text-blue-600 font-bold">73.33%</span>
                 </div>
                 <div class="h-4 bg-gray-200 rounded-full overflow-hidden">
-                  <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full" style="width: 73.3%"></div>
+                  <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full" style="width: 73.33%"></div>
                 </div>
               </div>
               <!-- Vector Only -->
               <div>
                 <div class="flex justify-between text-sm mb-1">
                   <span class="font-medium text-gray-700">Vector Only</span>
-                  <span class="text-purple-600 font-bold">56.7%</span>
+                  <span class="text-purple-600 font-bold">50%</span>
                 </div>
                 <div class="h-4 bg-gray-200 rounded-full overflow-hidden">
-                  <div class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" style="width: 56.7%"></div>
+                  <div class="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" style="width: 50%"></div>
                 </div>
               </div>
             </div>
@@ -347,19 +347,19 @@
                 <tbody>
                   <tr>
                     <td class="p-2 font-medium text-gray-600">Actual Negative</td>
-                    <td class="p-2 text-center bg-green-100 text-green-800 font-bold">TN: 42</td>
+                    <td class="p-2 text-center bg-green-100 text-green-800 font-bold">TN: 2</td>
                     <td class="p-2 text-center bg-red-100 text-red-800">FP: 0</td>
                   </tr>
                   <tr>
                     <td class="p-2 font-medium text-gray-600">Actual Positive</td>
                     <td class="p-2 text-center bg-red-100 text-red-800">FN: 0</td>
-                    <td class="p-2 text-center bg-green-100 text-green-800 font-bold">TP: 30</td>
+                    <td class="p-2 text-center bg-green-100 text-green-800 font-bold">TP: 28</td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <p class="text-xs text-gray-500 mt-2">
-              Hybrid method achieved perfect classification with no false positives or false negatives.
+              Evaluated on 30 gold-labeled queries (28 positive, 2 negative). Hybrid achieved perfect classification with 100% accuracy.
             </p>
           </div>
 
