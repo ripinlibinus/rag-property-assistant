@@ -519,13 +519,19 @@ async function handleStreamingChat(text) {
     loading: true
   })
 
+  let buffer = ''  // Buffer for incomplete lines
+
   try {
     while (true) {
       const { done, value } = await reader.read()
       if (done) break
 
       const chunk = decoder.decode(value)
-      const lines = chunk.split('\n')
+      buffer += chunk
+      const lines = buffer.split('\n')
+
+      // Keep the last incomplete line in buffer
+      buffer = lines.pop() || ''
 
       for (const line of lines) {
         if (!line.startsWith('data: ')) continue
