@@ -47,6 +47,9 @@ services:
 
       # Logging
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
+
+      # Google Maps API (for geocoding/maps features)
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY:-}
     volumes:
       # Persist ChromaDB data
       - chromadb_data:/app/data/chromadb
