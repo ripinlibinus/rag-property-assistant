@@ -21,7 +21,7 @@ services:
     container_name: rag-property-api
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "8001:8000"
     environment:
       # App
       - ENVIRONMENT=production
