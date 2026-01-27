@@ -62,19 +62,23 @@ async def chat(request: ChatRequest, agent=Depends(get_agent)):
         }
         ab_method = method_map.get(request.method, SearchMethod.HYBRID)
 
-        # Set the method for this request (thread-local)
+        # Set the method for this request
         from src.utils.ab_testing import get_ab_manager
         ab_manager = get_ab_manager()
 
-        # Override method for this user/session
-        original_method = ab_manager.get_method(request.user_id)
+        # Set override to use the requested method
+        ab_manager.set_override(ab_method)
 
-        # Call the agent
-        response = agent.chat(
-            message=request.message,
-            thread_id=request.session_id,
-            user_id=request.user_id,
-        )
+        try:
+            # Call the agent
+            response = agent.chat(
+                message=request.message,
+                thread_id=request.session_id,
+                user_id=request.user_id,
+            )
+        finally:
+            # Clear override after request
+            ab_manager.clear_override()
 
         # For now, we return the response without parsing properties
         # In a more sophisticated implementation, we would track
@@ -113,6 +117,19 @@ async def chat_stream(request: ChatRequest, agent=Depends(get_agent)):
     - done: Stream complete
     """
     import json
+    from src.utils.ab_testing import get_ab_manager
+
+    # Map method string to SearchMethod enum
+    method_map = {
+        "hybrid": SearchMethod.HYBRID,
+        "api_only": SearchMethod.API_ONLY,
+        "vector_only": SearchMethod.CHROMADB_ONLY,
+    }
+    ab_method = method_map.get(request.method, SearchMethod.HYBRID)
+
+    # Set override for this request
+    ab_manager = get_ab_manager()
+    ab_manager.set_override(ab_method)
 
     async def generate():
         try:
@@ -125,6 +142,9 @@ async def chat_stream(request: ChatRequest, agent=Depends(get_agent)):
         except Exception as e:
             logger.error(f"Stream error: {str(e)}", exc_info=True)
             yield f"data: {json.dumps({'type': 'error', 'content': str(e)})}\n\n"
+        finally:
+            # Clear override after streaming completes
+            ab_manager.clear_override()
 
     return StreamingResponse(
         generate(),
