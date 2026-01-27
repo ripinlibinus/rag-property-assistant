@@ -114,7 +114,7 @@
                   <!-- Step Content -->
                   <div class="flex-1 min-w-0">
                     <div :class="[getStepTextClass(step.type)]">{{ step.title }}</div>
-                    <div v-if="step.detail" class="text-xs text-gray-500 mt-0.5 break-words">{{ step.detail }}</div>
+                    <div v-if="step.detail && step.type !== 'thinking'" class="text-xs text-gray-500 mt-0.5 break-words">{{ step.detail }}</div>
                     <!-- JSON Preview for tool calls -->
                     <div v-if="step.json" class="mt-1 p-2 bg-gray-800 rounded text-xs font-mono text-green-400 overflow-hidden">
                       <pre class="whitespace-pre-wrap break-all">{{ step.json }}</pre>
@@ -149,14 +149,16 @@
     <!-- Input Area -->
     <div class="border-t bg-white p-4">
       <div class="max-w-3xl mx-auto">
-        <form @submit.prevent="handleSubmit" class="flex gap-3">
-          <input
+        <form @submit.prevent="handleSubmit" class="flex gap-3 items-end">
+          <textarea
             ref="inputRef"
             v-model="inputMessage"
-            type="text"
             placeholder="Ask about properties..."
-            class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-gray-50"
+            rows="1"
+            class="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-gray-50 resize-none overflow-hidden"
             :disabled="isLoading"
+            @keydown="handleKeyDown"
+            @input="autoResizeTextarea"
           />
           <button
             type="submit"
@@ -264,9 +266,57 @@ function stopWritingMessages() {
 
 const suggestions = [
   'Cari rumah di cemara asri medan',
-  'Rumah 3 kamar harga di bawah 2M',
-  'Apartemen dekat mall di jakarta'
+  'Rumah 3 kamar harga di bawah 2M di medan',
+  'Rumah dekat mall di batam'
 ]
+
+// Mobile detection
+const isMobile = ref(false)
+
+function checkMobile() {
+  isMobile.value = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    || window.innerWidth < 768
+}
+
+// Keyboard handler for textarea
+function handleKeyDown(event) {
+  if (event.key === 'Enter') {
+    if (isMobile.value) {
+      // Mobile: Enter = new line, only button sends
+      return // Allow default behavior (new line)
+    } else {
+      // Desktop: Enter = send, Shift+Enter = new line
+      if (!event.shiftKey) {
+        event.preventDefault()
+        handleSubmit()
+      }
+      // Shift+Enter: allow default behavior (new line)
+    }
+  }
+}
+
+// Auto-resize textarea
+function autoResizeTextarea(event) {
+  const textarea = event.target
+  textarea.style.height = 'auto'
+  textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px'
+}
+
+// Reset textarea height
+function resetTextareaHeight() {
+  if (inputRef.value) {
+    inputRef.value.style.height = 'auto'
+  }
+}
+
+// Focus input
+function focusInput() {
+  nextTick(() => {
+    if (inputRef.value) {
+      inputRef.value.focus()
+    }
+  })
+}
 
 // Computed
 const isButtonDisabled = computed(() => {
@@ -485,11 +535,13 @@ async function handleSubmit() {
   })
 
   inputMessage.value = ''
+  resetTextareaHeight()
   isLoading.value = true
   reasoningSteps.value = []
   agentStatusText.value = 'Starting...'
 
   scrollToBottom()
+  focusInput()
 
   // Use streaming
   await handleStreamingChat(text)
@@ -666,16 +718,20 @@ async function handleStreamingChat(text) {
     }
 
     scrollToBottom()
+    focusInput()
   }
 }
 
 // Lifecycle
 onMounted(() => {
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
   inputRef.value?.focus()
 })
 
 onUnmounted(() => {
   stopWritingMessages()
+  window.removeEventListener('resize', checkMobile)
 })
 </script>
 

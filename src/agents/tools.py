@@ -608,6 +608,36 @@ def create_property_tools(
         )
     
     # Helper function for geocoding (shared by all location-based tools)
+    def _check_poi_match(location_name: str, display_name: str) -> dict:
+        """
+        Check if the searched POI name appears in the geocode result.
+
+        Returns:
+            dict with poi_found (bool), match_type (exact/partial/city_only), confidence (0-1)
+        """
+        location_lower = location_name.lower().strip()
+        display_lower = display_name.lower()
+
+        # Extract significant words from location name (ignore common words)
+        ignore_words = {'di', 'in', 'the', 'at', 'near', 'dekat', 'sekitar', 'area', 'daerah', 'kota', 'city'}
+        location_words = [w for w in location_lower.split() if w not in ignore_words and len(w) > 2]
+
+        if not location_words:
+            return {"poi_found": True, "match_type": "unknown", "confidence": 0.5}
+
+        # Check how many significant words appear in display_name
+        matched_words = sum(1 for word in location_words if word in display_lower)
+        match_ratio = matched_words / len(location_words)
+
+        if match_ratio >= 0.8:
+            return {"poi_found": True, "match_type": "exact", "confidence": 1.0}
+        elif match_ratio >= 0.5:
+            return {"poi_found": True, "match_type": "partial", "confidence": 0.7}
+        elif match_ratio > 0:
+            return {"poi_found": False, "match_type": "city_only", "confidence": 0.3}
+        else:
+            return {"poi_found": False, "match_type": "city_only", "confidence": 0.2}
+
     def _geocode(
         location_name: str,
         city: Optional[str] = None,
@@ -623,7 +653,7 @@ def create_property_tools(
             country: Country context (default Indonesia)
 
         Returns:
-            dict with lat, lng, display_name or None if not found
+            dict with lat, lng, display_name, poi_found, match_type, confidence or None if not found
         """
         import httpx
 
@@ -651,10 +681,19 @@ def create_property_tools(
                     if data.get("status") == "OK" and data.get("results"):
                         result = data["results"][0]
                         location = result.get("geometry", {}).get("location", {})
+                        display_name = result.get("formatted_address", location_name)
+
+                        # Check if POI was actually found
+                        match_info = _check_poi_match(location_name, display_name)
+
                         return {
                             "lat": location.get("lat", 0),
                             "lng": location.get("lng", 0),
-                            "display_name": result.get("formatted_address", location_name),
+                            "display_name": display_name,
+                            "poi_found": match_info["poi_found"],
+                            "match_type": match_info["match_type"],
+                            "confidence": match_info["confidence"],
+                            "search_query": location_name,
                         }
                     elif data.get("status") == "ZERO_RESULTS":
                         return None
@@ -681,10 +720,19 @@ def create_property_tools(
 
             if data:
                 result = data[0]
+                display_name = result.get("display_name", location_name)
+
+                # Check if POI was actually found
+                match_info = _check_poi_match(location_name, display_name)
+
                 return {
                     "lat": float(result["lat"]),
                     "lng": float(result["lon"]),
-                    "display_name": result.get("display_name", location_name),
+                    "display_name": display_name,
+                    "poi_found": match_info["poi_found"],
+                    "match_type": match_info["match_type"],
+                    "confidence": match_info["confidence"],
+                    "search_query": location_name,
                 }
         except Exception as e:
             logger.warning("nominatim_geocode_failed", error=str(e))
@@ -1082,12 +1130,26 @@ def create_property_tools(
             if not result:
                 return f"Location '{location_name}' not found. Try with more specific name or add city context."
 
+            poi_found = result.get("poi_found", True)
+            match_type = result.get("match_type", "unknown")
+            confidence = result.get("confidence", 1.0)
+
+            # Build validation status
+            if poi_found and match_type == "exact":
+                validation_status = "✅ POI FOUND: Exact match confirmed"
+            elif poi_found and match_type == "partial":
+                validation_status = "⚠️ POI PARTIAL: Location found but may not be exact match"
+            else:
+                validation_status = f"❌ POI NOT FOUND: Specific location '{location_name}' was not found. Result shows general area only."
+
             return f"""Coordinates for "{location_name}":
 - Latitude: {result['lat']}
 - Longitude: {result['lng']}
 - Full address: {result['display_name']}
+- Validation: {validation_status}
+- Match confidence: {confidence:.0%}
 
-Use these coordinates with search_nearby or search_properties_by_location."""
+IMPORTANT: If validation shows POI NOT FOUND, inform the user that the specific location wasn't found and results will be based on general area."""
 
         except Exception as e:
             return f"Error geocoding location: {str(e)}"
@@ -1136,6 +1198,19 @@ Use these coordinates with search_nearby or search_properties_by_location."""
 
             lat = geo_result["lat"]
             lng = geo_result["lng"]
+            poi_found = geo_result.get("poi_found", True)
+            match_type = geo_result.get("match_type", "unknown")
+            confidence = geo_result.get("confidence", 1.0)
+            display_name = geo_result.get("display_name", location_name)
+
+            # Build POI validation warning if not exact match
+            poi_warning = ""
+            if not poi_found or match_type == "city_only":
+                poi_warning = (
+                    f"\n⚠️ PERHATIAN: Lokasi spesifik '{location_name}' tidak ditemukan di peta. "
+                    f"Hasil pencarian berdasarkan area umum: {display_name}. "
+                    f"Pastikan nama lokasi sudah benar atau coba nama yang lebih spesifik."
+                )
 
             # Step 2: Search properties with coordinates and all filters
             criteria = SearchCriteria(
@@ -1226,6 +1301,10 @@ Use these coordinates with search_nearby or search_properties_by_location."""
                 f"(Koordinat pusat: {lat:.6f}, {lng:.6f})",
                 f"(Diurutkan dari yang terdekat)"
             ]
+
+            # Add POI warning if location wasn't found exactly
+            if poi_warning:
+                output_lines.insert(0, poi_warning)
 
             for i, prop in enumerate(properties_sorted[:10], 1):
                 price_str = f"Rp {prop.price:,.0f}".replace(",", ".")
