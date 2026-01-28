@@ -52,6 +52,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY api/ ./api/
 COPY src/ ./src/
 COPY config/ ./config/
+COPY scripts/ ./scripts/
 COPY data/knowledge-base/ ./data/knowledge-base/
 
 # Copy built frontend from stage 1
