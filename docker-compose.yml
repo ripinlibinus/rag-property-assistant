@@ -66,6 +66,39 @@ services:
     networks:
       - rag-network
 
+  # ---------------------------------------------------------------------------
+  # Scheduler Service - Auto sync ChromaDB
+  # ---------------------------------------------------------------------------
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rag-scheduler
+    restart: unless-stopped
+    environment:
+      # Sync settings
+      - SYNC_INTERVAL_MINUTES=${SYNC_INTERVAL_MINUTES:-60}
+      - SYNC_LIMIT=${SYNC_LIMIT:-200}
+
+      # OpenAI (required for embeddings)
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_EMBEDDING_MODEL=${OPENAI_EMBEDDING_MODEL:-text-embedding-3-small}
+
+      # MetaProperty API
+      - METAPROPERTY_API_URL=${METAPROPERTY_API_URL}
+      - METAPROPERTY_API_TOKEN=${METAPROPERTY_API_TOKEN}
+
+      # ChromaDB
+      - CHROMA_PERSIST_DIRECTORY=/app/data/chromadb
+    volumes:
+      # Share ChromaDB data with API service
+      - chromadb_data:/app/data/chromadb
+    command: python scripts/scheduler.py
+    networks:
+      - rag-network
+    depends_on:
+      - api
+
 # ---------------------------------------------------------------------------
 # Volumes
 # ---------------------------------------------------------------------------
