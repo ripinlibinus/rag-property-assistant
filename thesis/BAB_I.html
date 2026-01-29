@@ -1,0 +1,264 @@
+<h1 id="bab-i-pendahuluan">BAB I PENDAHULUAN</h1>
+<h2 id="latar-belakang">1.1 Latar Belakang</h2>
+<p>Industri properti Indonesia mengalami pertumbuhan yang signifikan
+dalam beberapa tahun terakhir. Berdasarkan data Asosiasi Real Estate
+Broker Indonesia (AREBI), terdapat lebih dari 50.000 tenaga pemasaran
+properti yang aktif melayani kebutuhan masyarakat dalam transaksi jual
+beli dan sewa properti. Pertumbuhan ini diiringi dengan meningkatnya
+ekspektasi konsumen terhadap kecepatan dan kualitas layanan
+informasi.</p>
+<p>Tenaga pemasaran properti menghadapi tantangan dalam menyediakan
+informasi secara cepat dan akurat kepada calon pembeli. Dalam praktik
+sehari-hari, tenaga pemasaran harus menjawab berbagai pertanyaan yang
+bersifat natural dan variatif, seperti “carikan rumah 3 kamar di sekitar
+Cemara dengan harga sekitar 1 miliar” atau “ada rumah yang dekat dengan
+mall tidak?”. Pertanyaan-pertanyaan semacam ini memerlukan pemahaman
+kontekstual yang tidak dapat dijawab oleh sistem pencarian berbasis
+filter tradisional.</p>
+<p>Platform pencarian properti konvensional umumnya menggunakan
+pendekatan faceted search dengan dropdown filter untuk parameter seperti
+lokasi, rentang harga, jumlah kamar, dan tipe properti [12]. Meskipun
+pendekatan ini robust untuk query yang terdefinisi dengan baik, terdapat
+gap signifikan antara cara berpikir pengguna dan antarmuka sistem.
+Pengguna cenderung berpikir dalam istilah fuzzy seperti “harga
+terjangkau”, “dekat sekolah”, atau “rumah luas dengan taman”, yang tidak
+dapat langsung diterjemahkan ke parameter filter diskrit [8].</p>
+<p>Gap ini menimbulkan beberapa permasalahan praktis. Pertama, pengguna
+memerlukan waktu lebih lama untuk menerjemahkan kebutuhan mereka ke
+dalam format filter yang tersedia. Kedua, hasil pencarian sering tidak
+sesuai ekspektasi karena parameter tidak mencerminkan intent sebenarnya.
+Ketiga, fitur-fitur properti yang tidak terstruktur dalam database
+(seperti “ada CCTV”, “dekat mall”, atau “view bagus”) tidak dapat dicari
+melalui filter konvensional.</p>
+<p>Perkembangan teknologi Artificial Intelligence (AI), khususnya Large
+Language Models (LLM), membuka peluang untuk menjembatani gap ini [24].
+LLM seperti GPT-4 memiliki kemampuan memahami bahasa natural dengan
+tingkat akurasi yang tinggi [21], memungkinkan pengguna mengekspresikan
+kebutuhan dalam bahasa sehari-hari tanpa perlu menguasai terminologi
+teknis atau struktur filter. Namun, LLM murni memiliki kelemahan
+fundamental berupa hallucination—menghasilkan informasi yang tampak
+benar tetapi tidak memiliki basis faktual [1].</p>
+<p>Retrieval-Augmented Generation (RAG) hadir sebagai solusi untuk
+mengatasi keterbatasan LLM [1]. RAG menggabungkan kemampuan pemahaman
+bahasa LLM dengan retrieval dari sumber data otoritatif, memastikan
+respons yang dihasilkan grounded pada fakta yang dapat diverifikasi
+[11]. Dalam konteks properti, RAG memungkinkan chatbot untuk memahami
+query natural language sambil mengambil data dari database properti yang
+akurat dan terkini [5].</p>
+<p>Implementasi RAG untuk pencarian properti dapat menggunakan berbagai
+strategi retrieval [3]. Strategi Vector-Only menggunakan semantic search
+berbasis embedding untuk menemukan properti yang relevan secara semantik
+[4]. Strategi API-Only mengkonversi query menjadi parameter filter
+terstruktur untuk query langsung ke database [18]. Strategi Hybrid
+mengkombinasikan kedua pendekatan untuk mendapatkan keuntungan dari
+masing-masing [33], [34].</p>
+<p>Penelitian ini penting untuk dilakukan karena belum ada studi yang
+secara sistematis membandingkan efektivitas berbagai strategi retrieval
+dalam konteks RAG untuk domain properti. Perbandingan ini diperlukan
+untuk mengidentifikasi pendekatan optimal yang dapat memberikan akurasi
+tinggi sekaligus coverage yang komprehensif terhadap berbagai jenis
+query.</p>
+<p>Berdasarkan latar belakang tersebut, penelitian ini mengembangkan
+chatbot AI berbasis RAG untuk asisten virtual agen properti dengan
+membandingkan tiga strategi retrieval: Vector-Only, API-Only, dan
+Hybrid. Evaluasi dilakukan menggunakan framework constraint-based yang
+mengukur sejauh mana hasil pencarian memenuhi kriteria yang
+dispesifikasikan dalam query pengguna.</p>
+<h2 id="perumusan-masalah">1.2 Perumusan Masalah</h2>
+<p>Berdasarkan latar belakang yang telah diuraikan, penelitian ini
+merumuskan masalah sebagai berikut:</p>
+<ol type="1">
+<li><p>Bagaimana merancang sistem chatbot berbasis RAG yang dapat
+memahami query natural language untuk pencarian properti?</p></li>
+<li><p>Bagaimana membandingkan efektivitas strategi retrieval
+Vector-Only, API-Only, dan Hybrid dalam konteks pencarian
+properti?</p></li>
+<li><p>Bagaimana mengukur akurasi sistem dengan pendekatan
+constraint-based yang mencerminkan kepuasan terhadap kriteria
+pencarian?</p></li>
+<li><p>Strategi retrieval mana yang paling optimal untuk berbagai jenis
+query properti (transaksional, berbasis fitur, berbasis
+lokasi)?</p></li>
+</ol>
+<h2 id="tujuan-penelitian">1.3 Tujuan Penelitian</h2>
+<p>Penelitian ini memiliki tujuan sebagai berikut:</p>
+<ol type="1">
+<li><p>Merancang dan mengimplementasikan sistem chatbot berbasis RAG
+dengan arsitektur ReAct Agent yang dapat memahami query bahasa natural
+untuk pencarian properti.</p></li>
+<li><p>Membandingkan tiga strategi retrieval (Vector-Only, API-Only, dan
+Hybrid) menggunakan dataset gold-labeled questions yang sama untuk
+memastikan perbandingan yang adil.</p></li>
+<li><p>Mengembangkan framework evaluasi constraint-based dengan metrik
+Per-Constraint Accuracy (PCA), Constraint Pass Ratio (CPR), dan Strict
+Success Ratio.</p></li>
+<li><p>Mengidentifikasi strategi retrieval optimal untuk berbagai
+kategori query dan memberikan rekomendasi praktis untuk implementasi
+sistem pencarian properti.</p></li>
+</ol>
+<h2 id="manfaat-penelitian">1.4 Manfaat Penelitian</h2>
+<h3 id="manfaat-bagi-tenaga-pemasaran-properti">1.4.1 Manfaat Bagi
+Tenaga Pemasaran Properti</h3>
+<p>Chatbot AI yang dikembangkan dalam penelitian ini memberikan manfaat
+langsung bagi tenaga pemasaran properti:</p>
+<ol type="1">
+<li><p><strong>Peningkatan Efisiensi</strong>: Tenaga pemasaran dapat
+merespons pertanyaan pelanggan dengan lebih cepat tanpa perlu mencari
+manual dalam database.</p></li>
+<li><p><strong>Akurasi Informasi</strong>: Sistem menjamin informasi
+yang diberikan (harga, ketersediaan, spesifikasi) selalu akurat dan
+terkini karena terhubung dengan data live.</p></li>
+<li><p><strong>Penanganan Query Kompleks</strong>: Mampu menjawab
+pertanyaan yang melibatkan kombinasi kriteria dan bahasa
+informal.</p></li>
+<li><p><strong>Dukungan Konteks Percakapan</strong>: Memahami pertanyaan
+lanjutan yang merujuk pada konteks sebelumnya.</p></li>
+</ol>
+<h3 id="manfaat-bagi-perusahaan-broker">1.4.2 Manfaat Bagi Perusahaan
+Broker</h3>
+<p>Implementasi sistem ini memberikan nilai strategis bagi perusahaan
+broker properti:</p>
+<ol type="1">
+<li><p><strong>Skalabilitas Layanan</strong>: Dapat melayani banyak
+inquiry secara simultan tanpa peningkatan proporsional sumber daya
+manusia.</p></li>
+<li><p><strong>Konsistensi Layanan</strong>: Respons chatbot konsisten
+dan tidak dipengaruhi faktor seperti kelelahan atau mood.</p></li>
+<li><p><strong>Ketersediaan 24/7</strong>: Sistem dapat beroperasi di
+luar jam kerja normal, menangkap leads yang mungkin terlewat.</p></li>
+<li><p><strong>Data Insights</strong>: Dapat menganalisis pola
+pertanyaan pelanggan untuk memahami preferensi pasar.</p></li>
+</ol>
+<h3 id="manfaat-bagi-industri-properti-indonesia">1.4.3 Manfaat Bagi
+Industri Properti Indonesia</h3>
+<p>Secara lebih luas, penelitian ini berkontribusi pada:</p>
+<ol type="1">
+<li><p><strong>Modernisasi Industri</strong>: Mendorong adopsi teknologi
+AI dalam industri properti Indonesia.</p></li>
+<li><p><strong>Standar Evaluasi</strong>: Menyediakan framework evaluasi
+yang dapat digunakan untuk mengukur sistem serupa.</p></li>
+<li><p><strong>Best Practices</strong>: Mengidentifikasi pendekatan
+optimal yang dapat diadopsi oleh pelaku industri lain.</p></li>
+</ol>
+<h3 id="manfaat-bagi-pengembangan-ilmu-pengetahuan">1.4.4 Manfaat Bagi
+Pengembangan Ilmu Pengetahuan</h3>
+<p>Dari perspektif akademis, penelitian ini memberikan kontribusi:</p>
+<ol type="1">
+<li><p><strong>Perbandingan Empiris</strong>: Menyediakan data
+perbandingan sistematis antar strategi retrieval yang belum tersedia
+dalam literatur.</p></li>
+<li><p><strong>Framework Evaluasi Baru</strong>: Mengembangkan
+constraint-based evaluation metrics yang dapat diaplikasikan ke domain
+lain.</p></li>
+<li><p><strong>Domain-Specific RAG</strong>: Mendemonstrasikan penerapan
+RAG untuk domain properti Indonesia dengan karakteristik bahasa
+lokal.</p></li>
+</ol>
+<h2 id="hipotesis-penelitian">1.5 Hipotesis Penelitian</h2>
+<p>Berdasarkan rumusan masalah dan tujuan penelitian, diajukan hipotesis
+sebagai berikut:</p>
+<p><strong>H1</strong>: Strategi Hybrid retrieval menghasilkan akurasi
+yang lebih tinggi dibandingkan strategi Vector-Only dan API-Only pada
+sistem chatbot RAG untuk domain properti.</p>
+<p><em>Rasional</em>: Hybrid menggabungkan keunggulan structured query
+(akurasi constraint) dan semantic search (coverage semantik), sehingga
+diharapkan memberikan performa superior.</p>
+<p><strong>H2</strong>: Sistem chatbot RAG yang dikembangkan mampu
+memahami query natural language dengan tingkat akurasi di atas 80%.</p>
+<p><em>Rasional</em>: Kombinasi LLM untuk pemahaman bahasa dan retrieval
+dari data otoritatif diharapkan menghasilkan akurasi tinggi.</p>
+<p><strong>H3</strong>: Terdapat perbedaan signifikan dalam
+Per-Constraint Accuracy antara ketiga strategi retrieval untuk berbagai
+jenis constraint.</p>
+<p><em>Rasional</em>: Setiap strategi memiliki kekuatan dan kelemahan
+pada jenis constraint yang berbeda, menghasilkan profil performa yang
+distinct.</p>
+<h2 id="ruang-lingkup-penelitian">1.6 Ruang Lingkup Penelitian</h2>
+<p>Penelitian ini memiliki ruang lingkup sebagai berikut:</p>
+<h3 id="batasan-geografis">1.6.1 Batasan Geografis</h3>
+<p>Penelitian fokus pada pasar properti di wilayah Medan, Indonesia.
+Pemilihan ini didasarkan pada ketersediaan data dari kantor properti
+mitra dan karakteristik pasar yang representatif.</p>
+<h3 id="batasan-dataset">1.6.2 Batasan Dataset</h3>
+<p>Dataset yang digunakan terdiri dari: - Sekitar 2.800 listing properti
+aktif - 30 gold-labeled questions dalam 12 kategori - Tipe properti
+mencakup rumah, apartemen, ruko, tanah, dan gudang</p>
+<h3 id="batasan-teknologi">1.6.3 Batasan Teknologi</h3>
+<p>Komponen teknologi yang digunakan: - Model LLM: GPT-4o-mini dari
+OpenAI - Model Embedding: text-embedding-3-small dari OpenAI - Vector
+Database: ChromaDB - Backend: FastAPI dengan Python - Frontend:
+Vue.js</p>
+<h3 id="batasan-evaluasi">1.6.4 Batasan Evaluasi</h3>
+<p>Evaluasi difokuskan pada: - Metrik constraint-based (PCA, CPR, Strict
+Success) - Confusion matrix analysis (Precision, Recall, F1, Accuracy) -
+User experience survey (10 responden)</p>
+<p>Tidak termasuk dalam lingkup: - Evaluasi biaya operasional jangka
+panjang - A/B testing pada production environment - Perbandingan dengan
+sistem chatbot properti komersial lain</p>
+<h2 id="sistematika-penulisan">1.7 Sistematika Penulisan</h2>
+<p>Tesis ini disusun dalam lima bab dengan sistematika sebagai
+berikut:</p>
+<h3 id="bab-i-pendahuluan-1">BAB I: PENDAHULUAN</h3>
+<p>Bab ini menguraikan latar belakang penelitian yang menjelaskan gap
+antara pencarian properti tradisional dan kebutuhan pemahaman bahasa
+natural. Dipaparkan pula rumusan masalah, tujuan penelitian, manfaat
+penelitian bagi berbagai stakeholder, hipotesis yang diajukan, ruang
+lingkup penelitian, dan sistematika penulisan.</p>
+<h3 id="bab-ii-tinjauan-pustaka">BAB II: TINJAUAN PUSTAKA</h3>
+<p>Bab ini menyajikan landasan teori yang mendasari penelitian, meliputi
+konsep Artificial Intelligence, Machine Learning, Natural Language
+Processing, Large Language Models, Retrieval-Augmented Generation,
+Vector Database dan Semantic Search, Conversational Search, Hybrid
+Retrieval Approaches, evaluasi sistem RAG, serta tinjauan penelitian
+terdahulu yang relevan dengan gap analysis dan positioning penelitian
+ini.</p>
+<h3 id="bab-iii-metodologi-penelitian">BAB III: METODOLOGI
+PENELITIAN</h3>
+<p>Bab ini menjelaskan metodologi penelitian secara komprehensif,
+mencakup kerangka pemikiran, arsitektur sistem (high-level architecture,
+ReAct agent design, tool layer, data sources), persiapan data
+(pengumpulan, cleaning, vector index, gold standard questions),
+implementasi tiga strategi retrieval (Vector-Only, API-Only, Hybrid),
+framework evaluasi (constraint-based metrics, question-level evaluation,
+evaluation protocol), implementasi teknis (hardware, software,
+hyperparameters), dan keterbatasan metodologi.</p>
+<h3 id="bab-iv-hasil-dan-pembahasan">BAB IV: HASIL DAN PEMBAHASAN</h3>
+<p>Bab ini menyajikan hasil implementasi sistem (API Contract
+integration, frontend, vector database, agent implementation) dan hasil
+evaluasi kuantitatif (summary metrics comparison, per-constraint
+accuracy analysis, confusion matrix analysis, per-category performance,
+response time analysis). Disertakan pula pembahasan mendalam tentang
+keunggulan masing-masing strategi, analisis mengapa Hybrid unggul,
+perbandingan dengan penelitian terdahulu, dan implikasi praktis.
+Evaluasi user experience juga disajikan untuk validasi penerimaan
+pengguna.</p>
+<h3 id="bab-v-simpulan-dan-saran">BAB V: SIMPULAN DAN SARAN</h3>
+<p>Bab ini menyimpulkan temuan utama penelitian, menjawab pertanyaan
+penelitian yang dirumuskan, dan memvalidasi atau menolak hipotesis yang
+diajukan. Disertakan pula saran untuk pengembangan sistem di masa depan,
+termasuk dynamic routing, expanded evaluation, user study, multi-turn
+dialogue sophistication, integrasi dengan platform messaging, dan
+multi-market expansion.</p>
+<hr />
+<p><strong>Ringkasan BAB I:</strong></p>
+<p>Bab ini telah memaparkan landasan penelitian yang meliputi:</p>
+<ol type="1">
+<li><p><strong>Latar Belakang</strong>: Gap antara pencarian properti
+tradisional dan kebutuhan pemahaman bahasa natural, serta potensi RAG
+sebagai solusi.</p></li>
+<li><p><strong>Rumusan Masalah</strong>: Empat pertanyaan penelitian
+tentang perancangan, perbandingan strategi, pengukuran akurasi, dan
+identifikasi strategi optimal.</p></li>
+<li><p><strong>Tujuan Penelitian</strong>: Implementasi chatbot RAG,
+perbandingan tiga strategi, pengembangan framework evaluasi, dan
+rekomendasi praktis.</p></li>
+<li><p><strong>Manfaat Penelitian</strong>: Bagi tenaga pemasaran,
+perusahaan broker, industri properti, dan pengembangan ilmu
+pengetahuan.</p></li>
+<li><p><strong>Hipotesis</strong>: Tiga hipotesis tentang keunggulan
+Hybrid, akurasi &gt;80%, dan perbedaan per-constraint accuracy.</p></li>
+<li><p><strong>Ruang Lingkup</strong>: Fokus Medan, ~2.800 listings, 30
+gold questions, teknologi OpenAI + ChromaDB.</p></li>
+<li><p><strong>Sistematika</strong>: Struktur lima bab dari Pendahuluan
+hingga Simpulan.</p></li>
+</ol>

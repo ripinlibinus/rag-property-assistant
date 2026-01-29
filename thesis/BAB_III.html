@@ -1,0 +1,1137 @@
+<h1 id="bab-iii-metodologi-penelitian">BAB III METODOLOGI
+PENELITIAN</h1>
+<p>Bab ini menjelaskan metodologi yang digunakan dalam penelitian,
+meliputi kerangka pemikiran, arsitektur sistem, persiapan data,
+implementasi tiga strategi retrieval, framework evaluasi, implementasi
+teknis, dan keterbatasan metodologi.</p>
+<h2 id="kerangka-pemikiran">3.1 Kerangka Pemikiran</h2>
+<p>Penelitian ini bertujuan untuk mengembangkan dan mengevaluasi sistem
+chatbot AI berbasis RAG (Retrieval-Augmented Generation) untuk membantu
+tenaga pemasaran properti dalam menjawab query pelanggan menggunakan
+bahasa natural. Kerangka pemikiran penelitian diilustrasikan pada Gambar
+3.1.</p>
+<p><strong>Gambar 3.1. Kerangka Pemikiran Penelitian</strong></p>
+<pre><code>┌─────────────────────────────────────────────────────────────────────┐
+│                        MASALAH PENELITIAN                           │
+│  - Filter tradisional tidak memahami bahasa natural                 │
+│  - Gap antara cara berpikir pengguna dan interface sistem           │
+│  - Kebutuhan perbandingan strategi retrieval untuk domain properti  │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                      SOLUSI YANG DIAJUKAN                           │
+│  Chatbot RAG dengan 3 Strategi Retrieval:                           │
+│  1. Vector-Only (Semantic Search)                                   │
+│  2. API-Only (Structured Query)                                     │
+│  3. Hybrid (Kombinasi keduanya)                                     │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                         IMPLEMENTASI                                │
+│  - Arsitektur ReAct Agent dengan 9 Tools                            │
+│  - API Contract untuk integrasi data                                │
+│  - ChromaDB untuk vector storage                                    │
+│  - Score Fusion untuk hybrid ranking                                │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                          EVALUASI                                   │
+│  - 30 Gold-Labeled Questions                                        │
+│  - Constraint-Based Metrics (CPR, Strict Success)                   │
+│  - Confusion Matrix Analysis                                        │
+│  - User Experience Survey                                           │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                       OUTPUT PENELITIAN                             │
+│  - Identifikasi strategi retrieval optimal                          │
+│  - Framework evaluasi constraint-based                              │
+│  - Sistem chatbot yang dapat diimplementasikan                      │
+└─────────────────────────────────────────────────────────────────────┘</code></pre>
+<p>Alur penelitian dimulai dari identifikasi masalah pencarian properti
+menggunakan filter tradisional, dilanjutkan dengan perancangan solusi
+berbasis RAG, implementasi tiga strategi retrieval, evaluasi menggunakan
+metrik constraint-based, dan analisis untuk mengidentifikasi strategi
+optimal.</p>
+<hr />
+<h2 id="arsitektur-sistem">3.2 Arsitektur Sistem</h2>
+<h3 id="high-level-architecture">3.2.1 High-Level Architecture</h3>
+<p>Sistem chatbot RAG yang dikembangkan terdiri dari beberapa lapisan
+komponen yang saling terintegrasi. Gambar 3.2 menunjukkan arsitektur
+tingkat tinggi sistem.</p>
+<p><strong>Gambar 3.2. High-Level System Architecture</strong></p>
+<pre><code>┌─────────────────────────────────────────────────────────────────────┐
+│                         USER INTERFACE                              │
+│                    (Vue.js Chat Interface)                          │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                        FASTAPI BACKEND                              │
+│                    (HTTP/JSON API Endpoint)                         │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                         REACT AGENT                                 │
+│              (LangGraph-based Reason-Act-Observe Loop)              │
+│  ┌───────────┐    ┌───────────┐    ┌───────────┐                   │
+│  │  Reason   │ -&gt; │    Act    │ -&gt; │  Observe  │ -&gt; (iterate)      │
+│  └───────────┘    └───────────┘    └───────────┘                   │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                         TOOL LAYER                                  │
+│  ┌────────────────┐  ┌────────────────┐  ┌────────────────┐        │
+│  │search_properties│  │ search_nearby  │  │search_knowledge│        │
+│  └────────────────┘  └────────────────┘  └────────────────┘        │
+│  ┌────────────────┐  ┌────────────────┐  ┌────────────────┐        │
+│  │geocode_location│  │ rerank_results │  │get_prop_details│        │
+│  └────────────────┘  └────────────────┘  └────────────────┘        │
+│  ┌────────────────┐  ┌────────────────┐  ┌────────────────┐        │
+│  │get_prop_types  │  │ get_locations  │  │no_props_found  │        │
+│  └────────────────┘  └────────────────┘  └────────────────┘        │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                    ┌─────────────┴─────────────┐
+                    ▼                           ▼
+┌─────────────────────────────┐   ┌─────────────────────────────────┐
+│      PROPERTY API           │   │         CHROMADB                │
+│   (REST API - MySQL)        │   │    (Vector Database)            │
+│   Source of Truth           │   │    Semantic Search              │
+│   ~2,800 listings           │   │    ~2,800 embeddings            │
+└─────────────────────────────┘   └─────────────────────────────────┘</code></pre>
+<p>Arsitektur ini terdiri dari lima lapisan utama:</p>
+<ol type="1">
+<li><p><strong>User Interface Layer</strong>: Antarmuka pengguna
+berbasis Vue.js yang menyediakan tampilan chat interaktif.</p></li>
+<li><p><strong>API Layer</strong>: FastAPI backend yang mengekspos
+endpoint HTTP/JSON untuk menerima query dan mengembalikan
+respons.</p></li>
+<li><p><strong>Agent Layer</strong>: ReAct Agent berbasis LangGraph yang
+melakukan penalaran dan pemilihan tool.</p></li>
+<li><p><strong>Tool Layer</strong>: Sembilan tools spesialisasi yang
+menangani berbagai jenis operasi pencarian dan retrieval.</p></li>
+<li><p><strong>Data Layer</strong>: Dua sumber data—Property API untuk
+data terstruktur dan ChromaDB untuk pencarian semantik.</p></li>
+</ol>
+<h3 id="react-agent-design">3.2.2 ReAct Agent Design</h3>
+<p>Agent diimplementasikan menggunakan paradigma ReAct (Reasoning and
+Acting) [16] yang memungkinkan penalaran eksplisit sebelum mengambil
+tindakan. Gambar 3.3 menunjukkan alur kerja ReAct Agent.</p>
+<p><strong>Gambar 3.3. ReAct Agent Flow</strong></p>
+<pre><code>┌─────────────────────────────────────────────────────────────────────┐
+│                         USER QUERY                                  │
+│         &quot;Carikan rumah 3 kamar di Cemara harga 1M-an&quot;              │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                      THOUGHT (Reasoning)                            │
+│  &quot;User mencari rumah dengan spesifikasi:                            │
+│   - Bedrooms: 3                                                     │
+│   - Location: Cemara                                                │
+│   - Price range: sekitar 1 miliar                                   │
+│   Saya perlu menggunakan search_properties dengan filter ini&quot;       │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                        ACTION (Tool Call)                           │
+│  Tool: search_properties                                            │
+│  Parameters: {                                                      │
+│    &quot;location&quot;: &quot;cemara&quot;,                                            │
+│    &quot;bedrooms&quot;: 3,                                                   │
+│    &quot;min_price&quot;: 800000000,                                          │
+│    &quot;max_price&quot;: 1200000000,                                         │
+│    &quot;listing_type&quot;: &quot;sale&quot;                                           │
+│  }                                                                  │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                     OBSERVATION (Tool Result)                       │
+│  [Property 1: Rumah Cemara Asri Tipe 120, 3KT, Rp 1.05M]           │
+│  [Property 2: Rumah Cemara Indah Tipe 100, 3KT, Rp 980jt]          │
+│  [Property 3: ...]                                                  │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                      THOUGHT (Evaluation)                           │
+│  &quot;Saya mendapatkan hasil yang sesuai dengan kriteria user.          │
+│   Ada beberapa opsi yang dapat saya presentasikan.&quot;                 │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                       FINAL ANSWER                                  │
+│  &quot;Berikut rumah 3 kamar di area Cemara dengan harga sekitar 1M:     │
+│   1. Rumah Cemara Asri Tipe 120 - Rp 1,05 Miliar                   │
+│   2. Rumah Cemara Indah Tipe 100 - Rp 980 Juta                     │
+│   ...&quot;                                                              │
+└─────────────────────────────────────────────────────────────────────┘</code></pre>
+<p>Implementasi menggunakan LangGraph yang menyediakan: - <strong>State
+Management</strong>: Menyimpan konteks percakapan dan hasil intermediate
+- <strong>Graph-based Flow</strong>: Mengelola transisi antar state
+(reason, act, observe) - <strong>Tool Binding</strong>: Menghubungkan
+agent dengan tools yang tersedia - <strong>Memory Integration</strong>:
+Mengintegrasikan dengan sistem memori untuk konteks multi-turn</p>
+<h3 id="tool-layer-9-tools">3.2.3 Tool Layer (9 Tools)</h3>
+<p>Agent memiliki akses ke sembilan tools yang dirancang khusus untuk
+domain pencarian properti:</p>
+<p><strong>Tabel 3.1. Daftar Agent Tools</strong></p>
+<table>
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 27%" />
+<col style="width: 20%" />
+<col style="width: 42%" />
+</colgroup>
+<thead>
+<tr>
+<th>No</th>
+<th>Tool Name</th>
+<th>Fungsi</th>
+<th>Parameter Utama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>search_properties</td>
+<td>Pencarian properti dengan filter terstruktur</td>
+<td>location, price_range, bedrooms, property_type, listing_type</td>
+</tr>
+<tr>
+<td>2</td>
+<td>search_nearby</td>
+<td>Pencarian dalam radius dari titik koordinat</td>
+<td>lat, lng, radius_km, property_type</td>
+</tr>
+<tr>
+<td>3</td>
+<td>geocode_location</td>
+<td>Konversi nama lokasi ke koordinat geografis</td>
+<td>location_name</td>
+</tr>
+<tr>
+<td>4</td>
+<td>search_knowledge</td>
+<td>Pencarian semantik di ChromaDB</td>
+<td>query_text, top_k</td>
+</tr>
+<tr>
+<td>5</td>
+<td>rerank_results</td>
+<td>Re-ranking hasil menggunakan semantic scores</td>
+<td>results, query</td>
+</tr>
+<tr>
+<td>6</td>
+<td>get_property_details</td>
+<td>Mengambil detail lengkap properti</td>
+<td>property_id</td>
+</tr>
+<tr>
+<td>7</td>
+<td>get_property_types</td>
+<td>Daftar tipe properti yang tersedia</td>
+<td>-</td>
+</tr>
+<tr>
+<td>8</td>
+<td>get_locations</td>
+<td>Daftar lokasi/area yang tersedia</td>
+<td>-</td>
+</tr>
+<tr>
+<td>9</td>
+<td>no_properties_found</td>
+<td>Handler untuk kondisi tidak ada hasil</td>
+<td>reason</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Strategi Pemilihan Tool:</strong></p>
+<p>Agent mengikuti strategi routing berdasarkan karakteristik query:</p>
+<ol type="1">
+<li><strong>Constraint-heavy queries</strong> (harga, kamar, tipe) →
+<code>search_properties</code></li>
+<li><strong>Proximity queries</strong> (“dekat mall”, “sekitar sekolah”)
+→ <code>geocode_location</code> + <code>search_nearby</code></li>
+<li><strong>Feature queries</strong> (“dengan CCTV”, “ada kolam renang”)
+→ <code>search_knowledge</code></li>
+<li><strong>Detail queries</strong> (“info lengkap properti X”) →
+<code>get_property_details</code></li>
+<li><strong>Exploratory queries</strong> (“tipe properti apa saja?”) →
+<code>get_property_types</code> atau <code>get_locations</code></li>
+</ol>
+<h3 id="data-sources">3.2.4 Data Sources</h3>
+<p>Sistem menggunakan dua sumber data yang saling melengkapi:</p>
+<p><strong>Tabel 3.2. Spesifikasi Data Sources</strong></p>
+<table>
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 49%" />
+<col style="width: 39%" />
+</colgroup>
+<thead>
+<tr>
+<th>Aspek</th>
+<th>Property API (MySQL via REST)</th>
+<th>ChromaDB (Vector Store)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fungsi</td>
+<td>Source of truth untuk data transaksional</td>
+<td>Pencarian semantik</td>
+</tr>
+<tr>
+<td>Jumlah Data</td>
+<td>~2.800 listings aktif</td>
+<td>~2.800 embeddings</td>
+</tr>
+<tr>
+<td>Update</td>
+<td>Real-time</td>
+<td>Periodik (setiap 60 menit)</td>
+</tr>
+<tr>
+<td>Query Type</td>
+<td>Structured filters</td>
+<td>Semantic similarity</td>
+</tr>
+<tr>
+<td>Keunggulan</td>
+<td>Akurasi constraint 100%</td>
+<td>Pemahaman natural language</td>
+</tr>
+<tr>
+<td>Keterbatasan</td>
+<td>Tidak memahami semantik</td>
+<td>Data mungkin tidak terkini</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Property API</strong> berfungsi sebagai source of truth untuk
+semua data transaksional: - Harga dan ketersediaan yang selalu akurat -
+Filter terstruktur untuk constraint numerik - Pagination dan sorting
+hasil</p>
+<p><strong>ChromaDB</strong> [15] menyediakan kemampuan pencarian
+semantik: - Matching berdasarkan similarity vektor - Pemahaman sinonim
+dan variasi bahasa - Pencarian berdasarkan deskripsi dan fitur</p>
+<hr />
+<h2 id="persiapan-data">3.3 Persiapan Data</h2>
+<h3 id="pengumpulan-data">3.3.1 Pengumpulan Data</h3>
+<p>Data properti diperoleh melalui integrasi dengan MetaProperty API
+yang menyediakan akses ke listing properti dari kantor-kantor properti
+mitra di wilayah Medan, Indonesia. Proses pengumpulan data dilakukan
+secara otomatis melalui API endpoint yang telah disediakan.</p>
+<p><strong>Karakteristik Dataset:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Atribut</th>
+<th>Nilai</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Jumlah Total Listing</td>
+<td>~2.800</td>
+</tr>
+<tr>
+<td>Wilayah Coverage</td>
+<td>Medan dan sekitarnya</td>
+</tr>
+<tr>
+<td>Tipe Properti</td>
+<td>Rumah, Apartemen, Ruko, Tanah, Gudang</td>
+</tr>
+<tr>
+<td>Listing Type</td>
+<td>Dijual (Sale), Disewa (Rent)</td>
+</tr>
+<tr>
+<td>Periode Data</td>
+<td>Aktif (tersedia untuk transaksi)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Atribut Data yang Dikumpulkan:</strong></p>
+<ul>
+<li><strong>Identifikasi</strong>: ID unik, judul, URL listing</li>
+<li><strong>Harga</strong>: Harga jual/sewa, periode sewa (jika
+applicable)</li>
+<li><strong>Spesifikasi</strong>: Kamar tidur, kamar mandi, lantai, luas
+tanah, luas bangunan</li>
+<li><strong>Lokasi</strong>: Alamat lengkap, kota, kecamatan, koordinat
+GPS</li>
+<li><strong>Deskripsi</strong>: Teks deskripsi, fasilitas,
+keunggulan</li>
+<li><strong>Media</strong>: URL gambar properti</li>
+<li><strong>Metadata</strong>: Tanggal listing, status ketersediaan</li>
+</ul>
+<h3 id="data-cleaning-dan-normalisasi">3.3.2 Data Cleaning dan
+Normalisasi</h3>
+<p>Data yang diperoleh dari API melewati proses ETL (Extract, Transform,
+Load) untuk memastikan konsistensi:</p>
+<p><strong>Proses Cleaning:</strong></p>
+<ol type="1">
+<li><p><strong>Normalisasi Harga</strong>: Mengkonversi format harga
+yang bervariasi (“1M”, “1 Miliar”, “1.000.000.000”) ke format numerik
+standar</p></li>
+<li><p><strong>Standardisasi Lokasi</strong>: Menyeragamkan penamaan
+lokasi (case normalization, penghapusan karakter khusus)</p></li>
+<li><p><strong>Validasi Koordinat</strong>: Memverifikasi bahwa
+koordinat GPS berada dalam batas geografis yang valid</p></li>
+<li><p><strong>Penanganan Missing Values</strong>:</p>
+<ul>
+<li>Numerik: Default ke 0 atau null yang teridentifikasi</li>
+<li>Teks: Default ke string kosong</li>
+<li>Koordinat: Geocoding dari alamat jika tidak tersedia</li>
+</ul></li>
+<li><p><strong>Deduplikasi</strong>: Identifikasi dan penanganan listing
+duplikat berdasarkan kombinasi judul + lokasi + harga</p></li>
+</ol>
+<h3 id="vector-index-preparation">3.3.3 Vector Index Preparation</h3>
+<p>Proses persiapan vector index melibatkan konversi data properti
+menjadi representasi vektor yang dapat dicari secara semantik.</p>
+<p><strong>Gambar 3.4. Data Preparation Workflow</strong></p>
+<pre><code>┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│  Property Data  │ --&gt; │ Text Conversion │ --&gt; │   Embedding     │
+│   (from API)    │     │   (Template)    │     │  (OpenAI API)   │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+                                                        │
+                                                        ▼
+                                                ┌─────────────────┐
+                                                │    ChromaDB     │
+                                                │   Vector Store  │
+                                                └─────────────────┘</code></pre>
+<p><strong>Template Konversi Teks:</strong></p>
+<p>Setiap properti dikonversi ke format teks menggunakan template
+berikut:</p>
+<pre><code>{property_type} {listing_type} di {location}
+Harga: Rp {price}
+Spesifikasi: {bedrooms} kamar tidur, {bathrooms} kamar mandi, {floors} lantai
+Luas: Tanah {land_area} m², Bangunan {building_area} m²
+Fasilitas: {facilities}
+{description}</code></pre>
+<p><strong>Parameter Embedding:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Nilai</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Model</td>
+<td>text-embedding-3-small (OpenAI)</td>
+</tr>
+<tr>
+<td>Dimensi</td>
+<td>1.536</td>
+</tr>
+<tr>
+<td>Batch Size</td>
+<td>100 dokumen per request</td>
+</tr>
+<tr>
+<td>Total Embeddings</td>
+<td>~2.800</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Konfigurasi ChromaDB:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Nilai</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Collection Name</td>
+<td>properties</td>
+</tr>
+<tr>
+<td>Distance Function</td>
+<td>Cosine Similarity</td>
+</tr>
+<tr>
+<td>Persistence</td>
+<td>SQLite + Parquet files</td>
+</tr>
+<tr>
+<td>Metadata Fields</td>
+<td>property_type, listing_type, location, price, id</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gold-standard-questions">3.3.4 Gold Standard Questions</h3>
+<p>Untuk evaluasi yang objektif, dikembangkan set 30 pertanyaan
+gold-standard yang mencakup berbagai jenis query properti.</p>
+<p><strong>Tabel 3.3. Kategori Gold Standard Questions</strong></p>
+<table>
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 21%" />
+<col style="width: 51%" />
+</colgroup>
+<thead>
+<tr>
+<th>Kategori</th>
+<th>Jumlah</th>
+<th>Contoh Pertanyaan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>location_simple</td>
+<td>3</td>
+<td>“Carikan rumah dijual di daerah Cemara”</td>
+</tr>
+<tr>
+<td>location_price</td>
+<td>3</td>
+<td>“Carikan rumah di Cemara harga 1M-an”</td>
+</tr>
+<tr>
+<td>location_price_spec</td>
+<td>3</td>
+<td>“Rumah dijual Ringroad dibawah 800jt 3 kamar”</td>
+</tr>
+<tr>
+<td>property_type</td>
+<td>3</td>
+<td>“Apakah ada ruko disewakan di Krakatau?”</td>
+</tr>
+<tr>
+<td>context_followup</td>
+<td>3</td>
+<td>“Apakah masih ada pilihan lain?”</td>
+</tr>
+<tr>
+<td>context_modify</td>
+<td>2</td>
+<td>“Pilihan lain, tapi yang 3 lantai?”</td>
+</tr>
+<tr>
+<td>project_search</td>
+<td>2</td>
+<td>“Cari rumah di Citraland Bagya City”</td>
+</tr>
+<tr>
+<td>feature_search</td>
+<td>5</td>
+<td>“Carikan rumah dengan fasilitas CCTV”</td>
+</tr>
+<tr>
+<td>nearby_search</td>
+<td>4</td>
+<td>“Cari rumah dekat mall di Medan”</td>
+</tr>
+<tr>
+<td>no_data</td>
+<td>2</td>
+<td>“Apakah ada gudang di KIM?”</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>30</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Annotation Protocol:</strong></p>
+<p>Setiap pertanyaan dilengkapi dengan anotasi: 1. <strong>Expected
+Constraints</strong>: Daftar constraint yang harus dipenuhi (location,
+price, bedrooms, dll.) 2. <strong>Expected Result Status</strong>:
+has_data atau no_data 3. <strong>Ground Truth Verification</strong>:
+Verifikasi melalui API untuk memastikan kebenaran expected result</p>
+<hr />
+<h2 id="implementasi-tiga-strategi-retrieval">3.4 Implementasi Tiga
+Strategi Retrieval</h2>
+<h3 id="vector-only-pipeline">3.4.1 Vector-Only Pipeline</h3>
+<p>Strategi Vector-Only melakukan pencarian murni menggunakan semantic
+similarity di ChromaDB tanpa melibatkan API terstruktur.</p>
+<p><strong>Gambar 3.5. Vector-Only Pipeline</strong></p>
+<pre><code>┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   User Query    │ --&gt; │    Embedding    │ --&gt; │  ChromaDB       │
+│  (Natural Text) │     │   Generation    │     │ Similarity      │
+└─────────────────┘     └─────────────────┘     │    Search       │
+                                                └─────────────────┘
+                                                        │
+                                                        ▼
+                                                ┌─────────────────┐
+                                                │  Post-Filtering │
+                                                │  (Metadata)     │
+                                                └─────────────────┘
+                                                        │
+                                                        ▼
+                                                ┌─────────────────┐
+                                                │   Top-K         │
+                                                │   Results       │
+                                                └─────────────────┘</code></pre>
+<p><strong>Alur Proses:</strong></p>
+<ol type="1">
+<li><p><strong>Query Embedding</strong>: Query pengguna dikonversi
+menjadi vektor menggunakan model embedding yang sama
+(text-embedding-3-small)</p></li>
+<li><p><strong>Similarity Search</strong>: ChromaDB mencari K dokumen
+terdekat berdasarkan cosine similarity</p></li>
+<li><p><strong>Post-Filtering</strong>: Filter opsional berdasarkan
+metadata (property_type, listing_type) jika teridentifikasi dari
+query</p></li>
+<li><p><strong>Result Ranking</strong>: Hasil diurutkan berdasarkan
+similarity score</p></li>
+</ol>
+<p><strong>Konfigurasi:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Nilai</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Top-K</td>
+<td>20 (pre-filter)</td>
+</tr>
+<tr>
+<td>Final Results</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Similarity Threshold</td>
+<td>0.35</td>
+</tr>
+<tr>
+<td>Post-Filter Fields</td>
+<td>property_type, listing_type</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Kekuatan:</strong> - Memahami variasi bahasa dan sinonim -
+Toleran terhadap typo dan informal language - Dapat matching berdasarkan
+deskripsi dan fitur</p>
+<p><strong>Kelemahan:</strong> - Tidak menjamin akurasi constraint
+numerik - Data mungkin tidak terkini (index lag) - Tidak dapat melakukan
+exact match pada filter</p>
+<h3 id="api-only-pipeline">3.4.2 API-Only Pipeline</h3>
+<p>Strategi API-Only mengkonversi query natural language menjadi
+parameter filter terstruktur untuk query ke Property API [18].</p>
+<p><strong>Gambar 3.6. API-Only Pipeline</strong></p>
+<pre><code>┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   User Query    │ --&gt; │    LLM Parse    │ --&gt; │   JSON Filter   │
+│  (Natural Text) │     │   (Extract      │     │   Generation    │
+│                 │     │   Parameters)   │     │                 │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+                                                        │
+                                                        ▼
+                                                ┌─────────────────┐
+                                                │  Property API   │
+                                                │    Query        │
+                                                └─────────────────┘
+                                                        │
+                                                        ▼
+                                                ┌─────────────────┐
+                                                │   Structured    │
+                                                │    Results      │
+                                                └─────────────────┘</code></pre>
+<p><strong>Alur Proses:</strong></p>
+<ol type="1">
+<li><p><strong>Parameter Extraction</strong>: LLM mengekstrak parameter
+pencarian dari query natural language:</p>
+<ul>
+<li>Location: nama area/lokasi</li>
+<li>Price Range: min_price, max_price</li>
+<li>Specifications: bedrooms, bathrooms, floors</li>
+<li>Type: property_type, listing_type</li>
+</ul></li>
+<li><p><strong>JSON Filter Construction</strong>: Parameter dikompilasi
+menjadi JSON filter object</p></li>
+<li><p><strong>API Query</strong>: Filter dikirim ke Property
+API</p></li>
+<li><p><strong>Result Processing</strong>: Hasil dari API langsung
+dikembalikan dengan urutan dari API</p></li>
+</ol>
+<p><strong>Contoh Konversi:</strong></p>
+<p>Query: “Carikan rumah 3 kamar di Cemara harga di bawah 1 Miliar”</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;location&quot;</span><span class="fu">:</span> <span class="st">&quot;cemara&quot;</span><span class="fu">,</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;bedrooms&quot;</span><span class="fu">:</span> <span class="dv">3</span><span class="fu">,</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;max_price&quot;</span><span class="fu">:</span> <span class="dv">1000000000</span><span class="fu">,</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;listing_type&quot;</span><span class="fu">:</span> <span class="st">&quot;sale&quot;</span><span class="fu">,</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;property_type&quot;</span><span class="fu">:</span> <span class="st">&quot;house&quot;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Kekuatan:</strong> - Akurasi 100% pada constraint terstruktur
+- Data selalu terkini (live database) - Performa query cepat</p>
+<p><strong>Kelemahan:</strong> - Tidak memahami query berbasis fitur
+(CCTV, kolam renang) - Tidak memahami konsep proximity (dekat mall) -
+Memerlukan mapping exact untuk parameter</p>
+<h3 id="hybrid-pipeline">3.4.3 Hybrid Pipeline</h3>
+<p>Strategi Hybrid mengkombinasikan kedua pendekatan dengan strategi
+sequential dan fallback.</p>
+<p><strong>Gambar 3.7. Hybrid Pipeline (Sequential with
+Fallback)</strong></p>
+<pre><code>┌─────────────────┐
+│   User Query    │
+└─────────────────┘
+        │
+        ▼
+┌─────────────────┐
+│  API Search     │ ──────────────────────────────┐
+│  (Structured)   │                               │
+└─────────────────┘                               │
+        │                                         │
+        ▼                                         │
+   ┌─────────┐                                    │
+   │ Results │                                    │
+   │   &gt; 0?  │                                    │
+   └─────────┘                                    │
+    │       │                                     │
+   Yes      No                                    │
+    │       │                                     │
+    ▼       ▼                                     │
+┌───────┐ ┌─────────────────┐                    │
+│Semantic│ │ChromaDB Semantic│                    │
+│Rerank  │ │   Fallback      │                    │
+└───────┘ └─────────────────┘                    │
+    │             │                               │
+    ▼             ▼                               │
+┌─────────────────────────────────────────────────┘
+│              Score Fusion                       │
+│   score = 0.6 × semantic + 0.4 × api_position   │
+└─────────────────────────────────────────────────┘
+        │
+        ▼
+┌─────────────────┐
+│  Final Ranked   │
+│    Results      │
+└─────────────────┘</code></pre>
+<p><strong>Alur Proses:</strong></p>
+<ol type="1">
+<li><p><strong>API Search First</strong>: Sistem selalu memulai dengan
+pencarian API terstruktur untuk constraint yang dapat
+diidentifikasi</p></li>
+<li><p><strong>Conditional Branching</strong>:</p>
+<ul>
+<li>Jika API mengembalikan hasil → lanjut ke semantic re-ranking</li>
+<li>Jika API tidak mengembalikan hasil → fallback ke ChromaDB semantic
+search</li>
+</ul></li>
+<li><p><strong>Semantic Re-ranking</strong>: Untuk hasil dari API,
+semantic scores dihitung dan digabungkan dengan posisi API</p></li>
+<li><p><strong>Score Fusion</strong>: Skor final dihitung dengan
+formula:</p></li>
+</ol>
+<pre><code>score = α × semantic_score + β × api_position_score</code></pre>
+<p>Di mana: - α = 0.6 (bobot semantic relevance) - β = 0.4 (bobot API
+position) - api_position_score = 1 - (position / total_results)</p>
+<p><strong>Rasional Pemilihan Bobot:</strong></p>
+<p>Bobot 60:40 dipilih berdasarkan eksperimen yang menunjukkan: -
+Semantic relevance lebih penting untuk user satisfaction - API position
+menjamin hasil memenuhi constraint terstruktur - Kombinasi ini
+memberikan keseimbangan optimal</p>
+<p><strong>Keunggulan Hybrid:</strong></p>
+<ol type="1">
+<li><strong>Transactional Accuracy</strong>: Constraint numerik dijamin
+akurat dari API</li>
+<li><strong>Semantic Coverage</strong>: Feature dan proximity queries
+ditangani oleh semantic search</li>
+<li><strong>Relevance Ranking</strong>: Re-ranking meningkatkan kualitas
+urutan hasil</li>
+<li><strong>Fallback Safety</strong>: Tidak mengembalikan hasil kosong
+jika salah satu strategi gagal</li>
+</ol>
+<hr />
+<h2 id="framework-evaluasi">3.5 Framework Evaluasi</h2>
+<h3 id="constraint-based-metrics">3.5.1 Constraint-Based Metrics</h3>
+<p>Evaluasi menggunakan metrik berbasis constraint yang mengukur sejauh
+mana hasil memenuhi kriteria yang dispesifikasikan dalam query.</p>
+<p><strong>Per-Constraint Accuracy (PCA)</strong></p>
+<p>Untuk setiap listing yang dikembalikan, PCA mengukur proporsi
+constraint yang terpenuhi:</p>
+<pre><code>PCA_i = (Jumlah constraint terpenuhi) / (Jumlah total constraint yang applicable)</code></pre>
+<p>Contoh: - Query: “rumah 3 kamar harga max 1M di Cemara” -
+Constraints: {bedrooms ≥ 3, price ≤ 1M, location = Cemara, property_type
+= house} - Listing hasil: {bedrooms: 3, price: 950jt, location: Cemara
+Asri, type: house} - PCA = 4/4 = 100%</p>
+<p><strong>Strict Success</strong></p>
+<p>Binary indicator apakah listing memenuhi SEMUA constraint:</p>
+<pre><code>Strict_Success_i = 1 jika PCA_i = 100%, else 0</code></pre>
+<p><strong>Constraint Pass Ratio (CPR)</strong></p>
+<p>Rasio listing yang memenuhi semua constraint dari total listing yang
+dikembalikan:</p>
+<pre><code>CPR = (Σ Strict_Success_i) / K</code></pre>
+<p>Di mana K = jumlah listing yang dikembalikan</p>
+<p><strong>Tabel 3.4. Definisi Metrik Evaluasi</strong></p>
+<table>
+<colgroup>
+<col style="width: 44%" />
+<col style="width: 55%" />
+</colgroup>
+<thead>
+<tr>
+<th>Metrik</th>
+<th>Definisi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PCA</td>
+<td>Rasio constraint terpenuhi untuk satu listing</td>
+</tr>
+<tr>
+<td>Strict Success</td>
+<td>Listing dengan PCA = 100%</td>
+</tr>
+<tr>
+<td>Strict Success Ratio</td>
+<td>Proporsi Strict Success dari semua hasil</td>
+</tr>
+<tr>
+<td>CPR</td>
+<td>Rata-rata Strict Success per query</td>
+</tr>
+<tr>
+<td>Mean CPR</td>
+<td>Rata-rata CPR across all queries</td>
+</tr>
+<tr>
+<td>Query Success Rate</td>
+<td>Persentase query dengan CPR ≥ threshold (T=0.60)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="question-level-evaluation">3.5.2 Question-Level Evaluation</h3>
+<p>Evaluasi tingkat pertanyaan menggunakan confusion matrix untuk
+mengukur performa klasifikasi.</p>
+<p><strong>Ground Truth (GT):</strong> - Positive: API mengembalikan
+hasil untuk gold constraints - Negative: API tidak mengembalikan hasil
+(no matching properties)</p>
+<p><strong>Prediction (Pred):</strong> - Positive: Bot mengembalikan
+listings DAN CPR ≥ T - Negative: Bot menyatakan “no result” ATAU CPR
+&lt; T</p>
+<p><strong>Confusion Matrix Components:</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Predicted Negative</th>
+<th>Predicted Positive</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Actual Negative</strong></td>
+<td>TN (Correct Abstention)</td>
+<td>FP (False Alarm)</td>
+</tr>
+<tr>
+<td><strong>Actual Positive</strong></td>
+<td>FN (Missed Opportunity)</td>
+<td>TP (Correct Answer)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Derived Metrics:</strong></p>
+<pre><code>Precision = TP / (TP + FP)
+Recall = TP / (TP + FN)
+F1 = 2 × (Precision × Recall) / (Precision + Recall)
+Accuracy = (TP + TN) / (TP + TN + FP + FN)</code></pre>
+<h3 id="evaluation-protocol">3.5.3 Evaluation Protocol</h3>
+<p><strong>Sequential Conversation Protocol:</strong></p>
+<p>Evaluasi dilakukan menggunakan protokol percakapan sekuensial:</p>
+<ol type="1">
+<li>Setiap pipeline diinisialisasi dengan thread_id unik</li>
+<li>Pertanyaan diproses secara berurutan (1-30)</li>
+<li>Konteks percakapan dipertahankan untuk kategori context_followup dan
+context_modify</li>
+<li>Hasil dicatat per pertanyaan</li>
+</ol>
+<p><strong>Ground Truth Verification:</strong></p>
+<p>Untuk setiap properti yang dikembalikan: 1. Ekstrak property_id dari
+hasil 2. Query API untuk mendapatkan data aktual 3. Bandingkan atribut
+dengan gold constraints 4. Hitung PCA berdasarkan data API (bukan hasil
+parsing teks)</p>
+<p><strong>Reproducibility Measures:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Aspek</th>
+<th>Implementasi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LLM Temperature</td>
+<td>0 (deterministic)</td>
+</tr>
+<tr>
+<td>Random Seed</td>
+<td>Fixed per experiment</td>
+</tr>
+<tr>
+<td>Evaluation Script</td>
+<td>Versioned di repository</td>
+</tr>
+<tr>
+<td>Gold Questions</td>
+<td>Stored di data/gold_questions.xlsx</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="implementasi-teknis">3.6 Implementasi Teknis</h2>
+<h3 id="hardware-specifications">3.6.1 Hardware Specifications</h3>
+<p>Sistem di-deploy pada infrastruktur cloud dengan spesifikasi:</p>
+<p><strong>Tabel 3.5. Spesifikasi Hardware</strong></p>
+<table>
+<thead>
+<tr>
+<th>Komponen</th>
+<th>Spesifikasi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Platform</td>
+<td>Cloud Virtual Private Server (VPS)</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>4 vCPU cores</td>
+</tr>
+<tr>
+<td>RAM</td>
+<td>8 GB</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td>100 GB SSD</td>
+</tr>
+<tr>
+<td>Network</td>
+<td>1 Gbps</td>
+</tr>
+<tr>
+<td>OS</td>
+<td>Ubuntu 22.04 LTS</td>
+</tr>
+</tbody>
+</table>
+<h3 id="software-stack">3.6.2 Software Stack</h3>
+<p><strong>Tabel 3.6. Software Dependencies</strong></p>
+<table>
+<thead>
+<tr>
+<th>Komponen</th>
+<th>Versi</th>
+<th>Fungsi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python</td>
+<td>3.11</td>
+<td>Runtime environment</td>
+</tr>
+<tr>
+<td>FastAPI</td>
+<td>0.110.x</td>
+<td>HTTP/JSON API endpoint</td>
+</tr>
+<tr>
+<td>LangChain</td>
+<td>0.3.x</td>
+<td>Agent orchestration</td>
+</tr>
+<tr>
+<td>LangGraph</td>
+<td>0.2.x</td>
+<td>ReAct agent state management</td>
+</tr>
+<tr>
+<td>ChromaDB</td>
+<td>0.5.x</td>
+<td>Vector storage</td>
+</tr>
+<tr>
+<td>OpenAI API</td>
+<td>-</td>
+<td>LLM (GPT-4o-mini) &amp; embeddings</td>
+</tr>
+<tr>
+<td>SQLAlchemy</td>
+<td>2.0.x</td>
+<td>Database ORM</td>
+</tr>
+<tr>
+<td>Vue.js</td>
+<td>3.x</td>
+<td>Frontend framework</td>
+</tr>
+<tr>
+<td>Docker</td>
+<td>24.x</td>
+<td>Containerization</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hyperparameters">3.6.3 Hyperparameters</h3>
+<p><strong>Tabel 3.7. System Hyperparameters</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Nilai</th>
+<th>Keterangan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LLM Model</td>
+<td>GPT-4o-mini</td>
+<td>Model inference</td>
+</tr>
+<tr>
+<td>Temperature</td>
+<td>0</td>
+<td>Output deterministik</td>
+</tr>
+<tr>
+<td>Embedding Model</td>
+<td>text-embedding-3-small</td>
+<td>1536 dimensi</td>
+</tr>
+<tr>
+<td>Vector Search k</td>
+<td>limit × 2</td>
+<td>Pre-fetch untuk re-ranking</td>
+</tr>
+<tr>
+<td>Similarity Threshold</td>
+<td>0.35</td>
+<td>Minimum cosine similarity</td>
+</tr>
+<tr>
+<td>Max Results</td>
+<td>10</td>
+<td>Properti per query</td>
+</tr>
+<tr>
+<td>CPR Threshold (T)</td>
+<td>0.60</td>
+<td>Threshold query success</td>
+</tr>
+<tr>
+<td>Semantic Weight (α)</td>
+<td>0.60</td>
+<td>Hybrid score fusion</td>
+</tr>
+<tr>
+<td>API Position Weight (β)</td>
+<td>0.40</td>
+<td>Hybrid score fusion</td>
+</tr>
+<tr>
+<td>Sync Interval</td>
+<td>60 menit</td>
+<td>ChromaDB sync period</td>
+</tr>
+<tr>
+<td>Memory Window</td>
+<td>20 messages</td>
+<td>Konteks percakapan</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Justifikasi Pemilihan Nilai:</strong></p>
+<ol type="1">
+<li><strong>Temperature = 0</strong>: Memastikan reproducibility dan
+konsistensi hasil</li>
+<li><strong>Similarity Threshold = 0.35</strong>: Dipilih untuk balance
+antara precision dan recall pada semantic search</li>
+<li><strong>CPR Threshold = 0.60</strong>: Dengan max 10 hasil, minimal
+6 harus correct untuk dianggap successful</li>
+<li><strong>Score Fusion 60:40</strong>: Eksperimen menunjukkan bobot
+ini optimal untuk kombinasi relevance dan constraint satisfaction</li>
+</ol>
+<hr />
+<h2 id="keterbatasan-metodologi">3.7 Keterbatasan Metodologi</h2>
+<p>Penelitian ini memiliki beberapa keterbatasan metodologis yang perlu
+diakui:</p>
+<h3 id="gold-set-size">3.7.1 Gold Set Size</h3>
+<p>Dataset evaluasi terdiri dari 30 pertanyaan yang mencakup 12
+kategori. Meskipun dirancang untuk representatif, ukuran ini membatasi:
+- Statistical power untuk analisis subgroup yang detail - Generalisasi
+ke variasi query yang lebih luas - Identifikasi edge cases yang
+jarang</p>
+<p><strong>Mitigasi:</strong> Pertanyaan dipilih secara purposive untuk
+mencakup spektrum query yang umum dalam konteks properti Indonesia.</p>
+<h3 id="single-market-focus">3.7.2 Single Market Focus</h3>
+<p>Evaluasi dilakukan pada data properti dari wilayah Medan, Indonesia.
+Hasil mungkin tidak sepenuhnya transferable ke: - Pasar properti dengan
+karakteristik berbeda - Bahasa dan terminologi regional lain - Range
+harga dan spesifikasi yang berbeda</p>
+<p><strong>Mitigasi:</strong> Arsitektur API Contract memungkinkan
+adaptasi ke market lain dengan konfigurasi minimal.</p>
+<h3 id="index-freshness">3.7.3 Index Freshness</h3>
+<p>Vector index disinkronisasi setiap 60 menit, menimbulkan potensi lag
+antara: - Data live di API - Data di ChromaDB</p>
+<p><strong>Mitigasi:</strong> Verifikasi final selalu menggunakan API
+sebagai source of truth. Vector search digunakan untuk discovery, bukan
+sebagai final arbiter.</p>
+<h3 id="no-user-study-for-comparison">3.7.4 No User Study for
+Comparison</h3>
+<p>Evaluasi fokus pada metrik objektif (constraint satisfaction) tanpa:
+- Studi usability dengan pengguna akhir untuk perbandingan antar
+strategi - Pengukuran SUS (System Usability Scale) per strategi - Task
+completion time comparison</p>
+<p><strong>Mitigasi:</strong> Survei UX dilakukan untuk sistem final
+(Hybrid), memberikan validasi penerimaan pengguna.</p>
+<h3 id="llm-dependency">3.7.5 LLM Dependency</h3>
+<p>Sistem bergantung pada OpenAI API untuk: - Inference (GPT-4o-mini) -
+Embedding generation (text-embedding-3-small)</p>
+<p>Hal ini menimbulkan: - Ketergantungan pada layanan eksternal -
+Variabilitas biaya operasional - Potensi perubahan behavior model di
+masa depan</p>
+<p><strong>Mitigasi:</strong> Arsitektur modular memungkinkan
+penggantian provider LLM jika diperlukan.</p>
+<hr />
+<p><strong>Ringkasan BAB III:</strong></p>
+<p>Bab ini telah menjelaskan metodologi penelitian secara komprehensif,
+meliputi:</p>
+<ol type="1">
+<li><strong>Kerangka Pemikiran</strong>: Alur dari identifikasi masalah
+hingga output penelitian</li>
+<li><strong>Arsitektur Sistem</strong>: Desain berlapis dengan ReAct
+Agent, 9 tools, dan dual data sources</li>
+<li><strong>Persiapan Data</strong>: ETL pipeline dan gold standard
+questions</li>
+<li><strong>Tiga Strategi Retrieval</strong>: Vector-Only, API-Only, dan
+Hybrid dengan score fusion</li>
+<li><strong>Framework Evaluasi</strong>: Metrik constraint-based dan
+confusion matrix analysis</li>
+<li><strong>Implementasi Teknis</strong>: Hardware, software stack, dan
+hyperparameters</li>
+<li><strong>Keterbatasan</strong>: Acknowledged limitations dan mitigasi
+yang dilakukan</li>
+</ol>
+<p>Metodologi ini dirancang untuk memungkinkan perbandingan yang adil
+antar strategi dan menghasilkan temuan yang reproducible.</p>

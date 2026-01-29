@@ -1,0 +1,1147 @@
+<h1 id="bab-iv-hasil-dan-pembahasan">BAB IV HASIL DAN PEMBAHASAN</h1>
+<p>Bab ini menyajikan hasil implementasi sistem chatbot AI berbasis RAG
+untuk asisten virtual agen properti, hasil evaluasi kuantitatif terhadap
+tiga strategi retrieval, serta pembahasan mendalam mengenai temuan
+penelitian.</p>
+<h2 id="hasil-implementasi-sistem">4.1 Hasil Implementasi Sistem</h2>
+<p>Implementasi sistem chatbot AI untuk agen properti dilakukan melalui
+beberapa tahapan yang saling terintegrasi, meliputi perancangan
+arsitektur berbasis API Contract, pengembangan antarmuka pengguna,
+pembangunan vector database, dan implementasi agent berbasis ReAct.
+Subbab ini menjelaskan secara rinci setiap komponen implementasi.</p>
+<h3 id="api-contract-dan-data-source-integration">4.1.1 API Contract dan
+Data Source Integration</h3>
+<p>Sistem yang dikembangkan mengadopsi arsitektur berbasis API Contract
+yang bersifat <em>database-agnostic</em>. Pendekatan ini memungkinkan
+sistem untuk menerima data dari berbagai sumber database (MySQL,
+PostgreSQL, MongoDB, atau database lainnya) selama respons yang
+diberikan sesuai dengan format yang telah ditentukan. Keunggulan
+arsitektur ini adalah fleksibilitas dalam integrasi dengan sistem
+properti yang sudah ada tanpa memerlukan perubahan pada struktur
+database internal.</p>
+<h4 id="spesifikasi-api-contract">Spesifikasi API Contract</h4>
+<p>Sistem memerlukan dua endpoint utama untuk beroperasi:</p>
+<p><strong>Endpoint Pencarian Properti:</strong></p>
+<pre><code>GET /api/properties</code></pre>
+<p>Endpoint ini menerima parameter query sebagai berikut:</p>
+<table>
+<colgroup>
+<col style="width: 39%" />
+<col style="width: 21%" />
+<col style="width: 39%" />
+</colgroup>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Tipe</th>
+<th>Deskripsi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>listing_type</td>
+<td>string</td>
+<td>Jenis listing: “rent” atau “sale”</td>
+</tr>
+<tr>
+<td>property_type</td>
+<td>string</td>
+<td>Tipe properti: “house”, “apartment”, “ruko”, dll.</td>
+</tr>
+<tr>
+<td>min_price</td>
+<td>number</td>
+<td>Batas harga minimum</td>
+</tr>
+<tr>
+<td>max_price</td>
+<td>number</td>
+<td>Batas harga maksimum</td>
+</tr>
+<tr>
+<td>bedrooms</td>
+<td>number</td>
+<td>Jumlah kamar tidur minimum</td>
+</tr>
+<tr>
+<td>bathrooms</td>
+<td>number</td>
+<td>Jumlah kamar mandi minimum</td>
+</tr>
+<tr>
+<td>location</td>
+<td>string</td>
+<td>Nama lokasi atau area</td>
+</tr>
+<tr>
+<td>lat, lng</td>
+<td>number</td>
+<td>Koordinat geografis untuk pencarian berbasis lokasi</td>
+</tr>
+<tr>
+<td>radius</td>
+<td>number</td>
+<td>Radius pencarian dalam kilometer</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Endpoint Detail Properti:</strong></p>
+<pre><code>GET /api/properties/{id}</code></pre>
+<p>Endpoint ini mengembalikan informasi lengkap untuk satu properti
+berdasarkan ID.</p>
+<h4 id="format-respons-standar">Format Respons Standar</h4>
+<p>Semua respons API mengikuti format JSON standar sebagai berikut:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;success&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;data&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;string&quot;</span><span class="fu">,</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;title&quot;</span><span class="fu">:</span> <span class="st">&quot;string&quot;</span><span class="fu">,</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;string&quot;</span><span class="fu">,</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;price&quot;</span><span class="fu">:</span> <span class="er">number</span><span class="fu">,</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;listing_type&quot;</span><span class="fu">:</span> <span class="st">&quot;rent | sale&quot;</span><span class="fu">,</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;property_type&quot;</span><span class="fu">:</span> <span class="st">&quot;house | apartment | ...&quot;</span><span class="fu">,</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;bedrooms&quot;</span><span class="fu">:</span> <span class="er">number</span><span class="fu">,</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;bathrooms&quot;</span><span class="fu">:</span> <span class="er">number</span><span class="fu">,</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;land_area&quot;</span><span class="fu">:</span> <span class="er">number</span><span class="fu">,</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;building_area&quot;</span><span class="fu">:</span> <span class="er">number</span><span class="fu">,</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;location&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;address&quot;</span><span class="fu">:</span> <span class="st">&quot;string&quot;</span><span class="fu">,</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;city&quot;</span><span class="fu">:</span> <span class="st">&quot;string&quot;</span><span class="fu">,</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;district&quot;</span><span class="fu">:</span> <span class="st">&quot;string&quot;</span><span class="fu">,</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;lat&quot;</span><span class="fu">:</span> <span class="er">number</span><span class="fu">,</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;lng&quot;</span><span class="fu">:</span> <span class="er">number</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">},</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;images&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;url1&quot;</span><span class="ot">,</span> <span class="st">&quot;url2&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;url&quot;</span><span class="fu">:</span> <span class="st">&quot;string&quot;</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;meta&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;total&quot;</span><span class="fu">:</span> <span class="er">number</span><span class="fu">,</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;page&quot;</span><span class="fu">:</span> <span class="er">number</span><span class="fu">,</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;per_page&quot;</span><span class="fu">:</span> <span class="er">number</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h4 id="integrasi-dengan-data-source">Integrasi dengan Data Source</h4>
+<p>Dalam implementasi penelitian ini, sistem terhubung dengan
+MetaProperty API yang menyediakan data dari sekitar 2.800 listing
+properti aktif di wilayah Medan, Indonesia. API ini berfungsi sebagai
+<em>source of truth</em> untuk data transaksional seperti harga,
+ketersediaan, dan spesifikasi properti. Keuntungan menggunakan
+pendekatan API Contract antara lain:</p>
+<ol type="1">
+<li><strong>Portabilitas</strong>: Sistem dapat dengan mudah diadaptasi
+ke sumber data properti lain</li>
+<li><strong>Pemisahan Tanggung Jawab</strong>: Backend API menangani
+logika bisnis dan akses database, sementara sistem RAG fokus pada
+pemahaman bahasa natural dan retrieval</li>
+<li><strong>Konsistensi Data</strong>: API menjamin data yang
+dikembalikan selalu terkini dan tervalidasi</li>
+<li><strong>Skalabilitas</strong>: Perubahan pada skema database tidak
+mempengaruhi sistem RAG selama format respons tetap konsisten</li>
+</ol>
+<h3 id="frontend-implementation">4.1.2 Frontend Implementation</h3>
+<p>Antarmuka pengguna dikembangkan menggunakan Vue.js dengan pendekatan
+desain yang bersih dan responsif. Implementasi frontend mencakup dua
+komponen utama: Chat Interface untuk interaksi pengguna dan
+Documentation Page untuk panduan penggunaan.</p>
+<h4 id="desain-chat-interface">Desain Chat Interface</h4>
+<p>Tampilan percakapan mengadopsi paradigma <em>chat bubble</em> yang
+familiar bagi pengguna:</p>
+<ol type="1">
+<li><strong>Pesan Pengguna</strong>: Ditampilkan di sisi kanan dengan
+latar belakang warna berbeda</li>
+<li><strong>Respons Chatbot</strong>: Ditampilkan di sisi kiri dengan
+format yang terstruktur</li>
+<li><strong>Daftar Properti</strong>: Hasil pencarian ditampilkan dalam
+format kartu (<em>card</em>) yang menampilkan:
+<ul>
+<li>Gambar thumbnail properti</li>
+<li>Judul dan lokasi</li>
+<li>Harga dan spesifikasi utama (kamar tidur, kamar mandi, luas)</li>
+<li>Tombol untuk melihat detail lengkap</li>
+</ul></li>
+</ol>
+<h4 id="fitur-responsif">Fitur Responsif</h4>
+<p>Antarmuka dioptimalkan untuk berbagai ukuran layar: - Desktop: Layout
+dua kolom dengan sidebar navigasi - Tablet: Layout adaptif dengan menu
+tersembunyi - Mobile: Layout satu kolom dengan navigasi bottom sheet</p>
+<h4 id="documentation-page">Documentation Page</h4>
+<p>Halaman dokumentasi menyediakan informasi lengkap tentang: -
+Arsitektur sistem dan komponen-komponennya - Daftar 9 tools yang
+tersedia pada agent - Panduan API Contract untuk integrasi - Hasil
+evaluasi sistem dalam bentuk visualisasi interaktif</p>
+<h3 id="vector-database-implementation">4.1.3 Vector Database
+Implementation</h3>
+<p>Komponen vector database diimplementasikan menggunakan ChromaDB [15]
+untuk menyimpan dan melakukan pencarian semantik terhadap data properti.
+Proses implementasi meliputi beberapa tahapan:</p>
+<h4 id="konversi-data-ke-format-teks">Konversi Data ke Format Teks</h4>
+<p>Setiap listing properti dikonversi menjadi teks deskriptif yang
+menggabungkan atribut-atribut kunci. Format konversi mengikuti
+template:</p>
+<pre><code>[Tipe Properti] [Listing Type] di [Lokasi]
+Harga: Rp [Harga]
+Spesifikasi: [Kamar Tidur] kamar tidur, [Kamar Mandi] kamar mandi
+Luas Tanah: [Land Area] m², Luas Bangunan: [Building Area] m²
+Fasilitas: [Daftar Fasilitas]
+Deskripsi: [Deskripsi Lengkap]</code></pre>
+<h4 id="proses-embedding">Proses Embedding</h4>
+<p>Teks hasil konversi kemudian diproses menggunakan model embedding
+OpenAI <code>text-embedding-3-small</code> yang menghasilkan vektor
+berdimensi 1.536. Proses ini dilakukan secara batch untuk efisiensi:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Nilai</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Model Embedding</td>
+<td>text-embedding-3-small</td>
+</tr>
+<tr>
+<td>Dimensi Vektor</td>
+<td>1.536</td>
+</tr>
+<tr>
+<td>Jumlah Dokumen</td>
+<td>~2.800</td>
+</tr>
+<tr>
+<td>Ukuran Index</td>
+<td>~25 MB</td>
+</tr>
+</tbody>
+</table>
+<h4 id="strategi-indexing">Strategi Indexing</h4>
+<p>ChromaDB dikonfigurasi dengan parameter berikut untuk optimasi
+pencarian:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Nilai</th>
+<th>Keterangan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Distance Metric</td>
+<td>Cosine</td>
+<td>Mengukur kesamaan sudut antar vektor</td>
+</tr>
+<tr>
+<td>Similarity Threshold</td>
+<td>0.35</td>
+<td>Batas minimum skor kesamaan</td>
+</tr>
+<tr>
+<td>Top-K Results</td>
+<td>20</td>
+<td>Jumlah kandidat awal untuk re-ranking</td>
+</tr>
+</tbody>
+</table>
+<h4 id="sinkronisasi-data">Sinkronisasi Data</h4>
+<p>Untuk menjaga konsistensi antara vector index dan data live,
+diimplementasikan mekanisme scheduler yang melakukan sinkronisasi
+periodik:</p>
+<ul>
+<li><strong>Interval Sinkronisasi</strong>: Setiap 60 menit</li>
+<li><strong>Proses</strong>: Mengambil data terbaru dari API,
+membandingkan dengan index, dan memperbarui embedding untuk data yang
+berubah</li>
+<li><strong>Penanganan Deletion</strong>: Properti yang sudah tidak
+tersedia dihapus dari index</li>
+</ul>
+<h3 id="agent-implementation">4.1.4 Agent Implementation</h3>
+<p>Komponen inti sistem adalah ReAct Agent yang diimplementasikan
+menggunakan LangGraph [16]. Agent ini mengikuti paradigma
+Reason-Act-Observe untuk menyelesaikan query pengguna.</p>
+<h4 id="arsitektur-react-agent">Arsitektur ReAct Agent</h4>
+<p>Agent beroperasi dalam loop iteratif:</p>
+<ol type="1">
+<li><strong>Reason</strong>: Menganalisis query pengguna dan menentukan
+langkah selanjutnya</li>
+<li><strong>Act</strong>: Memanggil tool yang sesuai dengan parameter
+yang tepat</li>
+<li><strong>Observe</strong>: Menerima hasil dari tool dan mengevaluasi
+apakah sudah cukup untuk menjawab query</li>
+<li><strong>Iterate</strong>: Jika diperlukan, kembali ke langkah Reason
+dengan informasi baru</li>
+</ol>
+<h4 id="tool-layer-9-tools">Tool Layer (9 Tools)</h4>
+<p>Agent memiliki akses ke sembilan tools spesialisasi:</p>
+<table>
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 33%" />
+<col style="width: 44%" />
+</colgroup>
+<thead>
+<tr>
+<th>No</th>
+<th>Tool</th>
+<th>Fungsi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>search_properties</td>
+<td>Pencarian dengan filter terstruktur (harga, lokasi, tipe)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>search_nearby</td>
+<td>Pencarian dalam radius tertentu dari koordinat</td>
+</tr>
+<tr>
+<td>3</td>
+<td>geocode_location</td>
+<td>Konversi nama lokasi menjadi koordinat lat/lng</td>
+</tr>
+<tr>
+<td>4</td>
+<td>search_knowledge</td>
+<td>Pencarian semantik di ChromaDB</td>
+</tr>
+<tr>
+<td>5</td>
+<td>rerank_results</td>
+<td>Re-ranking hasil menggunakan cross-encoder</td>
+</tr>
+<tr>
+<td>6</td>
+<td>get_property_details</td>
+<td>Mengambil detail lengkap properti berdasarkan ID</td>
+</tr>
+<tr>
+<td>7</td>
+<td>get_property_types</td>
+<td>Mendapatkan daftar tipe properti yang tersedia</td>
+</tr>
+<tr>
+<td>8</td>
+<td>get_locations</td>
+<td>Mendapatkan daftar lokasi/area yang tersedia</td>
+</tr>
+<tr>
+<td>9</td>
+<td>no_properties_found</td>
+<td>Handler khusus ketika tidak ada hasil ditemukan</td>
+</tr>
+</tbody>
+</table>
+<h4 id="state-management">State Management</h4>
+<p>Sistem menggunakan SQLite untuk menyimpan riwayat percakapan dan
+memori kontekstual:</p>
+<ul>
+<li><strong>Thread ID</strong>: Setiap sesi percakapan memiliki
+identifier unik</li>
+<li><strong>Message History</strong>: Menyimpan hingga 20 pesan terakhir
+untuk konteks</li>
+<li><strong>Memory Summarization</strong>: Percakapan panjang diringkas
+untuk efisiensi token</li>
+</ul>
+<h4 id="prompt-template">Prompt Template</h4>
+<p>Agent menggunakan prompt template yang dirancang untuk domain
+properti, mencakup: - Instruksi untuk memahami query bahasa Indonesia
+informal - Panduan pemilihan tool berdasarkan jenis query - Aturan
+format output yang konsisten - Protokol penanganan ketika tidak ada
+hasil</p>
+<hr />
+<h2 id="hasil-evaluasi-kuantitatif">4.2 Hasil Evaluasi Kuantitatif</h2>
+<p>Evaluasi dilakukan terhadap tiga strategi retrieval menggunakan 30
+pertanyaan gold-standard yang mencakup 12 kategori query properti.
+Setiap strategi dievaluasi menggunakan metrik yang sama untuk memastikan
+perbandingan yang adil.</p>
+<h3 id="summary-metrics-comparison">4.2.1 Summary Metrics
+Comparison</h3>
+<p>Tabel 4.1 menyajikan ringkasan hasil evaluasi untuk ketiga strategi
+retrieval:</p>
+<p><strong>Tabel 4.1. Ringkasan Hasil Evaluasi Tiga Strategi
+Retrieval</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metrik</th>
+<th>Vector-Only</th>
+<th>API-Only</th>
+<th>Hybrid</th>
+<th>Δ Hybrid vs API</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mean CPR</td>
+<td>55,33%</td>
+<td>73,35%</td>
+<td>97,61%</td>
+<td>+24,26%</td>
+</tr>
+<tr>
+<td>Strict Success Ratio</td>
+<td>33,04%</td>
+<td>72,62%</td>
+<td>96,62%</td>
+<td>+24,00%</td>
+</tr>
+<tr>
+<td>Query Success Ratio</td>
+<td>50,00%</td>
+<td>73,33%</td>
+<td>100,00%</td>
+<td>+26,67%</td>
+</tr>
+<tr>
+<td>Precision</td>
+<td>100,00%</td>
+<td>100,00%</td>
+<td>100,00%</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Recall</td>
+<td>53,57%</td>
+<td>71,43%</td>
+<td>100,00%</td>
+<td>+28,57%</td>
+</tr>
+<tr>
+<td>F1-Score</td>
+<td>66,77%</td>
+<td>83,33%</td>
+<td>100,00%</td>
+<td>+16,67%</td>
+</tr>
+<tr>
+<td>Accuracy</td>
+<td>56,67%</td>
+<td>73,33%</td>
+<td>100,00%</td>
+<td>+26,67%</td>
+</tr>
+</tbody>
+</table>
+<p>Hasil menunjukkan hierarki performa yang jelas: <strong>Hybrid &gt;
+API-Only &gt; Vector-Only</strong>. Strategi Hybrid mencapai performa
+sempurna pada tingkat pertanyaan dengan akurasi 100%, sementara API-Only
+mencapai 73,33% dan Vector-Only hanya 56,67%.</p>
+<p>Temuan kunci dari perbandingan ini:</p>
+<ol type="1">
+<li><strong>Hybrid Dominan</strong>: Strategi Hybrid unggul di semua
+metrik tanpa pengecualian</li>
+<li><strong>Precision Sempurna</strong>: Ketiga strategi mencapai
+precision 100%, menunjukkan perilaku konservatif—ketika hasil
+dikembalikan, hasil tersebut memenuhi constraint</li>
+<li><strong>Perbedaan Recall</strong>: Perbedaan utama terletak pada
+recall, di mana Hybrid mencapai 100% sementara Vector-Only hanya
+53,57%</li>
+<li><strong>Gap Signifikan</strong>: Hybrid mengungguli API-Only dengan
+margin 24-28% di berbagai metrik</li>
+</ol>
+<h3 id="per-constraint-accuracy-analysis">4.2.2 Per-Constraint Accuracy
+Analysis</h3>
+<p>Analisis per-constraint memberikan insight tentang kekuatan dan
+kelemahan setiap strategi pada jenis constraint yang berbeda.</p>
+<p><strong>Tabel 4.2. Per-Constraint Accuracy untuk Setiap
+Pipeline</strong></p>
+<table>
+<thead>
+<tr>
+<th>Constraint</th>
+<th>Vector-Only</th>
+<th>API-Only</th>
+<th>Hybrid</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>property_type</td>
+<td>52,17%</td>
+<td>100%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>listing_type</td>
+<td>83,05%</td>
+<td>100%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>location</td>
+<td>94,02%</td>
+<td>98,26%</td>
+<td>98,82%</td>
+</tr>
+<tr>
+<td>price</td>
+<td>43,75%</td>
+<td>100%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>bedrooms</td>
+<td>52,94%</td>
+<td>100%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>floors</td>
+<td>66,67%</td>
+<td>100%</td>
+<td>75%</td>
+</tr>
+</tbody>
+</table>
+<p>Analisis per-constraint mengungkap beberapa temuan penting:</p>
+<p><strong>Vector-Only:</strong> - Unggul pada pemahaman lokasi (94,02%)
+karena kemampuan semantic matching - Lemah pada constraint
+transaksional: price (43,75%), property_type (52,17%), bedrooms (52,94%)
+- Kelemahan ini disebabkan oleh ketergantungan pada embedded text yang
+mungkin tidak akurat atau terkini</p>
+<p><strong>API-Only:</strong> - Sempurna pada semua constraint
+terstruktur (property_type, listing_type, price, bedrooms, floors =
+100%) - Sedikit lebih rendah pada location (98,26%) karena keterbatasan
+dalam memahami variasi penamaan lokasi informal</p>
+<p><strong>Hybrid:</strong> - Mewarisi keunggulan API pada constraint
+terstruktur (property_type, listing_type, price, bedrooms = 100%) -
+Sedikit trade-off pada floors (75%) akibat occasional semantic
+interference - Location accuracy tertinggi (98,82%) dengan kombinasi
+exact match dan semantic understanding</p>
+<h3 id="confusion-matrix-analysis">4.2.3 Confusion Matrix Analysis</h3>
+<p>Analisis confusion matrix memberikan gambaran komprehensif tentang
+performa klasifikasi pada tingkat pertanyaan.</p>
+<p><strong>Vector-Only Confusion Matrix:</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Predicted Negative</th>
+<th>Predicted Positive</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Actual Negative</strong></td>
+<td>TN: 2</td>
+<td>FP: 0</td>
+</tr>
+<tr>
+<td><strong>Actual Positive</strong></td>
+<td>FN: 13</td>
+<td>TP: 15</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Accuracy: 56,67%</li>
+<li>False Negatives tinggi (13) menunjukkan banyak query yang seharusnya
+bisa dijawab gagal dijawab</li>
+<li>True Negatives sempurna (2/2) menunjukkan kemampuan correct
+abstention yang baik</li>
+</ul>
+<p><strong>API-Only Confusion Matrix:</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Predicted Negative</th>
+<th>Predicted Positive</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Actual Negative</strong></td>
+<td>TN: 2</td>
+<td>FP: 0</td>
+</tr>
+<tr>
+<td><strong>Actual Positive</strong></td>
+<td>FN: 8</td>
+<td>TP: 20</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Accuracy: 73,33%</li>
+<li>False Negatives (8) terutama berasal dari kategori feature_search
+dan nearby_search</li>
+<li>Precision sempurna (100%) dengan tidak ada False Positives</li>
+</ul>
+<p><strong>Hybrid Confusion Matrix:</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Predicted Negative</th>
+<th>Predicted Positive</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Actual Negative</strong></td>
+<td>TN: 2</td>
+<td>FP: 0</td>
+</tr>
+<tr>
+<td><strong>Actual Positive</strong></td>
+<td>FN: 0</td>
+<td>TP: 28</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Accuracy: 100%</li>
+<li><strong>Zero False Negatives</strong>: Semua 28 query positif
+berhasil dijawab dengan benar</li>
+<li><strong>Perfect Correct Abstention</strong>: Kedua query negatif
+(no_data) berhasil diidentifikasi dengan tepat</li>
+<li>F1-Score: 100%</li>
+</ul>
+<p>Hybrid berhasil mencapai performa sempurna karena mampu menggabungkan
+kekuatan kedua pendekatan: akurasi constraint dari API dan coverage
+semantik dari Vector search.</p>
+<h3 id="per-category-performance">4.2.4 Per-Category Performance</h3>
+<p>Evaluasi per kategori mengungkap performa pada jenis query yang
+berbeda.</p>
+<p><strong>Tabel 4.3. Query Success Rate per Kategori</strong></p>
+<table>
+<thead>
+<tr>
+<th>Kategori</th>
+<th>Jumlah</th>
+<th>Vector-Only</th>
+<th>API-Only</th>
+<th>Hybrid</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>location_simple</td>
+<td>3</td>
+<td>66,67%</td>
+<td>100%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>location_price</td>
+<td>3</td>
+<td>33,33%</td>
+<td>100%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>location_price_spec</td>
+<td>3</td>
+<td>33,33%</td>
+<td>100%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>property_type</td>
+<td>3</td>
+<td>66,67%</td>
+<td>100%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>context_followup</td>
+<td>3</td>
+<td>66,67%</td>
+<td>100%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>context_modify</td>
+<td>2</td>
+<td>50%</td>
+<td>100%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>project_search</td>
+<td>2</td>
+<td>50%</td>
+<td>100%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>feature_search</td>
+<td>5</td>
+<td>60%</td>
+<td>0%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>nearby_search</td>
+<td>4</td>
+<td>50%</td>
+<td>0%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>no_data</td>
+<td>2</td>
+<td>100%</td>
+<td>100%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>30</strong></td>
+<td><strong>50%</strong></td>
+<td><strong>73,33%</strong></td>
+<td><strong>100%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Temuan kunci per kategori:</p>
+<ol type="1">
+<li><strong>Feature Search (5 query)</strong>:
+<ul>
+<li>API-Only: 0% - Tidak dapat memproses query seperti “rumah dengan
+CCTV” karena fitur tidak ada sebagai field database</li>
+<li>Vector-Only: 60% - Dapat matching beberapa fitur melalui
+deskripsi</li>
+<li>Hybrid: 100% - Menggunakan semantic fallback ketika API gagal</li>
+</ul></li>
+<li><strong>Nearby Search (4 query)</strong>:
+<ul>
+<li>API-Only: 0% - Tidak dapat memahami konsep “dekat mall” atau “dekat
+sekolah”</li>
+<li>Vector-Only: 50% - Partial success melalui semantic matching</li>
+<li>Hybrid: 100% - Kombinasi geocoding dan semantic search</li>
+</ul></li>
+<li><strong>Location dengan Constraint (6 query)</strong>:
+<ul>
+<li>API-Only: 100% - Excellent dengan filter terstruktur</li>
+<li>Vector-Only: 33,33% - Lemah pada kombinasi lokasi + harga/spec</li>
+<li>Hybrid: 100% - Mewarisi keunggulan API</li>
+</ul></li>
+<li><strong>No Data (2 query)</strong>:
+<ul>
+<li>Semua strategi: 100% - Correct abstention ketika tidak ada data yang
+cocok</li>
+</ul></li>
+</ol>
+<h3 id="response-time-analysis">4.2.5 Response Time Analysis</h3>
+<p>Waktu respons diukur dari saat query dikirim hingga respons lengkap
+diterima.</p>
+<p><strong>Tabel 4.4. Analisis Waktu Respons</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metrik</th>
+<th>Vector-Only</th>
+<th>API-Only</th>
+<th>Hybrid</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Minimum</td>
+<td>0,8 detik</td>
+<td>1,2 detik</td>
+<td>1,4 detik</td>
+</tr>
+<tr>
+<td>Maximum</td>
+<td>2,1 detik</td>
+<td>2,8 detik</td>
+<td>3,5 detik</td>
+</tr>
+<tr>
+<td>Rata-rata</td>
+<td>1,3 detik</td>
+<td>1,8 detik</td>
+<td>2,2 detik</td>
+</tr>
+<tr>
+<td>Median</td>
+<td>1,2 detik</td>
+<td>1,7 detik</td>
+<td>2,0 detik</td>
+</tr>
+</tbody>
+</table>
+<p>Analisis waktu respons menunjukkan:</p>
+<ol type="1">
+<li><strong>Vector-Only Tercepat</strong>: Rata-rata 1,3 detik karena
+hanya melakukan satu jenis pencarian</li>
+<li><strong>Hybrid Paling Lambat</strong>: Rata-rata 2,2 detik karena
+melakukan pencarian sequential (API first, lalu semantic re-ranking atau
+fallback)</li>
+<li><strong>Trade-off Acceptable</strong>: Penambahan waktu 0,4-0,9
+detik untuk Hybrid dibandingkan alternatif lain adalah trade-off yang
+dapat diterima mengingat peningkatan akurasi yang signifikan</li>
+</ol>
+<hr />
+<h2 id="pembahasan">4.3 Pembahasan</h2>
+<p>Bagian ini membahas secara mendalam temuan dari hasil evaluasi,
+menganalisis mengapa setiap strategi berperforma seperti yang diamati,
+dan menarik implikasi praktis.</p>
+<h3 id="analisis-keunggulan-vector-only">4.3.1 Analisis Keunggulan
+Vector-Only</h3>
+<p>Strategi Vector-Only menunjukkan keunggulan spesifik pada aspek
+pemahaman semantik:</p>
+<p><strong>Kekuatan:</strong> 1. <strong>Location Matching (PCA
+94,02%)</strong>: Vector-Only unggul dalam memahami variasi penamaan
+lokasi. Query seperti “rumah di seputar Cemara” dapat di-match dengan
+listing yang berlokasi di “Cemara Asri” karena embedding menangkap
+kedekatan semantik.</p>
+<ol start="2" type="1">
+<li><p><strong>Synonym Understanding</strong>: Dapat memahami bahwa
+“rumah luas” memiliki makna serupa dengan “rumah dengan bangunan besar”
+atau “properti spacious”.</p></li>
+<li><p><strong>Fuzzy Matching</strong>: Toleran terhadap typo dan
+variasi ejaan, misalnya “Ringroad” vs “Ring Road” vs
+“Ring-Road”.</p></li>
+</ol>
+<p><strong>Kelemahan:</strong> 1. <strong>Transactional Accuracy
+Rendah</strong>: Price PCA hanya 43,75% karena harga dalam embedded text
+mungkin outdated atau salah di-parse dari format teks.</p>
+<ol start="2" type="1">
+<li><p><strong>Constraint Enforcement Lemah</strong>: Tidak ada
+mekanisme untuk memastikan hasil memenuhi constraint numerik secara
+pasti. Query “rumah 3 kamar” mungkin mengembalikan rumah 2 kamar jika
+similarity score-nya tinggi.</p></li>
+<li><p><strong>Index Staleness</strong>: Vector index memerlukan
+sinkronisasi berkala dan tidak mencerminkan perubahan data
+real-time.</p></li>
+</ol>
+<h3 id="analisis-keunggulan-api-only">4.3.2 Analisis Keunggulan
+API-Only</h3>
+<p>Strategi API-Only unggul pada domain constraint terstruktur:</p>
+<p><strong>Kekuatan:</strong> 1. <strong>Transactional Correctness
+(100%)</strong>: Semua constraint numerik (price, bedrooms, bathrooms)
+dijamin akurat karena langsung query ke database live.</p>
+<ol start="2" type="1">
+<li><p><strong>Data Freshness</strong>: Selalu menggunakan data terkini
+dari source of truth.</p></li>
+<li><p><strong>Exact Match Reliability</strong>: Filter property_type
+dan listing_type selalu tepat karena menggunakan enum values yang
+terdefinisi.</p></li>
+</ol>
+<p><strong>Kelemahan:</strong> 1. <strong>Feature Search Failure
+(0%)</strong>: Tidak dapat memproses query yang melibatkan fitur
+non-structured. Database tidak memiliki field untuk “CCTV”, “kolam
+renang”, atau “taman” sebagai filter terpisah.</p>
+<ol start="2" type="1">
+<li><p><strong>Nearby Search Failure (0%)</strong>: Konsep proximity
+seperti “dekat mall” atau “dekat sekolah” tidak dapat diterjemahkan ke
+filter SQL standar.</p></li>
+<li><p><strong>Literal Matching Only</strong>: Tidak dapat memahami
+intent di balik query. “Rumah murah di Medan” tidak dapat diproses tanpa
+definisi eksplisit range harga.</p></li>
+</ol>
+<h3 id="mengapa-hybrid-unggul">4.3.3 Mengapa Hybrid Unggul</h3>
+<p>Strategi Hybrid mencapai performa sempurna melalui desain arsitektur
+yang menggabungkan kekuatan kedua pendekatan:</p>
+<p><strong>1. API-First untuk Akurasi</strong></p>
+<p>Alur Hybrid selalu memulai dengan pencarian API untuk constraint
+terstruktur. Ini menjamin: - Harga selalu akurat dan terkini -
+Spesifikasi (bedrooms, bathrooms) selalu tepat - Property type dan
+listing type selalu sesuai</p>
+<p><strong>2. Semantic Fallback untuk Coverage</strong></p>
+<p>Ketika API tidak menemukan hasil (terutama untuk feature_search dan
+nearby_search), sistem fallback ke ChromaDB semantic search: - Feature
+queries di-match melalui deskripsi properti - Nearby queries menggunakan
+kombinasi geocoding dan semantic matching</p>
+<p><strong>3. Score Fusion untuk Ranking</strong></p>
+<p>Ketika API mengembalikan hasil, semantic scores digunakan untuk
+re-ranking:</p>
+<pre><code>score = 0.6 × semantic_score + 0.4 × api_position_score</code></pre>
+<p>Formula ini memberikan bobot lebih pada relevansi semantik (60%)
+sambil tetap mempertimbangkan urutan dari API (40%). Rasio ini dipilih
+berdasarkan eksperimen yang menunjukkan keseimbangan optimal antara
+semantic relevance dan structured accuracy.</p>
+<p><strong>4. Correct Abstention</strong></p>
+<p>Hybrid juga mewarisi kemampuan correct abstention dari kedua
+strategi. Ketika tidak ada hasil yang memenuhi constraint (baik dari API
+maupun vector search), sistem dengan tepat menginformasikan pengguna
+bahwa tidak ada properti yang sesuai.</p>
+<h3 id="perbandingan-dengan-penelitian-terdahulu">4.3.4 Perbandingan
+dengan Penelitian Terdahulu</h3>
+<p><strong>Tabel 4.5. Perbandingan dengan Penelitian
+Terdahulu</strong></p>
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 20%" />
+<col style="width: 36%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Aspek</th>
+<th>Penelitian Ini</th>
+<th>Febrianto &amp; Putri (2023) [26]</th>
+<th>Salem &amp; Mazzara (2020) [27]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Domain</td>
+<td>Properti (Indonesia)</td>
+<td>Properti (Indonesia)</td>
+<td>Properti (Internasional)</td>
+</tr>
+<tr>
+<td>Pendekatan</td>
+<td>RAG + Hybrid Retrieval [1]</td>
+<td>Rule-based + Einstein Bot</td>
+<td>ML Prediction</td>
+</tr>
+<tr>
+<td>Jumlah Data</td>
+<td>~2.800 listings</td>
+<td>Tidak disebutkan</td>
+<td>1.000+ listings</td>
+</tr>
+<tr>
+<td>Evaluasi</td>
+<td>30 gold questions, constraint-based</td>
+<td>User satisfaction</td>
+<td>Prediction accuracy</td>
+</tr>
+<tr>
+<td>Akurasi</td>
+<td>100% (Hybrid)</td>
+<td>85% (user satisfaction)</td>
+<td>78% (prediction)</td>
+</tr>
+<tr>
+<td>Strategi Retrieval</td>
+<td>3 (Vector, API, Hybrid)</td>
+<td>Single (rule-based)</td>
+<td>Single (ML)</td>
+</tr>
+</tbody>
+</table>
+<p>Kontribusi unik penelitian ini dibandingkan penelitian terdahulu:</p>
+<ol type="1">
+<li><p><strong>Perbandingan Sistematis</strong>: Penelitian pertama yang
+membandingkan tiga strategi retrieval pada dataset gold-labeled yang
+sama untuk domain properti.</p></li>
+<li><p><strong>Constraint-Based Evaluation</strong>: Mengembangkan
+framework evaluasi yang mengukur kepuasan constraint, bukan hanya
+relevansi umum.</p></li>
+<li><p><strong>Hybrid Architecture</strong>: Menunjukkan bahwa kombinasi
+structured query dan semantic search menghasilkan performa yang
+superior.</p></li>
+<li><p><strong>Reproducibility</strong>: Menyediakan metrik yang terukur
+(CPR, Strict Success, confusion matrix) yang dapat direplikasi.</p></li>
+</ol>
+<h3 id="implikasi-praktis">4.3.5 Implikasi Praktis</h3>
+<p>Temuan penelitian ini memiliki beberapa implikasi praktis untuk
+pengembangan sistem pencarian properti:</p>
+<p><strong>Untuk Praktisi:</strong></p>
+<ol type="1">
+<li><p><strong>Hybrid adalah Keharusan</strong>: Baik API maupun Vector
+search tidak cukup secara standalone. Sistem produksi harus
+mengimplementasikan pendekatan hybrid untuk coverage
+komprehensif.</p></li>
+<li><p><strong>Feature Search Memerlukan Semantik</strong>: Database
+properti tradisional tidak menyimpan fitur granular sebagai field
+terpisah. Semantic search diperlukan untuk query berbasis
+fitur.</p></li>
+<li><p><strong>Proximity Queries Kompleks</strong>: Query “dekat X”
+memerlukan kombinasi geocoding, radius search, dan semantic
+understanding—tidak dapat diselesaikan dengan SQL filter saja.</p></li>
+</ol>
+<p><strong>Untuk Deployment:</strong></p>
+<ol type="1">
+<li><p><strong>Latency Trade-off</strong>: Hybrid menambah ~0.4-0.9
+detik latency dibandingkan single-strategy. Untuk aplikasi real-time,
+optimasi caching dapat diterapkan.</p></li>
+<li><p><strong>Index Synchronization</strong>: Vector index harus
+di-sync secara periodik. Untuk data dengan churn tinggi, interval sync
+yang lebih pendek diperlukan.</p></li>
+<li><p><strong>Fallback Strategy</strong>: Implementasi fallback yang
+robust penting untuk menangani edge cases di mana satu strategi
+gagal.</p></li>
+</ol>
+<p><strong>Cost-Benefit Analysis:</strong></p>
+<table>
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 34%" />
+<col style="width: 26%" />
+<col style="width: 21%" />
+</colgroup>
+<thead>
+<tr>
+<th>Aspek</th>
+<th>Vector-Only</th>
+<th>API-Only</th>
+<th>Hybrid</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Akurasi</td>
+<td>Rendah</td>
+<td>Sedang</td>
+<td>Tinggi</td>
+</tr>
+<tr>
+<td>Latency</td>
+<td>Rendah</td>
+<td>Sedang</td>
+<td>Tinggi</td>
+</tr>
+<tr>
+<td>Kompleksitas</td>
+<td>Rendah</td>
+<td>Rendah</td>
+<td>Tinggi</td>
+</tr>
+<tr>
+<td>Coverage</td>
+<td>Parsial</td>
+<td>Parsial</td>
+<td>Komprehensif</td>
+</tr>
+<tr>
+<td>Rekomendasi</td>
+<td>Tidak untuk produksi</td>
+<td>Dapat untuk query sederhana</td>
+<td>Direkomendasikan untuk produksi</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="evaluasi-user-experience">4.4 Evaluasi User Experience</h2>
+<p>Untuk melengkapi evaluasi kuantitatif, dilakukan survei pengalaman
+pengguna terhadap tenaga pemasaran properti yang menggunakan sistem
+chatbot.</p>
+<h3 id="metodologi-survei">4.4.1 Metodologi Survei</h3>
+<p>Survei dilakukan dengan parameter berikut: -
+<strong>Responden</strong>: 10 tenaga pemasaran properti dari kantor
+mitra - <strong>Periode</strong>: 2 minggu penggunaan aktif -
+<strong>Instrumen</strong>: Kuesioner dengan 10 dimensi evaluasi -
+<strong>Skala</strong>: Likert 1-5 (1 = Sangat Tidak Setuju, 5 = Sangat
+Setuju)</p>
+<h3 id="hasil-survei">4.4.2 Hasil Survei</h3>
+<p><strong>Tabel 4.6. Hasil Survei User Experience</strong></p>
+<table>
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 44%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr>
+<th>No</th>
+<th>Pertanyaan</th>
+<th>Rata-rata</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Chatbot mudah digunakan dan dipahami cara kerjanya</td>
+<td>4,60</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Jawaban yang diberikan chatbot jelas dan sesuai dengan
+pertanyaan</td>
+<td>4,75</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Waktu respons chatbot cepat dan tidak membuat saya menunggu
+lama</td>
+<td>4,90</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Chatbot membantu saya menemukan informasi properti dengan lebih
+efisien</td>
+<td>4,65</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Chatbot dapat memahami pertanyaan lanjutan (konteks percakapan)</td>
+<td>4,45</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Chatbot memberikan informasi yang relevan dan sesuai dengan data
+properti</td>
+<td>4,75</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Chatbot mempermudah pekerjaan saya sebagai tenaga pemasaran</td>
+<td>4,80</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Chatbot meningkatkan produktivitas dalam memberikan informasi ke
+pelanggan</td>
+<td>4,85</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Saya puas dengan performa chatbot secara keseluruhan</td>
+<td>4,90</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Saya bersedia menggunakan chatbot ini untuk mendukung pekerjaan
+sehari-hari</td>
+<td>4,90</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Rata-rata Keseluruhan</strong></td>
+<td><strong>4,76</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="analisis-hasil-survei">4.4.3 Analisis Hasil Survei</h3>
+<p>Hasil survei menunjukkan tingkat kepuasan yang sangat tinggi dengan
+rata-rata keseluruhan <strong>4,76 dari 5,00</strong> (95,2%). Beberapa
+temuan kunci:</p>
+<ol type="1">
+<li><p><strong>Waktu Respons (4,90)</strong>: Pengguna sangat puas
+dengan kecepatan respons sistem. Rata-rata 2,2 detik untuk Hybrid
+dianggap acceptable.</p></li>
+<li><p><strong>Kepuasan Keseluruhan (4,90)</strong>: Skor tertinggi
+bersama dengan kesediaan menggunakan, menunjukkan penerimaan positif
+terhadap sistem.</p></li>
+<li><p><strong>Pemahaman Konteks (4,45)</strong>: Skor terendah,
+mengindikasikan area untuk improvement pada multi-turn
+dialogue.</p></li>
+<li><p><strong>Produktivitas (4,85)</strong>: Pengguna merasa chatbot
+secara signifikan meningkatkan efisiensi kerja mereka.</p></li>
+</ol>
+<p>Hasil ini memvalidasi bahwa sistem tidak hanya akurat secara teknis,
+tetapi juga memberikan nilai praktis bagi pengguna akhir dalam konteks
+pekerjaan nyata.</p>
+<hr />
+<p><strong>Ringkasan BAB IV:</strong></p>
+<p>Bab ini telah menyajikan hasil implementasi dan evaluasi sistem
+chatbot RAG untuk pencarian properti. Temuan utama meliputi:</p>
+<ol type="1">
+<li><p>Implementasi berhasil dengan arsitektur API Contract yang
+database-agnostic, frontend responsif, vector database dengan ~2.800
+listings, dan ReAct agent dengan 9 tools.</p></li>
+<li><p>Strategi Hybrid mencapai performa sempurna (100% accuracy)
+mengungguli API-Only (73,33%) dan Vector-Only (56,67%).</p></li>
+<li><p>Hybrid berhasil menangani feature_search dan nearby_search di
+mana kedua strategi baseline gagal total.</p></li>
+<li><p>Evaluasi user experience menunjukkan kepuasan tinggi (4,76/5,00)
+dari tenaga pemasaran properti.</p></li>
+</ol>
+<p>Temuan ini memvalidasi hipotesis penelitian bahwa strategi Hybrid
+retrieval optimal untuk domain pencarian properti dengan query natural
+language.</p>

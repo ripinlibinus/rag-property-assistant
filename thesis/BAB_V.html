@@ -1,0 +1,225 @@
+<h1 id="bab-v-simpulan-dan-saran">BAB V SIMPULAN DAN SARAN</h1>
+<p>Bab ini menyajikan simpulan dari penelitian berdasarkan temuan yang
+telah dipaparkan pada bab sebelumnya, serta saran untuk pengembangan
+sistem di masa depan.</p>
+<h2 id="simpulan">5.1 Simpulan</h2>
+<p>Berdasarkan hasil penelitian yang telah dilakukan, dapat disimpulkan
+beberapa hal sebagai berikut:</p>
+<h3 id="keberhasilan-implementasi-sistem-rag">5.1.1 Keberhasilan
+Implementasi Sistem RAG</h3>
+<p>Penelitian ini berhasil merancang dan mengimplementasikan sistem
+chatbot berbasis Retrieval-Augmented Generation (RAG) [1] untuk asisten
+virtual agen properti. Sistem yang dikembangkan memiliki
+karakteristik:</p>
+<ol type="1">
+<li><p><strong>Arsitektur ReAct Agent</strong>: Menggunakan paradigma
+Reason-Act-Observe yang memungkinkan penalaran eksplisit dalam pemilihan
+strategi dan tools.</p></li>
+<li><p><strong>9 Tools Spesialisasi</strong>: Menyediakan fungsi-fungsi
+khusus untuk pencarian properti (search_properties, search_nearby,
+search_knowledge, dll.) yang menangani berbagai jenis query.</p></li>
+<li><p><strong>Dual Data Sources</strong>: Mengintegrasikan Property API
+sebagai source of truth untuk data transaksional dan ChromaDB [15]
+sebagai vector store untuk pencarian semantik.</p></li>
+<li><p><strong>API Contract Architecture</strong>: Mengadopsi arsitektur
+database-agnostic yang memungkinkan integrasi dengan berbagai sumber
+data selama mengikuti format respons standar.</p></li>
+</ol>
+<h3 id="perbandingan-tiga-strategi-retrieval">5.1.2 Perbandingan Tiga
+Strategi Retrieval</h3>
+<p>Penelitian ini berhasil membandingkan tiga strategi retrieval secara
+sistematis menggunakan 30 gold-labeled questions. Hasil evaluasi
+menunjukkan hierarki performa yang jelas:</p>
+<table>
+<thead>
+<tr>
+<th>Strategi</th>
+<th>Accuracy</th>
+<th>Mean CPR</th>
+<th>F1-Score</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hybrid</strong></td>
+<td><strong>100%</strong></td>
+<td><strong>97,61%</strong></td>
+<td><strong>100%</strong></td>
+</tr>
+<tr>
+<td>API-Only</td>
+<td>73,33%</td>
+<td>73,35%</td>
+<td>83,33%</td>
+</tr>
+<tr>
+<td>Vector-Only</td>
+<td>56,67%</td>
+<td>55,33%</td>
+<td>66,77%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Temuan kunci perbandingan:</strong></p>
+<ul>
+<li><strong>Vector-Only</strong> unggul pada pemahaman lokasi (PCA
+94,02%) namun lemah pada constraint transaksional (price PCA
+43,75%)</li>
+<li><strong>API-Only</strong> sempurna pada constraint terstruktur
+(100%) namun gagal total pada feature_search dan nearby_search (0%)</li>
+<li><strong>Hybrid</strong> mewarisi keunggulan kedua strategi dengan
+akurasi 100% di semua kategori query</li>
+</ul>
+<h3 id="validasi-hipotesis">5.1.3 Validasi Hipotesis</h3>
+<p><strong>H1: Strategi Hybrid retrieval menghasilkan akurasi yang lebih
+tinggi</strong> - <strong>TERBUKTI</strong></p>
+<p>Hybrid mencapai 100% accuracy, mengungguli API-Only (73,33%) dan
+Vector-Only (56,67%) dengan margin signifikan 26,67% dan 43,33%.</p>
+<p><strong>H2: Sistem mampu memahami query natural language dengan
+akurasi &gt;80%</strong> - <strong>TERBUKTI</strong></p>
+<p>Strategi Hybrid mencapai 100% accuracy, jauh melampaui threshold 80%
+yang dihipotesiskan. Bahkan API-Only (73,33%) mendekati threshold
+ini.</p>
+<p><strong>H3: Terdapat perbedaan signifikan dalam Per-Constraint
+Accuracy antar strategi</strong> - <strong>TERBUKTI</strong></p>
+<p>Tabel per-constraint menunjukkan perbedaan dramatis: - Price: Vector
+43,75% vs API/Hybrid 100% - Property_type: Vector 52,17% vs API/Hybrid
+100% - Feature-based queries: API 0% vs Hybrid 100%</p>
+<h3 id="kontribusi-framework-evaluasi-constraint-based">5.1.4 Kontribusi
+Framework Evaluasi Constraint-Based</h3>
+<p>Penelitian ini mengembangkan framework evaluasi yang mengukur
+kepuasan constraint secara objektif:</p>
+<ol type="1">
+<li><strong>Per-Constraint Accuracy (PCA)</strong>: Mengukur proporsi
+constraint yang terpenuhi per listing</li>
+<li><strong>Constraint Pass Ratio (CPR)</strong>: Mengukur proporsi
+listing yang memenuhi semua constraint</li>
+<li><strong>Strict Success</strong>: Binary indicator untuk listing
+dengan PCA = 100%</li>
+<li><strong>Confusion Matrix Analysis</strong>: Mengukur performa
+klasifikasi pada tingkat pertanyaan</li>
+</ol>
+<p>Framework ini memberikan insight yang lebih mendalam dibandingkan
+metrik tradisional (Precision, Recall, MRR) karena langsung mengukur
+kepuasan terhadap kriteria pencarian.</p>
+<h3 id="validasi-user-experience">5.1.5 Validasi User Experience</h3>
+<p>Survei terhadap 10 tenaga pemasaran properti menunjukkan tingkat
+kepuasan tinggi:</p>
+<ul>
+<li><strong>Rata-rata keseluruhan</strong>: 4,76 dari 5,00 (95,2%)</li>
+<li><strong>Waktu respons</strong>: 4,90/5,00 (sangat memuaskan)</li>
+<li><strong>Kepuasan keseluruhan</strong>: 4,90/5,00</li>
+<li><strong>Kesediaan menggunakan</strong>: 4,90/5,00</li>
+</ul>
+<p>Hasil ini memvalidasi bahwa sistem tidak hanya akurat secara teknis,
+tetapi juga diterima dengan baik oleh pengguna akhir.</p>
+<h3 id="keterbatasan-sistem">5.1.6 Keterbatasan Sistem</h3>
+<p>Meskipun mencapai performa tinggi, sistem memiliki beberapa
+keterbatasan:</p>
+<ol type="1">
+<li><strong>Gold Set Size</strong>: Evaluasi menggunakan 30 pertanyaan,
+membatasi statistical power untuk analisis subgroup</li>
+<li><strong>Single Market</strong>: Fokus pada pasar Medan, hasil
+mungkin berbeda di pasar lain</li>
+<li><strong>Index Lag</strong>: Vector index disinkronisasi periodik,
+dapat menyebabkan temporary stale data</li>
+<li><strong>LLM Dependency</strong>: Bergantung pada OpenAI API untuk
+inference dan embedding</li>
+</ol>
+<h2 id="saran-pengembangan">5.2 Saran Pengembangan</h2>
+<p>Berdasarkan temuan dan keterbatasan yang teridentifikasi, berikut
+saran untuk pengembangan sistem di masa depan:</p>
+<h3 id="dynamic-routing">5.2.1 Dynamic Routing</h3>
+<p><strong>Deskripsi</strong>: Mengembangkan learned policy untuk secara
+otomatis memilih strategi retrieval (Vector, API, atau Hybrid)
+berdasarkan karakteristik query.</p>
+<p><strong>Rasional</strong>: Meskipun Hybrid unggul secara keseluruhan,
+terdapat kasus di mana single strategy lebih efisien. Query dengan
+constraint jelas (“rumah 3 kamar max 1M”) dapat langsung menggunakan API
+tanpa semantic overhead.</p>
+<p><strong>Implementasi yang Disarankan</strong>: - Classifier untuk
+mengkategorikan query - Routing rules berbasis kategori - A/B testing
+untuk optimasi threshold</p>
+<h3 id="expanded-evaluation">5.2.2 Expanded Evaluation</h3>
+<p><strong>Deskripsi</strong>: Memperluas dataset evaluasi ke 100-200
+pertanyaan dengan multiple annotators.</p>
+<p><strong>Rasional</strong>: Dataset lebih besar memungkinkan: -
+Statistical power untuk analisis subgroup - Inter-annotator agreement
+metrics (Cohen’s κ) - Identifikasi edge cases yang lebih
+komprehensif</p>
+<p><strong>Implementasi yang Disarankan</strong>: - Crowdsourcing
+annotation dengan training - Stratified sampling untuk coverage kategori
+- Periodic refresh untuk data currency</p>
+<h3 id="user-study-dengan-sus-metrics">5.2.3 User Study dengan SUS
+Metrics</h3>
+<p><strong>Deskripsi</strong>: Melakukan studi usability formal
+menggunakan System Usability Scale (SUS) dan task completion
+metrics.</p>
+<p><strong>Rasional</strong>: Survei saat ini mengukur satisfaction,
+namun tidak mengukur: - Task completion time - Error rate dalam
+pencarian - Learnability curve</p>
+<p><strong>Implementasi yang Disarankan</strong>: - Controlled
+experiment dengan 30+ pengguna - Pre-defined task scenarios -
+Think-aloud protocol untuk qualitative insights</p>
+<h3 id="multi-turn-dialogue-sophistication">5.2.4 Multi-turn Dialogue
+Sophistication</h3>
+<p><strong>Deskripsi</strong>: Meningkatkan kemampuan sistem dalam
+menangani percakapan multi-turn yang kompleks.</p>
+<p><strong>Rasional</strong>: Evaluasi menunjukkan pemahaman konteks
+(4,45/5,00) adalah dimensi dengan skor terendah.</p>
+<p><strong>Implementasi yang Disarankan</strong>: - Enhanced memory
+management dengan summarization - Explicit slot filling untuk preference
+tracking - Clarification request generation - Preference refinement
+across turns</p>
+<h3 id="integrasi-platform-messaging">5.2.5 Integrasi Platform
+Messaging</h3>
+<p><strong>Deskripsi</strong>: Mengintegrasikan chatbot dengan platform
+messaging populer seperti WhatsApp dan Telegram.</p>
+<p><strong>Rasional</strong>: Tenaga pemasaran sering berkomunikasi
+dengan calon pembeli melalui platform ini. Integrasi akan meningkatkan
+aksesibilitas.</p>
+<p><strong>Implementasi yang Disarankan</strong>: - WhatsApp Business
+API integration - Telegram Bot API integration - Unified backend dengan
+multi-channel frontend - Rich message formatting (cards, carousels)</p>
+<h3 id="multi-market-expansion">5.2.6 Multi-Market Expansion</h3>
+<p><strong>Deskripsi</strong>: Memperluas coverage ke pasar properti di
+kota-kota lain di Indonesia.</p>
+<p><strong>Rasional</strong>: Arsitektur API Contract memungkinkan
+ekspansi tanpa perubahan signifikan pada sistem core.</p>
+<p><strong>Implementasi yang Disarankan</strong>: - Onboarding flow
+untuk partner properti baru - Regional terminology mapping - Price
+normalization across markets - Distributed vector indices per region</p>
+<h3 id="optimasi-performa">5.2.7 Optimasi Performa</h3>
+<p><strong>Deskripsi</strong>: Meningkatkan kecepatan respons dan
+mengurangi latency.</p>
+<p><strong>Rasional</strong>: Hybrid memiliki latency tertinggi
+(rata-rata 2,2 detik). Optimasi dapat meningkatkan user experience.</p>
+<p><strong>Implementasi yang Disarankan</strong>: - Response caching
+untuk query frequent - Parallel execution untuk API dan semantic search
+- Model distillation untuk inference lebih cepat - Edge deployment untuk
+reduced network latency</p>
+<h3 id="monitoring-dan-analytics">5.2.8 Monitoring dan Analytics</h3>
+<p><strong>Deskripsi</strong>: Mengembangkan dashboard monitoring untuk
+tracking performa sistem di production.</p>
+<p><strong>Rasional</strong>: Performa dapat berubah seiring waktu
+akibat data drift atau perubahan pola query.</p>
+<p><strong>Implementasi yang Disarankan</strong>: - Real-time metrics
+dashboard - Query pattern analysis - Automatic alert untuk anomali
+performa - A/B testing infrastructure</p>
+<hr />
+<p><strong>Penutup:</strong></p>
+<p>Penelitian ini telah berhasil mencapai seluruh tujuan yang
+ditetapkan. Sistem chatbot RAG yang dikembangkan mendemonstrasikan bahwa
+kombinasi structured query dan semantic search (Hybrid) adalah
+pendekatan optimal untuk pencarian properti berbasis natural language,
+mencapai 100% accuracy yang mengungguli strategi tunggal manapun.</p>
+<p>Framework evaluasi constraint-based yang dikembangkan memberikan
+metodologi yang reproducible untuk menilai sistem serupa. Temuan ini
+memiliki implikasi praktis yang signifikan bagi pengembangan asisten
+virtual di industri properti Indonesia dan dapat diadaptasi untuk domain
+transaksional lainnya yang memerlukan kombinasi pemahaman semantik dan
+akurasi constraint.</p>
+<p>Dengan saran pengembangan yang dipaparkan, sistem ini berpotensi
+menjadi solusi enterprise-ready yang dapat meningkatkan efisiensi tenaga
+pemasaran properti dan pengalaman calon pembeli dalam mencari properti
+idaman mereka.</p>

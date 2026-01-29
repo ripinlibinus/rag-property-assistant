@@ -1,0 +1,593 @@
+<h1 id="bab-ii-tinjauan-pustaka">BAB II TINJAUAN PUSTAKA</h1>
+<p>Bab ini menyajikan landasan teori yang mendasari penelitian, meliputi
+konsep Artificial Intelligence, Machine Learning, Natural Language
+Processing, Large Language Models, Retrieval-Augmented Generation,
+Vector Database, Conversational Search, Hybrid Retrieval, evaluasi
+sistem RAG, dan penelitian terdahulu yang relevan.</p>
+<h2 id="artificial-intelligence">2.1 Artificial Intelligence</h2>
+<h3 id="definisi-dan-konsep-dasar">2.1.1 Definisi dan Konsep Dasar</h3>
+<p>Artificial Intelligence (AI) atau Kecerdasan Buatan adalah cabang
+ilmu komputer yang berfokus pada pengembangan sistem yang dapat
+melakukan tugas-tugas yang biasanya memerlukan kecerdasan manusia [24].
+Tugas-tugas tersebut mencakup pemahaman bahasa natural, pengenalan pola,
+pengambilan keputusan, dan pembelajaran dari pengalaman.</p>
+<p>AI dapat diklasifikasikan berdasarkan kapabilitasnya:</p>
+<ol type="1">
+<li><p><strong>Narrow AI (AI Sempit)</strong>: Sistem yang dirancang
+untuk tugas spesifik, seperti pengenalan wajah, rekomendasi produk, atau
+asisten virtual. Mayoritas aplikasi AI saat ini termasuk dalam kategori
+ini.</p></li>
+<li><p><strong>General AI (AI Umum)</strong>: Sistem hipotetis yang
+dapat melakukan tugas intelektual apapun yang dapat dilakukan manusia.
+Belum terealisasi hingga saat ini.</p></li>
+<li><p><strong>Super AI</strong>: Konsep teoretis tentang AI yang
+melampaui kecerdasan manusia di semua aspek.</p></li>
+</ol>
+<h3 id="relevansi-dengan-industri-properti">2.1.2 Relevansi dengan
+Industri Properti</h3>
+<p>Dalam konteks industri properti, AI berperan dalam berbagai
+aplikasi:</p>
+<ul>
+<li><strong>Chatbot dan Virtual Assistant</strong>: Membantu calon
+pembeli menemukan properti yang sesuai kebutuhan melalui interaksi
+natural</li>
+<li><strong>Property Valuation</strong>: Estimasi harga properti
+berbasis data historis dan karakteristik</li>
+<li><strong>Image Recognition</strong>: Klasifikasi dan tagging otomatis
+foto properti</li>
+<li><strong>Recommendation Systems</strong>: Menyarankan properti
+berdasarkan preferensi pengguna</li>
+</ul>
+<p>Penelitian ini menggunakan pendekatan AI untuk mengembangkan chatbot
+yang dapat memahami query bahasa natural dan menghasilkan respons yang
+relevan dengan konteks properti.</p>
+<h2 id="machine-learning">2.2 Machine Learning</h2>
+<h3 id="paradigma-pembelajaran">2.2.1 Paradigma Pembelajaran</h3>
+<p>Machine Learning (ML) adalah subdomain AI yang memungkinkan komputer
+belajar dari data tanpa pemrograman eksplisit [22]. Terdapat tiga
+paradigma utama:</p>
+<p><strong>1. Supervised Learning (Pembelajaran Terawasi)</strong></p>
+<p>Algoritma belajar dari data berlabel untuk memprediksi output pada
+data baru. Contoh: - Klasifikasi: Mengkategorikan email sebagai spam
+atau bukan - Regresi: Memprediksi harga properti berdasarkan fitur</p>
+<p><strong>2. Unsupervised Learning (Pembelajaran Tak
+Terawasi)</strong></p>
+<p>Algoritma menemukan pola tersembunyi dalam data tanpa label. Contoh:
+- Clustering: Mengelompokkan properti berdasarkan karakteristik serupa -
+Dimensionality Reduction: Mereduksi fitur untuk visualisasi</p>
+<p><strong>3. Reinforcement Learning (Pembelajaran
+Penguatan)</strong></p>
+<p>Agent belajar melalui interaksi dengan environment dan feedback
+berupa reward/punishment. Digunakan dalam: - Game playing - Robotika -
+Optimasi dialog agent</p>
+<h3 id="deep-learning">2.2.2 Deep Learning</h3>
+<p>Deep Learning adalah subset ML yang menggunakan neural network dengan
+banyak layer (deep neural networks). Arsitektur deep learning telah
+merevolusi kemampuan pemrosesan:</p>
+<ul>
+<li><strong>Computer Vision</strong>: Convolutional Neural Networks
+(CNN)</li>
+<li><strong>Sequence Processing</strong>: Recurrent Neural Networks
+(RNN), LSTM</li>
+<li><strong>Language Understanding</strong>: Transformer
+architecture</li>
+</ul>
+<p>Transformer architecture menjadi fondasi bagi perkembangan Large
+Language Models yang digunakan dalam penelitian ini.</p>
+<h2 id="natural-language-processing">2.3 Natural Language
+Processing</h2>
+<h3 id="definisi-dan-ruang-lingkup">2.3.1 Definisi dan Ruang
+Lingkup</h3>
+<p>Natural Language Processing (NLP) adalah bidang yang menggabungkan
+linguistik, ilmu komputer, dan AI untuk memungkinkan komputer memahami,
+menginterpretasi, dan menghasilkan bahasa manusia [23].</p>
+<h3 id="tahapan-pemrosesan-nlp">2.3.2 Tahapan Pemrosesan NLP</h3>
+<p><strong>1. Tokenization</strong></p>
+<p>Proses memecah teks menjadi unit-unit kecil (token). Contoh: - Word
+tokenization: “Rumah dijual di Medan” → [“Rumah”, “dijual”, “di”,
+“Medan”] - Subword tokenization: Memecah kata langka menjadi subword
+units</p>
+<p><strong>2. Part-of-Speech (POS) Tagging</strong></p>
+<p>Mengidentifikasi kategori gramatikal setiap kata: - “Rumah” (Noun) -
+“dijual” (Verb) - “di” (Preposition) - “Medan” (Proper Noun)</p>
+<p><strong>3. Named Entity Recognition (NER)</strong></p>
+<p>Mengidentifikasi dan mengklasifikasi entitas dalam teks: - Location:
+“Medan”, “Cemara Asri” - Price: “1 Miliar”, “500 juta” - Property Type:
+“rumah”, “apartemen”</p>
+<p><strong>4. Semantic Analysis</strong></p>
+<p>Memahami makna di balik teks, termasuk: - Word Sense Disambiguation -
+Semantic Role Labeling - Sentiment Analysis</p>
+<h3 id="aplikasi-dalam-chatbot">2.3.3 Aplikasi dalam Chatbot</h3>
+<p>Dalam konteks chatbot properti, NLP digunakan untuk: - Memahami
+intent pengguna (mencari, membandingkan, bertanya detail) - Mengekstrak
+parameter pencarian (lokasi, harga, spesifikasi) - Menghasilkan respons
+yang natural dan informatif - Menangani variasi bahasa dan typo</p>
+<h2 id="large-language-models">2.4 Large Language Models</h2>
+<h3 id="arsitektur-transformer">2.4.1 Arsitektur Transformer</h3>
+<p>Transformer adalah arsitektur neural network yang diperkenalkan oleh
+Vaswani et al. (2017) dalam paper “Attention Is All You Need” [25].
+Komponen kunci Transformer meliputi:</p>
+<p><strong>Self-Attention Mechanism</strong></p>
+<p>Memungkinkan model untuk mempertimbangkan konteks dari seluruh input
+sequence saat memproses setiap token. Berbeda dengan RNN yang memproses
+sequential, Transformer memproses parallel.</p>
+<p><strong>Multi-Head Attention</strong></p>
+<p>Menggunakan beberapa attention head secara paralel untuk menangkap
+berbagai aspek hubungan antar token.</p>
+<p><strong>Positional Encoding</strong></p>
+<p>Menambahkan informasi posisi karena Transformer tidak memiliki konsep
+urutan bawaan.</p>
+<p><strong>Feed-Forward Networks</strong></p>
+<p>Layer fully-connected yang memproses representasi dari attention
+layer.</p>
+<h3 id="evolusi-gpt-series">2.4.2 Evolusi GPT Series</h3>
+<p><strong>GPT (Generative Pre-trained Transformer)</strong></p>
+<ul>
+<li>GPT-1 (2018): Memperkenalkan pre-training + fine-tuning
+paradigm</li>
+<li>GPT-2 (2019): 1.5B parameters, menunjukkan kemampuan zero-shot</li>
+<li>GPT-3 (2020): 175B parameters, breakthrough dalam few-shot learning
+[21]</li>
+<li>GPT-4 (2023): Multimodal, significantly improved reasoning</li>
+<li>GPT-4o (2024): Optimized for speed and cost efficiency</li>
+</ul>
+<h3 id="few-shot-dan-zero-shot-learning">2.4.3 Few-Shot dan Zero-Shot
+Learning</h3>
+<p><strong>Zero-Shot Learning</strong>: Model dapat melakukan tugas
+tanpa contoh spesifik, hanya dengan instruksi natural language.</p>
+<p><strong>Few-Shot Learning</strong>: Model diberikan beberapa contoh
+dalam prompt untuk memandu output.</p>
+<p><strong>In-Context Learning</strong>: Model belajar dari contoh yang
+diberikan dalam prompt tanpa update parameter.</p>
+<p>Kemampuan ini memungkinkan LLM digunakan untuk berbagai tugas NLP
+tanpa fine-tuning khusus.</p>
+<h3 id="hallucination-problem">2.4.4 Hallucination Problem</h3>
+<p>LLM dapat menghasilkan informasi yang tampak benar tetapi sebenarnya
+salah atau tidak memiliki basis faktual. Masalah ini disebut
+hallucination dan merupakan tantangan utama dalam aplikasi LLM untuk
+domain yang memerlukan akurasi tinggi.</p>
+<p>Penyebab hallucination: - Training data yang tidak akurat atau
+outdated - Over-generalization dari pola dalam data - Lack of grounding
+pada sumber faktual</p>
+<p>Mitigasi hallucination menjadi motivasi utama pengembangan
+Retrieval-Augmented Generation (RAG).</p>
+<h2 id="retrieval-augmented-generation-rag">2.5 Retrieval-Augmented
+Generation (RAG)</h2>
+<h3 id="konsep-dasar-rag">2.5.1 Konsep Dasar RAG</h3>
+<p>Retrieval-Augmented Generation (RAG) adalah paradigma yang
+menggabungkan retrieval (pengambilan informasi) dengan generation
+(pembangkitan teks) untuk menghasilkan respons yang grounded pada sumber
+faktual [1].</p>
+<p>Komponen utama RAG:</p>
+<p><strong>1. Retriever</strong> Bertanggung jawab untuk mengambil
+dokumen atau informasi relevan dari knowledge base berdasarkan query
+pengguna.</p>
+<p><strong>2. Generator</strong> Menggunakan dokumen yang di-retrieve
+sebagai konteks untuk menghasilkan respons yang informatif dan
+akurat.</p>
+<h3 id="arsitektur-rag">2.5.2 Arsitektur RAG</h3>
+<pre><code>Query → Retriever → Relevant Documents → Generator (LLM) → Response
+                          ↑
+                    Knowledge Base
+                    (Vector Store / Database)</code></pre>
+<p><strong>Retrieval Phase:</strong> 1. Query dikonversi ke representasi
+(embedding atau keywords) 2. Similarity search dilakukan terhadap
+knowledge base 3. Top-K dokumen relevan diambil</p>
+<p><strong>Generation Phase:</strong> 1. Query + retrieved documents
+digabung dalam prompt 2. LLM memproses prompt dan menghasilkan respons
+3. Respons ideally grounded pada dokumen yang di-retrieve</p>
+<h3 id="keunggulan-rag-vs-pure-llm">2.5.3 Keunggulan RAG vs Pure
+LLM</h3>
+<table>
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 45%" />
+<col style="width: 22%" />
+</colgroup>
+<thead>
+<tr>
+<th>Aspek</th>
+<th>Pure LLM</th>
+<th>RAG</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Knowledge Currency</td>
+<td>Terbatas pada training cutoff</td>
+<td>Dapat mengakses data terkini</td>
+</tr>
+<tr>
+<td>Hallucination</td>
+<td>Rentan</td>
+<td>Berkurang (grounded)</td>
+</tr>
+<tr>
+<td>Domain Specificity</td>
+<td>General</td>
+<td>Dapat di-customize</td>
+</tr>
+<tr>
+<td>Transparency</td>
+<td>Black box</td>
+<td>Dapat trace sumber</td>
+</tr>
+<tr>
+<td>Update</td>
+<td>Requires retraining</td>
+<td>Update knowledge base saja</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rag-untuk-domain-specific-applications">2.5.4 RAG untuk
+Domain-Specific Applications</h3>
+<p>RAG sangat cocok untuk aplikasi domain-specific seperti properti
+karena: - Data properti berubah frequently (listing baru, update harga)
+- Memerlukan akurasi tinggi (harga, ketersediaan) - Domain-specific
+knowledge (terminologi properti, lokasi) - User queries sering spesifik
+dan constraint-based</p>
+<h2 id="vector-database-dan-semantic-search">2.6 Vector Database dan
+Semantic Search</h2>
+<h3 id="embedding-representations">2.6.1 Embedding Representations</h3>
+<p>Embedding adalah representasi numerik (vektor) dari objek seperti
+teks, gambar, atau audio dalam ruang berdimensi tinggi. Untuk teks,
+embedding menangkap makna semantik sehingga teks dengan makna serupa
+memiliki vektor yang berdekatan.</p>
+<p><strong>Text Embedding Models:</strong> - Word2Vec, GloVe: Word-level
+embeddings - BERT, RoBERTa: Contextual embeddings - Sentence-BERT:
+Sentence-level embeddings - OpenAI text-embedding-3-small:
+State-of-the-art general embeddings</p>
+<h3 id="similarity-metrics">2.6.2 Similarity Metrics</h3>
+<p><strong>Cosine Similarity</strong></p>
+<p>Mengukur sudut antara dua vektor, independen terhadap magnitude:</p>
+<pre><code>cos(A,B) = (A · B) / (||A|| × ||B||)</code></pre>
+<p>Nilai berkisar -1 (berlawanan) hingga 1 (identik).</p>
+<p><strong>Euclidean Distance</strong></p>
+<p>Mengukur jarak geometris antara dua titik dalam ruang vektor:</p>
+<pre><code>d(A,B) = √(Σ(Ai - Bi)²)</code></pre>
+<p><strong>Dot Product</strong></p>
+<p>Kombinasi magnitude dan angle, sering digunakan ketika magnitude
+bermakna:</p>
+<pre><code>A · B = Σ(Ai × Bi)</code></pre>
+<h3 id="perbandingan-vector-databases">2.6.3 Perbandingan Vector
+Databases</h3>
+<p><strong>Tabel 2.1. Perbandingan Vector Database</strong></p>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 29%" />
+<col style="width: 20%" />
+<col style="width: 29%" />
+</colgroup>
+<thead>
+<tr>
+<th>Aspek</th>
+<th>ChromaDB</th>
+<th>FAISS</th>
+<th>Pinecone</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Type</td>
+<td>Embedded</td>
+<td>Library</td>
+<td>Managed Service</td>
+</tr>
+<tr>
+<td>Scalability</td>
+<td>Medium</td>
+<td>High</td>
+<td>High</td>
+</tr>
+<tr>
+<td>Setup Complexity</td>
+<td>Low</td>
+<td>Medium</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>Persistence</td>
+<td>SQLite/Parquet</td>
+<td>In-memory/disk</td>
+<td>Cloud</td>
+</tr>
+<tr>
+<td>Metadata Filtering</td>
+<td>Yes</td>
+<td>Limited</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>Free</td>
+<td>Free</td>
+<td>Pay-per-use</td>
+</tr>
+<tr>
+<td>Best For</td>
+<td>Prototyping, Small-medium scale</td>
+<td>Large-scale, On-premise</td>
+<td>Production, Managed</td>
+</tr>
+</tbody>
+</table>
+<p>Penelitian ini menggunakan ChromaDB [15] karena kemudahan setup,
+dukungan metadata filtering, dan kesesuaian untuk skala dataset ~2.800
+dokumen. FAISS [13] menyediakan kemampuan pencarian skala besar,
+sementara Product Quantization [14] memungkinkan efisiensi
+penyimpanan.</p>
+<h3 id="indexing-strategies">2.6.4 Indexing Strategies</h3>
+<p><strong>Flat Index</strong> Brute-force search, akurat tapi lambat
+untuk dataset besar.</p>
+<p><strong>IVF (Inverted File Index)</strong> Partisi ruang vektor ke
+cluster, search hanya di cluster terdekat.</p>
+<p><strong>HNSW (Hierarchical Navigable Small World)</strong>
+Graph-based index, balance antara speed dan accuracy.</p>
+<h2 id="conversational-search-dan-information-retrieval">2.7
+Conversational Search dan Information Retrieval</h2>
+<h3 id="keterbatasan-faceted-search">2.7.1 Keterbatasan Faceted
+Search</h3>
+<p>Faceted search (filter dropdown) memiliki keterbatasan fundamental
+[12]: - Memerlukan pengguna menerjemahkan intent ke parameter diskrit -
+Tidak dapat menangani query fuzzy (“sekitar 1 miliar”) - Tidak memahami
+konteks (“dekat sekolah anak”) - Workflow rigid, memerlukan banyak
+klik</p>
+<h3 id="conversational-ir-principles">2.7.2 Conversational IR
+Principles</h3>
+<p>Conversational Information Retrieval (CIR) menawarkan paradigma
+alternatif [8]. TREC CAsT [9] telah menetapkan metodologi untuk
+penelitian conversational assistance:</p>
+<p><strong>1. Natural Language Interface</strong> Pengguna
+mengekspresikan kebutuhan dalam bahasa natural tanpa perlu memahami
+struktur filter.</p>
+<p><strong>2. Iterative Refinement</strong> Dialog memungkinkan
+klarifikasi dan penyempurnaan kriteria secara incremental.</p>
+<p><strong>3. Context Awareness</strong> Sistem memahami referensi ke
+percakapan sebelumnya (“yang tadi”, “lebih murah lagi”).</p>
+<p><strong>4. Mixed-Initiative</strong> Baik pengguna maupun sistem
+dapat mengambil inisiatif dalam dialog.</p>
+<h3 id="multi-turn-dialogue">2.7.3 Multi-turn Dialogue</h3>
+<p>Dalam konteks pencarian properti, multi-turn dialogue
+memungkinkan:</p>
+<pre><code>User: Carikan rumah di Medan
+Bot: Ada 150 rumah di Medan. Apakah ada preferensi harga?
+User: Sekitar 1 miliar
+Bot: Ditemukan 45 rumah. Berapa kamar tidur yang diinginkan?
+User: Minimal 3
+Bot: Berikut 12 rumah 3+ kamar di Medan sekitar 1M...</code></pre>
+<p>Pendekatan ini mengurangi cognitive load pengguna dan menghasilkan
+hasil yang lebih sesuai kebutuhan.</p>
+<h2 id="hybrid-retrieval-approaches">2.8 Hybrid Retrieval
+Approaches</h2>
+<h3 id="sparse-vs-dense-retrieval">2.8.1 Sparse vs Dense Retrieval</h3>
+<p><strong>Sparse Retrieval (Lexical)</strong> [19] - Berbasis keyword
+matching (TF-IDF, BM25) - Representasi sparse (high-dimensional, mostly
+zeros) - Kekuatan: Exact match, interpretable - Kelemahan: Vocabulary
+mismatch, no semantic understanding</p>
+<p><strong>Dense Retrieval (Semantic)</strong> [3], [4] - Berbasis
+embedding similarity - Representasi dense (low-dimensional, semua
+non-zero) - Kekuatan: Semantic matching, synonym handling - Kelemahan:
+Costly inference, less interpretable</p>
+<h3 id="fusion-strategies">2.8.2 Fusion Strategies</h3>
+<p><strong>Early Fusion</strong> Menggabungkan representasi sparse dan
+dense sebelum retrieval.</p>
+<p><strong>Late Fusion</strong> Menjalankan kedua retriever secara
+terpisah, kemudian menggabungkan hasil: - Reciprocal Rank Fusion (RRF) -
+Score interpolation - Weighted combination</p>
+<p><strong>Hybrid/Sequential</strong> Menggunakan satu retriever untuk
+filter awal, lainnya untuk re-ranking.</p>
+<p>Penelitian ini menggunakan pendekatan sequential dengan score
+fusion:</p>
+<pre><code>score = 0.6 × semantic_score + 0.4 × api_position_score</code></pre>
+<h3 id="re-ranking-methods">2.8.3 Re-ranking Methods</h3>
+<p><strong>Cross-Encoder Re-ranking</strong> Menggunakan model yang
+melihat query dan dokumen bersama untuk scoring lebih akurat, tetapi
+costly.</p>
+<p><strong>Embedding Re-ranking</strong> Menggunakan embedding
+similarity untuk re-order hasil dari retriever pertama.</p>
+<p><strong>LLM-based Re-ranking</strong> Menggunakan LLM untuk menilai
+relevansi dokumen terhadap query.</p>
+<h2 id="evaluasi-sistem-rag">2.9 Evaluasi Sistem RAG</h2>
+<h3 id="traditional-ir-metrics">2.9.1 Traditional IR Metrics</h3>
+<p><strong>Precision</strong> Proporsi retrieved documents yang
+relevan:</p>
+<pre><code>Precision = Relevant Retrieved / Total Retrieved</code></pre>
+<p><strong>Recall</strong> Proporsi relevant documents yang berhasil
+di-retrieve:</p>
+<pre><code>Recall = Relevant Retrieved / Total Relevant</code></pre>
+<p><strong>Mean Reciprocal Rank (MRR)</strong> Rata-rata reciprocal rank
+dari dokumen relevan pertama:</p>
+<pre><code>MRR = (1/|Q|) × Σ(1/rank_i)</code></pre>
+<p><strong>Normalized Discounted Cumulative Gain (NDCG)</strong> [20]
+Mengukur kualitas ranking dengan mempertimbangkan posisi dan graded
+relevance.</p>
+<h3 id="constraint-based-evaluation">2.9.2 Constraint-Based
+Evaluation</h3>
+<p>Untuk domain seperti properti di mana hasil harus memenuhi kriteria
+spesifik, constraint-based evaluation lebih sesuai:</p>
+<p><strong>Per-Constraint Accuracy</strong> Mengukur seberapa banyak
+constraint yang dipenuhi oleh setiap hasil.</p>
+<p><strong>Constraint Pass Ratio</strong> Proporsi hasil yang memenuhi
+semua constraint.</p>
+<p><strong>Strict Success</strong> Binary indicator apakah semua
+constraint terpenuhi.</p>
+<h3 id="selective-classification-dan-abstention">2.9.3 Selective
+Classification dan Abstention</h3>
+<p>Selective classification adalah konsep di mana sistem dapat memilih
+untuk tidak memberikan jawaban (abstain) ketika confidence rendah [17].
+Dalam konteks RAG:</p>
+<p><strong>Correct Abstention</strong> Sistem tidak mengembalikan hasil
+ketika memang tidak ada properti yang sesuai (True Negative).</p>
+<p><strong>Missed Opportunity</strong> Sistem abstain padahal ada
+properti yang sesuai (False Negative).</p>
+<p><strong>False Alarm</strong> Sistem mengembalikan hasil padahal tidak
+ada yang sesuai (False Positive).</p>
+<p>Kemampuan correct abstention penting untuk menjaga kepercayaan
+pengguna.</p>
+<h2 id="penelitian-terdahulu">2.10 Penelitian Terdahulu</h2>
+<h3 id="tabel-penelitian-relevan">2.10.1 Tabel Penelitian Relevan</h3>
+<p><strong>Tabel 2.2. Ringkasan Penelitian Terdahulu</strong></p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 8%" />
+<col style="width: 36%" />
+<col style="width: 14%" />
+<col style="width: 16%" />
+<col style="width: 14%" />
+<col style="width: 10%" />
+</colgroup>
+<thead>
+<tr>
+<th>No</th>
+<th>Peneliti (Tahun)</th>
+<th>Judul</th>
+<th>Metode</th>
+<th>Hasil</th>
+<th>Ref</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Febrianto &amp; Putri (2023)</td>
+<td>Implementasi Chatbot Sebagai Agen Perumahan Menggunakan Einstein
+Bot</td>
+<td>Rule-based chatbot dengan Einstein Bot</td>
+<td>User satisfaction 85%, efisiensi meningkat</td>
+<td>[26]</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Salem &amp; Mazzara (2020)</td>
+<td>ML-based Telegram Bot for Real Estate Price Prediction</td>
+<td>Machine learning untuk prediksi harga</td>
+<td>Akurasi prediksi 78%</td>
+<td>[27]</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Ratnawati et al. (2021)</td>
+<td>Sistem Informasi Pemasaran Perumahan dengan Fitur Chatbot</td>
+<td>Chatbot berbasis Telegram</td>
+<td>Mempercepat respons informasi</td>
+<td>[28]</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Febriansyah &amp; Nirmala (2023)</td>
+<td>Perancangan Sistem Jual Beli Properti dengan Chat Bot Telegram</td>
+<td>Integrasi Telegram + Web</td>
+<td>Aksesibilitas meningkat</td>
+<td>[29]</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Mali et al. (2023)</td>
+<td>Web and Android Application for Real Estate Business Management</td>
+<td>Full-stack application</td>
+<td>Manajemen properti terintegrasi</td>
+<td>[30]</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Lewis et al. (2020)</td>
+<td>Retrieval-Augmented Generation for Knowledge-Intensive NLP
+Tasks</td>
+<td>RAG framework</td>
+<td>Peningkatan signifikan vs pure LLM</td>
+<td>[1]</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Karpukhin et al. (2020)</td>
+<td>Dense Passage Retrieval for Open-Domain QA</td>
+<td>Dense retrieval (DPR)</td>
+<td>Outperform BM25 pada QA tasks</td>
+<td>[3]</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Izacard &amp; Grave (2021)</td>
+<td>Fusion-in-Decoder</td>
+<td>Multi-passage evidence aggregation</td>
+<td>State-of-the-art pada QA benchmarks</td>
+<td>[2]</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Khattab &amp; Zaharia (2020)</td>
+<td>ColBERT: Efficient and Effective Passage Search</td>
+<td>Late-interaction ranking</td>
+<td>Balance speed dan accuracy</td>
+<td>[4]</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Doan et al. (2024)</td>
+<td>A Hybrid Retrieval Approach for Advancing RAG Systems</td>
+<td>Hybrid retrieve-rerank</td>
+<td>Hybrid outperform single strategy</td>
+<td>[33]</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gap-analysis">2.10.2 Gap Analysis</h3>
+<p>Berdasarkan tinjauan penelitian terdahulu, teridentifikasi beberapa
+gap:</p>
+<p><strong>1. Single Retrieval Strategy</strong> Mayoritas penelitian
+chatbot properti menggunakan satu strategi retrieval (rule-based atau
+keyword-based) tanpa perbandingan sistematis antar pendekatan.</p>
+<p><strong>2. Kurangnya Evaluasi Objektif</strong> Evaluasi cenderung
+fokus pada user satisfaction tanpa metrik objektif untuk mengukur
+akurasi constraint.</p>
+<p><strong>3. Tidak Ada Constraint-Based Metrics</strong> Belum ada
+penelitian yang mengembangkan framework evaluasi berbasis constraint
+untuk domain properti.</p>
+<p><strong>4. Limited RAG Application</strong> Penerapan RAG untuk
+domain properti Indonesia masih sangat terbatas.</p>
+<h3 id="posisi-penelitian-ini">2.10.3 Posisi Penelitian Ini</h3>
+<p>Penelitian ini berkontribusi dengan:</p>
+<ol type="1">
+<li><p><strong>Perbandingan Sistematis</strong>: Membandingkan tiga
+strategi retrieval (Vector-Only, API-Only, Hybrid) pada dataset
+gold-labeled yang sama.</p></li>
+<li><p><strong>Constraint-Based Evaluation</strong>: Mengembangkan
+framework evaluasi yang mengukur kepuasan constraint secara objektif
+(PCA, CPR, Strict Success).</p></li>
+<li><p><strong>Hybrid Architecture</strong>: Mendemonstrasikan
+arsitektur yang menggabungkan structured query dengan semantic
+search.</p></li>
+<li><p><strong>Domain Properti Indonesia</strong>: Menerapkan RAG untuk
+konteks properti Indonesia dengan karakteristik bahasa dan pasar
+lokal.</p></li>
+<li><p><strong>Reproducible Methodology</strong>: Menyediakan metrik
+terukur dan metodologi yang dapat direplikasi.</p></li>
+</ol>
+<hr />
+<p><strong>Ringkasan BAB II:</strong></p>
+<p>Bab ini telah menyajikan tinjauan pustaka yang komprehensif
+meliputi:</p>
+<ol type="1">
+<li><strong>Artificial Intelligence</strong>: Fondasi dan relevansi
+dengan industri properti</li>
+<li><strong>Machine Learning</strong>: Paradigma pembelajaran dan deep
+learning</li>
+<li><strong>Natural Language Processing</strong>: Teknik pemahaman
+bahasa natural</li>
+<li><strong>Large Language Models</strong>: Arsitektur Transformer dan
+evolusi GPT</li>
+<li><strong>RAG</strong>: Paradigma retrieval-augmented generation</li>
+<li><strong>Vector Database</strong>: Embedding dan semantic search</li>
+<li><strong>Conversational Search</strong>: Paradigma pencarian berbasis
+dialog</li>
+<li><strong>Hybrid Retrieval</strong>: Kombinasi sparse dan dense
+retrieval</li>
+<li><strong>Evaluasi RAG</strong>: Metrik tradisional dan
+constraint-based</li>
+<li><strong>Penelitian Terdahulu</strong>: Gap analysis dan
+positioning</li>
+</ol>
+<p>Tinjauan ini memberikan landasan teoretis untuk pengembangan sistem
+chatbot RAG dengan tiga strategi retrieval yang dievaluasi menggunakan
+framework constraint-based.</p>
